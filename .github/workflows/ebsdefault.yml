@@ -86,17 +86,19 @@ jobs:
           mask-aws-account-id: false
 
       - name: Terraform init
+        working-directory: ./regions/us-east-2/
         run: |
-          cd ./regions/us-east-2/
           terraform init \
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
             -backend-config="region=${{matrix.region}}"
 
           terraform workspace select -or-create ${{matrix.account_id}}
       - name: Terraform format check
+        working-directory: ./regions/us-east-2/
         run: terraform fmt -check
 
       - name: Terraform plan
+        working-directory: ./regions/us-east-2/
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
@@ -106,5 +108,6 @@ jobs:
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
 
       - name: Terraform apply
+        working-directory: ./regions/us-east-2/
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply plan
