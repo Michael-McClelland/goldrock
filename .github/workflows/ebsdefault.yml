@@ -67,7 +67,7 @@ jobs:
       matrix:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
         region:
-          - eu-west-1
+          - us-east-2
 
     steps:
       - name: Checkout
