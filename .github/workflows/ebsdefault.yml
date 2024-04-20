@@ -81,7 +81,7 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/goldrock-github-actions
+          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/goldrock-github-actions
           aws-region: ${{matrix.region}}
           mask-aws-account-id: false
 
@@ -90,9 +90,12 @@ jobs:
         run: |
           terraform init \
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="region=${{matrix.region}}"
+            -backend-config="dynamodb_table=arn:aws:dynamodb:us-east-2:529162655134:table/goldrock-tfstate-398930073421-us-east-2" \
+            -backend-config="kms_key_id=arn:aws:kms:us-east-2:529162655134:key/mrk-221cebf46fe142649a13184eb356a26c" \
+            -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-ebsdefault" \
+            -backend-config="region=${{matrix.region}}" \
+            -backend-config="encrypt=true"
 
-          terraform workspace select -or-create ${{matrix.account_id}}
       - name: Terraform format check
         working-directory: ./regions/us-east-2/
         run: terraform fmt -check
