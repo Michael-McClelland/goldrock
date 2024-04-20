@@ -87,12 +87,11 @@ jobs:
 
       - name: Terraform init
         run: |
-          pwd
-          ls
-          ls -lah
+          cd ./regions/us-east-2/
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-landing-zone-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}-tf-state" \
+            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
             -backend-config="region=${{matrix.region}}"
+
           terraform workspace select -or-create ${{matrix.account_id}}
       - name: Terraform format check
         run: terraform fmt -check
