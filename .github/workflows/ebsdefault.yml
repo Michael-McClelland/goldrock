@@ -88,6 +88,8 @@ jobs:
       - name: Terraform init
         run: |
           pwd
+          ls
+          ls -lah
           terraform init \
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-landing-zone-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}-tf-state" \
             -backend-config="region=${{matrix.region}}"
