@@ -1,3 +1,3 @@
 variable "name" {
-  default = "aousc-tfstate"
+  default = "goldrock-tfstate"
 }
