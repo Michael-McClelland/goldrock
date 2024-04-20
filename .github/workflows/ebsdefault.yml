@@ -41,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/github-actions
-          aws-region: eu-west-1
+          aws-region: us-east-2
           mask-aws-account-id: false
 
       - name: List accounts
