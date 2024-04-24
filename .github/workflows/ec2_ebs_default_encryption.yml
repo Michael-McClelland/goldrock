@@ -1,4 +1,4 @@
-name: 'EBSDefault'
+name: 'ec2_ebs_default_encryption'
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: 529162655134
   COMPANY_IDENTIFIER: goldrock
+  PATH: ./regions/us-east-2/ec2_ebs_default_encryption/
 
 concurrency: terraform
 
@@ -40,7 +41,7 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/goldrock-github-actions
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
           aws-region: us-east-2
           mask-aws-account-id: false
 
@@ -81,27 +82,27 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/goldrock-github-actions
+          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
           aws-region: ${{matrix.region}}
           mask-aws-account-id: false
 
       - name: Terraform init
-        working-directory: ./regions/us-east-2/
+        working-directory: ${{env.PATH}}
         run: |
           terraform init \
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/goldrock-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
             -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:key/mrk-221cebf46fe142649a13184eb356a26c" \
             -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-ebsdefault" \
             -backend-config="region=${{matrix.region}}" \
             -backend-config="encrypt=true"
 
       - name: Terraform format check
-        working-directory: ./regions/us-east-2/
+        working-directory: ${{env.PATH}}
         run: terraform fmt -check
 
       - name: Terraform plan
-        working-directory: ./regions/us-east-2/
+        working-directory: ${{env.PATH}}
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
@@ -111,6 +112,9 @@ jobs:
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
 
       - name: Terraform apply
-        working-directory: ./regions/us-east-2/
+        working-directory: ${{env.PATH}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply plan
+
+
+        
