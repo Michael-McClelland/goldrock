@@ -91,6 +91,6 @@ locals {
 
 module "organization_structure" {
   source = "./module"
-  
+
   organization = local.organization
 }
