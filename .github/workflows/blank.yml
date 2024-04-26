@@ -16,4 +16,4 @@ jobs:
 
       - name: Run a multi-line script
         run: |
-          echo ${{env.GITHUB_WORKFLOW}}
+          echo ${{GITHUB_WORKFLOW}}
