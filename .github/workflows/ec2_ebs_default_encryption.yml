@@ -49,7 +49,7 @@ jobs:
       - name: List accounts
         id: list_accounts
         run: |
-          echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(select(.Id != "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}")) | map(.Id)') >> "$GITHUB_OUTPUT"
+          echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
   deploy:
     name: 'deploy'
     runs-on: ubuntu-22.04
