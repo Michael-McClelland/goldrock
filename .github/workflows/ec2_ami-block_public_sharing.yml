@@ -10,7 +10,7 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   ORGANIZATION_ACCOUNT_KMS_KEY_ID: mrk-221cebf46fe142649a13184eb356a26c
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regions/us-east-2/ec2_ebs_default_encryption/
+  WORKING_DIRECTORY: ./regions/us-east-2/ec2_ami-block_public_sharing/
 
 concurrency: terraform
 
