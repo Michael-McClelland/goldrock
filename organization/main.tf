@@ -11,6 +11,13 @@ locals {
       {
         name = "security",
         key  = "goldrock-security"
+        accounts = [
+          {
+            name  = "securityservices"
+            key   = "goldrock-securityservices"
+            email = "mccmcc+securityservices@amazon.com"
+          }
+        ]
         units = [
           {
             name = "forensics",
@@ -79,13 +86,37 @@ locals {
   }
 }
 
-# resource "aws_organizations_organization" "organization" {
-#   aws_service_access_principals = [
-#     "cloudtrail.amazonaws.com"
-#   ]
-
-#   feature_set = "ALL"
-# }
+resource "aws_organizations_organization" "organization" {
+  aws_service_access_principals = [
+    "access-analyzer.amazonaws.com",
+    "account.amazonaws.com",
+    "cloudtrail.amazonaws.com",
+    "config.amazonaws.com",
+    "detective.amazonaws.com",
+    "fms.amazonaws.com",
+    "guardduty.amazonaws.com",
+    "inspector2.amazonaws.com",
+    "ipam.amazonaws.com",
+    "macie.amazonaws.com",
+    "malware-protection.guardduty.amazonaws.com",
+    "member.org.stacksets.cloudformation.amazonaws.com",
+    "ram.amazonaws.com",
+    "securityhub.amazonaws.com",
+    "securitylake.amazonaws.com",
+    "servicecatalog.amazonaws.com",
+    "ssm.amazonaws.com",
+    "sso.amazonaws.com",
+    "storage-lens.s3.amazonaws.com",
+    "tagpolicies.tag.amazonaws.com"
+  ]
+  enabled_policy_types = [
+    "AISERVICES_OPT_OUT_POLICY",
+    "BACKUP_POLICY",
+    "SERVICE_CONTROL_POLICY",
+    "TAG_POLICY"
+  ]
+  feature_set = "ALL"
+}
 
 
 

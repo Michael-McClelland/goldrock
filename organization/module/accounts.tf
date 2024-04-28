@@ -117,11 +117,8 @@ locals {
 resource "aws_organizations_account" "account" {
   for_each = { for record in local.all_accounts : record.key => record }
 
-  name  = each.value.name
-  email = each.value.email
-
-  iam_user_access_to_billing = each.value.allow_iam_users_access_to_billing ? "ALLOW" : "DENY"
-
+  name      = each.value.name
+  email     = each.value.email
   parent_id = each.value.parent.id
 }
 
