@@ -12,7 +12,7 @@ env:
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./organization/
   region: us-east-2
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 concurrency: organization
 
