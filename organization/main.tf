@@ -118,8 +118,6 @@ resource "aws_organizations_organization" "organization" {
   feature_set = "ALL"
 }
 
-
-
 module "organization_structure" {
   source = "./module"
 

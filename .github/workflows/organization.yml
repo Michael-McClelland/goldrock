@@ -77,3 +77,8 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply plan
 
+      - name: Terraform set security account var
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          gh variable set SECURITY_SERVICES_ACCOUNT_ID --body "$(terraform output -raw security_services_account_id)"
