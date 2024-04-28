@@ -12,7 +12,7 @@ env:
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./regions/us-east-2/ec2_ami-block_public_sharing/
 
-concurrency: terraform
+concurrency: ec2_ami-block_public_sharing
 
 jobs:
   setup:

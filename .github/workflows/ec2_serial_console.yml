@@ -12,7 +12,7 @@ env:
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./regions/us-east-2/ec2_serial_console/
 
-concurrency: terraform
+concurrency: ec2_serial_console
 
 jobs:
   setup:
