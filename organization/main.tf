@@ -125,3 +125,8 @@ module "organization_structure" {
 
   organization = local.organization
 }
+
+terraform {
+  backend "s3" {
+  }
+}

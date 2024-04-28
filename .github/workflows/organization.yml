@@ -1,4 +1,4 @@
-name: 'ec2_ebs_default_encryption'
+name: 'organization'
 
 on:
   push:
@@ -10,9 +10,9 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   ORGANIZATION_ACCOUNT_KMS_KEY_ID: mrk-221cebf46fe142649a13184eb356a26c
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regional/us-east-2/ec2_ebs_default_encryption/
+  WORKING_DIRECTORY: ./organization/
 
-concurrency: ec2_ebs_default_encryption
+concurrency: organization
 
 jobs:
   setup:
@@ -46,47 +46,6 @@ jobs:
           aws-region: us-east-2
           mask-aws-account-id: false
 
-      - name: List accounts
-        id: list_accounts
-        run: |
-          echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
-  deploy:
-    name: 'deploy'
-    runs-on: ubuntu-22.04
-
-    needs: setup
-
-    defaults:
-      run:
-        shell: bash
-
-    permissions:
-      contents: read
-      id-token: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
-        region:
-          - us-east-2
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: latest
-
-      - name: Authenticate with AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
-          aws-region: ${{matrix.region}}
-          mask-aws-account-id: false
-
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
@@ -117,7 +76,3 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply plan
 
-      - name: Terraform destroy
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform destroy --auto-approve
