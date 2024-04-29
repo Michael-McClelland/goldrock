@@ -33,13 +33,13 @@ data "aws_iam_policy_document" "bucket" {
         data.aws_organizations_organization.current.id
       ]
     }
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:PrincipalAccount"
-      values = [
-        data.aws_caller_identity.current.account_id
-      ]
-    }
+    # condition {
+    #   test     = "StringNotEquals"
+    #   variable = "aws:PrincipalAccount"
+    #   values = [
+    #     data.aws_caller_identity.current.account_id
+    #   ]
+    # }
   }
 
   statement {
@@ -243,7 +243,7 @@ data "aws_iam_policy_document" "keypolicy" {
     principals {
       type = "AWS"
       identifiers = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.id}:root"
+        "*"
       ]
     }
     effect = "Allow"
@@ -266,6 +266,13 @@ data "aws_iam_policy_document" "keypolicy" {
       variable = "kms:EncryptionContext:aws:s3:arn"
       values = [
         aws_s3_bucket.bucket.arn
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
       ]
     }
 
@@ -340,7 +347,7 @@ data "aws_iam_policy_document" "keypolicy" {
     principals {
       type = "AWS"
       identifiers = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.id}:root"
+        "*"
       ]
     }
     effect = "Allow"
@@ -363,6 +370,11 @@ data "aws_iam_policy_document" "keypolicy" {
       values = [
         "${var.name}*"
       ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values   = ["${data.aws_organizations_organization.current.id}"]
     }
   }
 
@@ -633,18 +645,18 @@ resource "aws_kms_alias" "alias" {
 
 
 resource "aws_dynamodb_table" "tf_lock_table" {
-  name = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
-  hash_key = "LockID"
-  read_capacity = 5
+  name           = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+  hash_key       = "LockID"
+  read_capacity  = 5
   write_capacity = 5
- 
+
   attribute {
     name = "LockID"
     type = "S"
   }
 
   server_side_encryption {
-    enabled = true
+    enabled     = true
     kms_key_arn = aws_kms_key.key.arn
   }
 }
