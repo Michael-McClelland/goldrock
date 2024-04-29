@@ -1,3 +1,35 @@
+resource "aws_organizations_organization" "organization" {
+  aws_service_access_principals = [
+    "access-analyzer.amazonaws.com",
+    "account.amazonaws.com",
+    "cloudtrail.amazonaws.com",
+    "config.amazonaws.com",
+    "detective.amazonaws.com",
+    "fms.amazonaws.com",
+    "guardduty.amazonaws.com",
+    "inspector2.amazonaws.com",
+    "ipam.amazonaws.com",
+    "macie.amazonaws.com",
+    "malware-protection.guardduty.amazonaws.com",
+    "member.org.stacksets.cloudformation.amazonaws.com",
+    "ram.amazonaws.com",
+    "securityhub.amazonaws.com",
+    "securitylake.amazonaws.com",
+    "servicecatalog.amazonaws.com",
+    "ssm.amazonaws.com",
+    "sso.amazonaws.com",
+    "storage-lens.s3.amazonaws.com",
+    "tagpolicies.tag.amazonaws.com"
+  ]
+  enabled_policy_types = [
+    "AISERVICES_OPT_OUT_POLICY",
+    "BACKUP_POLICY",
+    "SERVICE_CONTROL_POLICY",
+    "TAG_POLICY"
+  ]
+  feature_set = "ALL"
+}
+
 resource "aws_s3_bucket" "bucket" {
   bucket = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
 }
@@ -237,6 +269,30 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
 data "aws_iam_policy_document" "keypolicy" {
 
+  statement {
+    sid = "org-describe"
+    principals {
+      type = "AWS"
+      identifiers = [
+        "*"
+      ]
+    }
+    effect = "Allow"
+    actions = [
+      "kms:DescribeKey",
+    ]
+    resources = [
+      "*",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
+
+  }
 
   statement {
     sid = "s3"
@@ -549,8 +605,6 @@ data "aws_iam_policy_document" "keypolicy" {
       values   = ["true"]
     }
   }
-
-
 
   statement {
     sid = "PreventNonOrganizationalAccess"
