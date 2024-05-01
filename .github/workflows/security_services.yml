@@ -48,9 +48,9 @@ jobs:
       - name: Identify Security Account
         id: get_security_account
         run: |
-          GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq '.DelegatedAdministrators[0].Id')
-          SECURITYHUB_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq '.DelegatedAdministrators[0].Id')
-          [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
+          GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
+          SECURITYHUB_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
+          [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq -r '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
   deploy:
     name: 'deploy'
     runs-on: ubuntu-22.04
