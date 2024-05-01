@@ -77,12 +77,12 @@ jobs:
 
       - name: var test
         working-directory: ${{env.WORKING_DIRECTORY}}
-        run: echo "${{steps.get_security_account.outputs.security_account_id}}"
+        run: echo "${{needs.get_security_account.outputs.security_account_id}}"
 
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{steps.get_security_account.outputs.security_account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{needs.get_security_account.outputs.security_account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
           aws-region: us-east-2
           mask-aws-account-id: false
 
