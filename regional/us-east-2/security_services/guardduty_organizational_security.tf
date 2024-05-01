@@ -1,11 +1,9 @@
-resource "aws_guardduty_detector" "aws_guardduty_detector" {
-  enable = true
-}
+data "aws_guardduty_detector" "aws_guardduty_detector" {}
 
 resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_configuration" {
   auto_enable_organization_members = "ALL"
 
-  detector_id = aws_guardduty_detector.aws_guardduty_detector.id
+  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
 
   datasources {
     s3_logs {
