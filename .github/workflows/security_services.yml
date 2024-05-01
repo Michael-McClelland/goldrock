@@ -27,7 +27,7 @@ jobs:
       id-token: write
 
     outputs:
-      account_ids: ${{steps.get_security_account.outputs.security_account_id}}
+      security_account_id: ${{steps.get_security_account.outputs.security_account_id}}
 
     steps:
       - name: Checkout
@@ -74,13 +74,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
-
-      - name: var test1
-        #working-directory: ${{env.WORKING_DIRECTORY}}
-        run: |
-          ls -lah && pwd
-          find .
-          echo "${{steps.get_security_account.outputs.security_account_id}}"
 
       - name: var test
         working-directory: ${{env.WORKING_DIRECTORY}}
