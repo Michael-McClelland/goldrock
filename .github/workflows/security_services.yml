@@ -1,4 +1,4 @@
-name: 'ec2_serial_console'
+name: 'security_services'
 
 on:
   push:
@@ -9,9 +9,9 @@ on:
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regional/us-east-2/ec2_serial_console/
+  WORKING_DIRECTORY: ./regional/us-east-2/security_services/
 
-concurrency: ec2_serial_console
+concurrency: security_services
 
 jobs:
   setup:
@@ -27,7 +27,7 @@ jobs:
       id-token: write
 
     outputs:
-      account_ids: ${{steps.list_accounts.outputs.account_ids}}
+      account_ids: ${{steps.get_security_account.outputs.security_account_id}}
 
     steps:
       - name: Checkout
@@ -45,10 +45,12 @@ jobs:
           aws-region: us-east-2
           mask-aws-account-id: false
 
-      - name: List accounts
-        id: list_accounts
+      - name: Identify Security Account
+        id: get_security_account
         run: |
-          echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
+          GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq '.DelegatedAdministrators[0].Id')
+          SECURITYHUB_ACCOUNT_ID="$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq '.DelegatedAdministrators[0].Id')
+          [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
   deploy:
     name: 'deploy'
     runs-on: ubuntu-22.04
@@ -62,14 +64,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
-        region:
-          - us-east-2
-
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,19 +77,20 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
-          aws-region: ${{matrix.region}}
+          role-to-assume: arn:aws:iam::${{steps.get_security_account.outputs.security_account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          aws-region: us-east-2
           mask-aws-account-id: false
+          
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
-            -backend-config="region=${{matrix.region}}" \
+            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
+            -backend-config="kms_key_id=arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
+            -backend-config="key=us-east-2-${{steps.get_security_account.outputs.security_account_id}}-$GITHUB_WORKFLOW" \
+            -backend-config="region=us-east-2" \
             -backend-config="encrypt=true"
 
       - name: Terraform format check
@@ -106,8 +102,8 @@ jobs:
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_account_id: ${{matrix.account_id}}
-          TF_VAR_region: ${{matrix.region}}
+          #TF_VAR_account_id: ${{matrix.account_id}}
+          #TF_VAR_region: ${{matrix.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
 
@@ -115,8 +111,3 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply plan
-
-      - name: Terraform destroy
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform destroy --auto-approve

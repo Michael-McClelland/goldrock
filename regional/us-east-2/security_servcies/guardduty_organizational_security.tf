@@ -25,7 +25,13 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
     }
   }
 }
-terraform {
-  backend "s3" {
+resource "aws_guardduty_organization_configuration_feature" "eks_runtime_monitoring" {
+  detector_id = aws_guardduty_detector.aws_guardduty_detector.id
+  name        = "EKS_RUNTIME_MONITORING"
+  auto_enable = "ALL"
+
+  additional_configuration {
+    name        = "EKS_ADDON_MANAGEMENT"
+    auto_enable = "NEW"
   }
 }

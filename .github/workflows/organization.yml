@@ -27,9 +27,6 @@ jobs:
       contents: read
       id-token: write
 
-    outputs:
-      account_ids: ${{steps.list_accounts.outputs.account_ids}}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
