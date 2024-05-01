@@ -78,7 +78,8 @@ jobs:
       - name: var test1
         #working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          echo "ls -lah && pwd"
+          ls -lah && pwd
+          find .
           echo "${{steps.get_security_account.outputs.security_account_id}}"
 
       - name: var test
