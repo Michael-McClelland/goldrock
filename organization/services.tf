@@ -19,7 +19,7 @@ resource "aws_organizations_delegated_administrator" "access_analyzer" {
   service_principal = "access-analyzer.amazonaws.com"
 }
 
-resource "aws_organizations_delegated_administrator" "access_analyzer" {
+resource "aws_organizations_delegated_administrator" "guardduty" {
   account_id        = module.organization_structure.all_accounts.goldrock-securityservices.id
   service_principal = "guardduty.amazonaws.com"
 }
