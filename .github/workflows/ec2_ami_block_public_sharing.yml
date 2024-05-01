@@ -8,7 +8,6 @@ on:
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./regional/us-east-2/ec2_ami_block_public_sharing/
 

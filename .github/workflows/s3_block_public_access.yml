@@ -8,7 +8,6 @@ on:
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./global/s3_block_public_access/
 

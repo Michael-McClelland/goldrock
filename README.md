@@ -1,6 +1,8 @@
 # goldrock
 goldrock
 
+TODOLIST
+
 SystemsManager delegated admin
 delegated admin for cf for infrastructure accounts
 cloudtrail
