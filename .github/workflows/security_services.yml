@@ -66,6 +66,11 @@ jobs:
       id-token: write
       
     steps:
+
+      - name: var test
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: echo "${{steps.get_security_account.outputs.security_account_id}}"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -80,7 +85,6 @@ jobs:
           role-to-assume: arn:aws:iam::${{steps.get_security_account.outputs.security_account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
           aws-region: us-east-2
           mask-aws-account-id: false
-          
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
