@@ -8,7 +8,6 @@ on:
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-  ORGANIZATION_ACCOUNT_KMS_KEY_ID: mrk-221cebf46fe142649a13184eb356a26c
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./organization/
   region: us-east-2
@@ -54,7 +53,7 @@ jobs:
           terraform init \
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
             -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:key/${{env.ORGANIZATION_ACCOUNT_KMS_KEY_ID}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
             -backend-config="key=${{env.region}}-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-$GITHUB_WORKFLOW" \
             -backend-config="region=${{env.region}}" \
             -backend-config="encrypt=true"
@@ -77,9 +76,3 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply plan
-
-      # - name: Terraform set security account var
-      #   working-directory: ${{env.WORKING_DIRECTORY}}
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      #   run: |
-      #     gh variable set SECURITY_SERVICES_ACCOUNT_ID --body "$(terraform output -raw security_services_account_id)"

@@ -1,4 +1,4 @@
-name: 's3_block_public_access'
+name: 'ec2_serial_console'
 
 on:
   push:
@@ -10,9 +10,9 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
 
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./global/s3_block_public_access/
+  WORKING_DIRECTORY: ./regional/us-east-2/ec2_serial_console/
 
-concurrency: s3_block_public_access
+concurrency: ec2_serial_console
 
 jobs:
   setup:

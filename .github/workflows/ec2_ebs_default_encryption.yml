@@ -8,7 +8,7 @@ on:
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-  ORGANIZATION_ACCOUNT_KMS_KEY_ID: mrk-221cebf46fe142649a13184eb356a26c
+
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./regional/us-east-2/ec2_ebs_default_encryption/
 
@@ -93,7 +93,7 @@ jobs:
           terraform init \
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
             -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:key/${{env.ORGANIZATION_ACCOUNT_KMS_KEY_ID}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
             -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
             -backend-config="region=${{matrix.region}}" \
             -backend-config="encrypt=true"
