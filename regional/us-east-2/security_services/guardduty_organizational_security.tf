@@ -46,13 +46,13 @@ resource "aws_guardduty_organization_configuration_feature" "runtime_monitoring"
   }
 }
 
-# resource "aws_guardduty_organization_configuration_feature" "eks_runtime_monitoring" {
-#   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-#   name        = "EKS_RUNTIME_MONITORING"
-#   auto_enable = "ALL"
+resource "aws_guardduty_organization_configuration_feature" "eks_runtime_monitoring" {
+  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
+  name        = "EKS_RUNTIME_MONITORING"
+  auto_enable = "ALL"
 
-#   additional_configuration {
-#     name        = "EKS_ADDON_MANAGEMENT"
-#     auto_enable = "ALL"
-#   }
-# }
+  additional_configuration {
+    name        = "EKS_ADDON_MANAGEMENT"
+    auto_enable = "ALL"
+  }
+}
