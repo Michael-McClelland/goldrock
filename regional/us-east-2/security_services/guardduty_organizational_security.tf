@@ -5,54 +5,32 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
   auto_enable_organization_members = "ALL"
 }
 
-resource "aws_guardduty_organization_configuration_feature" "s3_data_events" {
+resource "aws_guardduty_detector_feature" "this" {
+  for_each = toset([
+    "S3_DATA_EVENTS",
+    "EKS_AUDIT_LOGS",
+    "EBS_MALWARE_PROTECTION",
+    "RDS_LOGIN_EVENTS",
+    "LAMBDA_NETWORK_LOGS"
+  ])
+
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-  name        = "S3_DATA_EVENTS"
-  auto_enable = "ALL"
+  name        = each.value
+  status      = "ENABLED"
 }
 
-resource "aws_guardduty_organization_configuration_feature" "eks_audit_logs" {
-  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-  name        = "EKS_AUDIT_LOGS"
-  auto_enable = "ALL"
-}
-
-resource "aws_guardduty_organization_configuration_feature" "ebs_malware_protection" {
-  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-  name        = "EBS_MALWARE_PROTECTION"
-  auto_enable = "ALL"
-}
-
-resource "aws_guardduty_organization_configuration_feature" "rds_login_events" {
-  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-  name        = "RDS_LOGIN_EVENTS"
-  auto_enable = "ALL"
-}
-
-resource "aws_guardduty_organization_configuration_feature" "lambda_network_logs" {
-  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-  name        = "LAMBDA_NETWORK_LOGS"
-  auto_enable = "ALL"
-}
-
-resource "aws_guardduty_organization_configuration_feature" "runtime_monitoring" {
+resource "aws_guardduty_detector_feature" "runtime_monitoring" {
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
   name        = "RUNTIME_MONITORING"
-  auto_enable = "ALL"
+  status      = "ENABLED"
 
   additional_configuration {
-    name        = "EC2_AGENT_MANAGEMENT"
-    auto_enable = "ALL"
+    name   = "ECS_FARGATE_AGENT_MANAGEMENT"
+    status = "ENABLED"
   }
-}
-
-resource "aws_guardduty_organization_configuration_feature" "eks_runtime_monitoring" {
-  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
-  name        = "EKS_RUNTIME_MONITORING"
-  auto_enable = "ALL"
 
   additional_configuration {
-    name        = "EKS_ADDON_MANAGEMENT"
-    auto_enable = "ALL"
+    name   = "EKS_ADDON_MANAGEMENT"
+    status = "ENABLED"
   }
 }
