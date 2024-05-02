@@ -24,7 +24,7 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
   }
 }
 resource "aws_guardduty_organization_configuration_feature" "eks_runtime_monitoring" {
-  detector_id = aws_guardduty_detector.aws_guardduty_detector.id
+  detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
   name        = "EKS_RUNTIME_MONITORING"
   auto_enable = "ALL"
 
