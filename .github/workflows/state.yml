@@ -78,6 +78,7 @@ jobs:
           KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>&1)
           KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId')
           [ "$KMS_KEY_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo kms_key_exists=true >> "$GITHUB_OUTPUT" || kms_key_exists=false
+          echo $kms_key_exists
 
       - name: dynamodbtable
         working-directory: ${{env.WORKING_DIRECTORY}}
@@ -88,6 +89,7 @@ jobs:
           DYNAMODB_TABLE_EXISTS_CHECK=$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} | jq -r '.Table.TableArn' 2>&1)
           DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5)
           [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo dynamodb_table_exists=true >> "$GITHUB_OUTPUT" || dynamodb_table_exists=false
+          echo $dynamodb_table_exists
 
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
