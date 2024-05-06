@@ -69,6 +69,30 @@ jobs:
               BUCKET_EXISTS=true >> "$GITHUB_OUTPUT"
           fi
 
+      - name: kmskey
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: |
+          aws sts get-caller-identity
+          echo "Checking if KMS key exists..."
+          KMS_KEY_EXISTS=false
+          KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" 2>&1)
+          echo $KMS_KEY_EXISTS_CHECK
+          # if [ $? != 0 ]
+          #   then
+          #   KMS_KEY_EXISTS_CHECK=$(echo $KMS_KEY_EXISTS_CHECK | grep -c 'NoSuchBucket')
+          #     echo $KMS_KEY_EXISTS_CHECK
+          #     if [ $KMS_KEY_EXISTS_CHECK = 1 ]; then
+          #       echo $KMS_KEY_EXISTS
+          #       KMS_KEY_EXISTS=false >> "$GITHUB_OUTPUT"
+          #     else
+          #       echo "$KMS_KEY_EXISTS_CHECK"
+          #       exit 1
+          #     fi
+          #   else
+          #     echo $KMS_KEY_EXISTS
+          #     KMS_KEY_EXISTS=true >> "$GITHUB_OUTPUT"
+          # fi
+
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
       #   run: |
