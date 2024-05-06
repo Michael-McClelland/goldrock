@@ -28,7 +28,7 @@ jobs:
       id-token: write
 
     outputs:
-      s3bucket: ${{steps.s3bucket.outputs.account_ids}}
+      s3bucket: ${{steps.s3bucket.outputs.bucket_exists}}
 
     steps:
       - name: Checkout
@@ -51,22 +51,22 @@ jobs:
         run: |
           aws sts get-caller-identity
           echo "Checking if S3 bucket exists..."
-          BUCKET_EXISTS=true
+          bucket_exists=true
           S3_BUCKET_EXISTS_CHECK=$(aws s3 ls ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>&1)
           if [ $? != 0 ]
             then
               NO_BUCKET_CHECK=$(echo $S3_BUCKET_EXISTS_CHECK | grep -c 'NoSuchBucket')
               echo $NO_BUCKET_CHECK
               if [ $NO_BUCKET_CHECK = 1 ]; then
-                echo $BUCKET_EXISTS
-                BUCKET_EXISTS=false >> "$GITHUB_OUTPUT"
+                echo $bucket_exists
+                bucket_exists=false >> "$GITHUB_OUTPUT"
               else
                 echo "$S3_BUCKET_EXISTS_CHECK"
                 exit 1
               fi
             else
-              echo $BUCKET_EXISTS
-              BUCKET_EXISTS=true >> "$GITHUB_OUTPUT"
+              echo $bucket_exists
+              bucket_exists=true >> "$GITHUB_OUTPUT"
           fi
 
       - name: kmskey
@@ -74,24 +74,20 @@ jobs:
         run: |
           aws sts get-caller-identity
           echo "Checking if KMS key exists..."
-          KMS_KEY_EXISTS=false
+          kms_key_exists=false
           KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>&1)
-          echo $KMS_KEY_EXISTS_CHECK
-          # if [ $? != 0 ]
-          #   then
-          #   KMS_KEY_EXISTS_CHECK=$(echo $KMS_KEY_EXISTS_CHECK | grep -c 'NoSuchBucket')
-          #     echo $KMS_KEY_EXISTS_CHECK
-          #     if [ $KMS_KEY_EXISTS_CHECK = 1 ]; then
-          #       echo $KMS_KEY_EXISTS
-          #       KMS_KEY_EXISTS=false >> "$GITHUB_OUTPUT"
-          #     else
-          #       echo "$KMS_KEY_EXISTS_CHECK"
-          #       exit 1
-          #     fi
-          #   else
-          #     echo $KMS_KEY_EXISTS
-          #     KMS_KEY_EXISTS=true >> "$GITHUB_OUTPUT"
-          # fi
+          KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId')
+          [ "$KMS_KEY_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo kms_key_exists=true >> "$GITHUB_OUTPUT" || kms_key_exists=false
+
+      - name: dynamodbtable
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: |
+          aws sts get-caller-identity
+          echo "Checking if DynamoDB table exists..."
+          dynamodb_table_exists=false
+          DYNAMODB_TABLE_EXISTS_CHECK=$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} | jq -r '.Table.TableArn' 2>&1)
+          DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5)
+          [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo dynamodb_table_exists=true >> "$GITHUB_OUTPUT" || dynamodb_table_exists=false
 
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
