@@ -48,7 +48,7 @@ jobs:
 
       - name: s3bucket
         working-directory: ${{env.WORKING_DIRECTORY}}
-        run: >-
+        run: |
           aws sts get-caller-identity
           echo "Checking if S3 bucket exists..."
           BUCKET_EXISTS=true
