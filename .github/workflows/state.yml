@@ -75,7 +75,7 @@ jobs:
           aws sts get-caller-identity
           echo "Checking if KMS key exists..."
           KMS_KEY_EXISTS=false
-          KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" 2>&1)
+          KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>&1)
           echo $KMS_KEY_EXISTS_CHECK
           # if [ $? != 0 ]
           #   then
