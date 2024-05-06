@@ -633,8 +633,6 @@ data "aws_iam_policy_document" "keypolicy" {
     }
   }
 
-
-
   statement {
     sid = "MaxDeletionWindow"
     principals {

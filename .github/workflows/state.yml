@@ -1,0 +1,100 @@
+name: 'state'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
+  COMPANY_IDENTIFIER: goldrock
+  WORKING_DIRECTORY: ./state/
+  region: us-east-2
+
+concurrency: state
+
+jobs:
+  setup:
+    name: 'state-exists-check'
+    runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      s3bucket: ${{steps.s3bucket.outputs.account_ids}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          aws-region: us-east-2
+          mask-aws-account-id: false
+
+      - name: s3bucket
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: >-
+          aws sts get-caller-identity
+          echo "Checking if S3 bucket exists..."
+          BUCKET_EXISTS=true
+          S3_BUCKET_EXISTS_CHECK=$(aws s3 ls ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>&1)
+          if [ $? != 0 ]
+          then
+            NO_BUCKET_CHECK=$(echo $S3_BUCKET_EXISTS_CHECK | grep -c 'NoSuchBucket')
+            echo $NO_BUCKET_CHECK
+            if [ $NO_BUCKET_CHECK = 1 ]; then
+              echo $BUCKET_EXISTS
+              BUCKET_EXISTS=false >> "$GITHUB_OUTPUT"
+            else
+              echo "$S3_BUCKET_EXISTS_CHECK"
+              exit 1
+            fi
+          else
+            echo $BUCKET_EXISTS
+            BUCKET_EXISTS=true >> "$GITHUB_OUTPUT"
+          fi
+
+      # - name: Terraform init
+      #   working-directory: ${{env.WORKING_DIRECTORY}}
+      #   run: |
+      #     terraform init \
+      #       -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
+      #       -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
+      #       -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
+      #       -backend-config="key=${{env.region}}-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-$GITHUB_WORKFLOW" \
+      #       -backend-config="region=${{env.region}}" \
+      #       -backend-config="encrypt=true"
+
+      # - name: Terraform format check
+      #   working-directory: ${{env.WORKING_DIRECTORY}}
+      #   run: terraform fmt -check
+
+      # - name: Terraform plan
+      #   working-directory: ${{env.WORKING_DIRECTORY}}
+      #   run: terraform plan -out plan
+      #   env:
+      #     TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+      #     TF_VAR_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+      #     TF_VAR_region: ${{env.region}}
+      #     TF_VAR_ref: ${{github.ref_name}}
+      #     TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
+
+      # - name: Terraform apply
+      #   working-directory: ${{env.WORKING_DIRECTORY}}
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   run: terraform apply plan
