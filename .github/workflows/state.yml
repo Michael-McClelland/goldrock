@@ -51,7 +51,6 @@ jobs:
       - name: s3bucket
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          aws sts get-caller-identity
           echo "Checking if S3 bucket exists..."
           if [ ! -z "$( aws s3api head-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null)" ];
           then
@@ -63,7 +62,6 @@ jobs:
       - name: kmskey
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          echo "Checking if KMS key exists..."
           KEY_EXISTS=false
           KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>&1)
           KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId')
@@ -72,7 +70,6 @@ jobs:
       - name: dynamodbtable
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          echo "Checking if DynamoDB table exists..."
           DYNAMODB_TABLE_EXISTS=false
           DYNAMODB_TABLE_EXISTS_CHECK=$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} | jq -r '.Table.TableArn' 2>&1)
           DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5)
@@ -95,6 +92,17 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           echo create dynamodb-table
+
+      - name: outputs
+        if: ${{ env.BUCKET_EXISTS }}
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: |
+          echo create bucket
+          echo ${{ env.BUCKET_EXISTS }}
+          echo -------------
+          echo ${{ env.KEY_EXISTS }}
+          echo -------------
+          echo ${{ env.DYNAMODB_TABLE_EXISTS }}
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
       #   run: |
