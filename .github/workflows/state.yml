@@ -55,8 +55,10 @@ jobs:
           echo "Checking if S3 bucket exists..."
           if [ -z "$( aws  s3api head-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} )" ];
           then
+            echo "adsf"
             BUCKET_EXISTS=true >> "$GITHUB_ENV"
           else
+            echo "asdfasdf"
             BUCKET_EXISTS=false >> "$GITHUB_ENV"
           fi
 
