@@ -78,7 +78,7 @@ jobs:
           KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId')
           echo $KMS_KEY_ACCOUNT
           echo ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          [ $KMS_KEY_ACCOUNT = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo kms_key_exists=true >> "$GITHUB_OUTPUT" || kms_key_exists=false
+          [ $KMS_KEY_ACCOUNT = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo kms_key_exists=true >> "$GITHUB_OUTPUT" || kms_key_exists=false >> "$GITHUB_OUTPUT"
 
       - name: dynamodbtable
         working-directory: ${{env.WORKING_DIRECTORY}}
@@ -90,7 +90,7 @@ jobs:
           DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5)
           echo $DYNAMODB_ACCOUNT
           echo ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo dynamodb_table_exists=true >> "$GITHUB_OUTPUT" || dynamodb_table_exists=false
+          [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo dynamodb_table_exists=true >> "$GITHUB_OUTPUT" || dynamodb_table_exists=false >> "$GITHUB_OUTPUT"
 
       - name: myoutputs
         working-directory: ${{env.WORKING_DIRECTORY}}
