@@ -64,8 +64,8 @@ jobs:
                 echo "$S3_BUCKET_EXISTS_CHECK"
                 exit 1
               fi
-            else
-              BUCKET_EXISTS=true >> "$GITHUB_ENV"
+          else
+            BUCKET_EXISTS=true >> "$GITHUB_ENV"
           fi
 
       - name: kmskey
