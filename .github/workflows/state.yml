@@ -59,50 +59,43 @@ jobs:
               NO_BUCKET_CHECK=$(echo $S3_BUCKET_EXISTS_CHECK | grep -c 'NoSuchBucket')
               echo $NO_BUCKET_CHECK
               if [ $NO_BUCKET_CHECK = 1 ]; then
-                bucket_exists=false >> "$GITHUB_OUTPUT"
+                bucket_exists=false >> "$GITHUB_ENV"
               else
                 echo "$S3_BUCKET_EXISTS_CHECK"
                 exit 1
               fi
             else
-              bucket_exists=true >> "$GITHUB_OUTPUT"
+              bucket_exists=true >> "$GITHUB_ENV"
           fi
 
       - name: kmskey
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          aws sts get-caller-identity
           echo "Checking if KMS key exists..."
           kms_key_exists=false
           KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>&1)
           KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId')
           echo $KMS_KEY_ACCOUNT
           echo ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          [ $KMS_KEY_ACCOUNT = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo kms_key_exists=true >> "$GITHUB_OUTPUT" || kms_key_exists=false >> "$GITHUB_OUTPUT"
+          [ $KMS_KEY_ACCOUNT = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo kms_key_exists=true >> "$GITHUB_ENV" || kms_key_exists=false >> "$GITHUB_ENV"
 
       - name: dynamodbtable
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          aws sts get-caller-identity
           echo "Checking if DynamoDB table exists..."
           dynamodb_table_exists=false
           DYNAMODB_TABLE_EXISTS_CHECK=$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} | jq -r '.Table.TableArn' 2>&1)
           DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5)
           echo $DYNAMODB_ACCOUNT
           echo ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo dynamodb_table_exists=true >> "$GITHUB_OUTPUT" || dynamodb_table_exists=false >> "$GITHUB_OUTPUT"
+          [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo dynamodb_table_exists=true >> "$GITHUB_ENV" || dynamodb_table_exists=false >> "$GITHUB_ENV"
 
       - name: myoutputs
         working-directory: ${{env.WORKING_DIRECTORY}}
-        env:
-          BUCKET_EXISTS: ${{steps.s3bucket.outputs.bucket_exists}}
-          KEY_EXISTS: ${{steps.kmskey.outputs.kms_key_exists}}
-          DYNAMODB_TABLE_EXISTS: ${{steps.dynamodbtable.outputs.dynamodb_table_exists}}
         run: |
-          aws sts get-caller-identity
-          echo $BUCKET_EXISTS
-          echo $KEY_EXISTS
-          echo $DYNAMODB_TABLE_EXISTS
+          echo ${{ env.BUCKET_EXISTS }}
+          echo ${{ env.KEY_EXISTS }}
+          echo ${{ env.DYNAMODB_TABLE_EXISTS }}
 
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
