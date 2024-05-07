@@ -53,7 +53,7 @@ jobs:
         run: |
           aws sts get-caller-identity
           echo "Checking if S3 bucket exists..."
-          if [ -z "$( aws  s3api head-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} )" ];
+          if [ ! -z "$( aws s3api head-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null)" ];
           then
             echo BUCKET_EXISTS=true >> "$GITHUB_ENV"
           else
@@ -78,16 +78,23 @@ jobs:
           DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5)
           [ "$DYNAMODB_ACCOUNT" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ] && echo DYNAMODB_TABLE_EXISTS=true >> "$GITHUB_ENV" || DYNAMODB_TABLE_EXISTS=false >> "$GITHUB_ENV"
 
-      - name: myoutputs
+      - name: create bucket
+        if: ${{ ! env.BUCKET_EXISTS }}
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          echo -------------
-          echo ${{ env.BUCKET_EXISTS }}
-          echo -------------
-          echo ${{ env.KEY_EXISTS }}
-          echo -------------
-          echo ${{ env.DYNAMODB_TABLE_EXISTS }}
+          echo create bucket
 
+      - name: create bucket
+        if: ${{ ! env.KEY_EXISTS }}
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: |
+          echo create key
+
+      - name: create bucket
+        if: ${{ ! env.DYNAMODB_TABLE_EXISTS }}
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: |
+          echo create dynamodb-table
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
       #   run: |
