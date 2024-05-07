@@ -53,19 +53,11 @@ jobs:
         run: |
           aws sts get-caller-identity
           echo "Checking if S3 bucket exists..."
-          S3_BUCKET_EXISTS_CHECK=$(aws s3 ls ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>&1)
-          if [ $? != 0 ]
-            then
-              NO_BUCKET_CHECK=$(echo $S3_BUCKET_EXISTS_CHECK | grep -c 'NoSuchBucket')
-              echo $NO_BUCKET_CHECK
-              if [ $NO_BUCKET_CHECK = 1 ]; then
-                BUCKET_EXISTS=false >> "$GITHUB_ENV"
-              else
-                echo "$S3_BUCKET_EXISTS_CHECK"
-                exit 1
-              fi
-          else
+          if [ -z "$( aws  s3api head-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} )" ];
+          then
             BUCKET_EXISTS=true >> "$GITHUB_ENV"
+          else
+            BUCKET_EXISTS=false >> "$GITHUB_ENV"
           fi
 
       - name: kmskey
