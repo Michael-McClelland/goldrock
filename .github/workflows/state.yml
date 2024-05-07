@@ -94,11 +94,15 @@ jobs:
 
       - name: myoutputs
         working-directory: ${{env.WORKING_DIRECTORY}}
+        env:
+          BUCKET_EXISTS: ${{steps.s3bucket.outputs.bucket_exists}}
+          KEY_EXISTS: ${{steps.kmskey.outputs.kms_key_exists}}
+          DYNAMODB_TABLE_EXISTS: ${{steps.dynamodbtable.outputs.dynamodb_table_exists}}
         run: |
           aws sts get-caller-identity
-          echo "bucket ${{steps.s3bucket.outputs.bucket_exists}}"
-          echo "key ${{steps.kmskey.outputs.kms_key_exists}}"
-          echo "dynamodb_table_exists ${{steps.dynamodbtable.outputs.dynamodb_table_exists}}"
+          echo $BUCKET_EXISTS
+          echo $KEY_EXISTS
+          echo $DYNAMODB_TABLE_EXISTS
 
       # - name: Terraform init
       #   working-directory: ${{env.WORKING_DIRECTORY}}
