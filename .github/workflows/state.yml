@@ -83,8 +83,11 @@ jobs:
       - name: myoutputs
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
+          echo -------------
           echo ${{ env.BUCKET_EXISTS }}
+          echo -------------
           echo ${{ env.KEY_EXISTS }}
+          echo -------------
           echo ${{ env.DYNAMODB_TABLE_EXISTS }}
 
       # - name: Terraform init
