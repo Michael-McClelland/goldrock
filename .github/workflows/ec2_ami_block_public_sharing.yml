@@ -3,6 +3,8 @@ name: 'ec2_ami_block_public_sharing'
 on:
   workflow_run:
     workflows: ["organization"]
+    types:
+      - completed
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}

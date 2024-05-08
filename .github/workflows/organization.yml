@@ -3,6 +3,8 @@ name: 'organization'
 on:
   workflow_run:
     workflows: ["state"]
+    types:
+      - completed
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
