@@ -58,6 +58,16 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform fmt -check
 
+      - name: orgaization import check
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: |
+          if [ ! -z "$( terraform state show aws_organizations_organization.organization 2>/dev/null)" ];
+          then
+            echo ORGANIZATION_EXISTS=true >> "$GITHUB_ENV"
+          else
+            terraform import aws_organizations_organization.organization $(aws organizations describe-organization | jq -r '.Organization.Id')
+          fi
+
       - name: Terraform plan
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform plan -out plan
@@ -68,7 +78,7 @@ jobs:
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
 
-      - name: Terraform apply
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply plan
+      # - name: Terraform apply
+      #   working-directory: ${{env.WORKING_DIRECTORY}}
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   run: terraform apply plan
