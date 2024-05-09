@@ -713,6 +713,35 @@ resource "aws_dynamodb_table" "tf_lock_table" {
   }
 }
 
+# resource "aws_dynamodb_resource_policy" "example" {
+#   resource_arn = aws_dynamodb_table.example.arn
+#   policy       = data.aws_iam_policy_document.test.json
+# }
+
+# resource "aws_appautoscaling_target" "dynamodb_table_read_target" {
+#   max_capacity       = 100
+#   min_capacity       = 5
+#   resource_id        = "table/tableName"
+#   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
+#   service_namespace  = "dynamodb"
+# }
+
+# resource "aws_appautoscaling_policy" "dynamodb_table_read_policy" {
+#   name               = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.dynamodb_table_read_target.resource_id}"
+#   policy_type        = "TargetTrackingScaling"
+#   resource_id        = aws_appautoscaling_target.dynamodb_table_read_target.resource_id
+#   scalable_dimension = aws_appautoscaling_target.dynamodb_table_read_target.scalable_dimension
+#   service_namespace  = aws_appautoscaling_target.dynamodb_table_read_target.service_namespace
+
+#   target_tracking_scaling_policy_configuration {
+#     predefined_metric_specification {
+#       predefined_metric_type = "DynamoDBReadCapacityUtilization"
+#     }
+
+#     target_value = 70
+#   }
+# }
+
 output "key_arn" {
   value = aws_kms_key.key.arn
 }
