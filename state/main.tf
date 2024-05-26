@@ -670,10 +670,19 @@ resource "aws_dynamodb_table" "tf_lock_table" {
   read_capacity  = 5
   write_capacity = 5
 
+  lifecycle {
+    ignore_changes = [
+      read_capacity,
+      write_capacity,
+    ]
+  }
+
   attribute {
     name = "LockID"
     type = "S"
   }
+
+  deletion_protection_enabled = true
 
   server_side_encryption {
     enabled     = true
@@ -681,34 +690,113 @@ resource "aws_dynamodb_table" "tf_lock_table" {
   }
 }
 
-# resource "aws_dynamodb_resource_policy" "example" {
-#   resource_arn = aws_dynamodb_table.example.arn
-#   policy       = data.aws_iam_policy_document.test.json
-# }
+data "aws_iam_policy_document" "dynamodb" {
 
-# resource "aws_appautoscaling_target" "dynamodb_table_read_target" {
-#   max_capacity       = 100
-#   min_capacity       = 5
-#   resource_id        = "table/tableName"
-#   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
-#   service_namespace  = "dynamodb"
-# }
+  statement {
+    sid    = "puts"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "dynamodb:DeleteItem",
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+    ]
+    resources = [
+      aws_dynamodb_table.tf_lock_table.arn
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "dynamodb:Attributes"
+      values = [
+        "LockID"
+      ]
+    }
 
-# resource "aws_appautoscaling_policy" "dynamodb_table_read_policy" {
-#   name               = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.dynamodb_table_read_target.resource_id}"
-#   policy_type        = "TargetTrackingScaling"
-#   resource_id        = aws_appautoscaling_target.dynamodb_table_read_target.resource_id
-#   scalable_dimension = aws_appautoscaling_target.dynamodb_table_read_target.scalable_dimension
-#   service_namespace  = aws_appautoscaling_target.dynamodb_table_read_target.service_namespace
+  }
 
-#   target_tracking_scaling_policy_configuration {
-#     predefined_metric_specification {
-#       predefined_metric_type = "DynamoDBReadCapacityUtilization"
-#     }
+}
 
-#     target_value = 70
-#   }
-# }
+
+
+
+resource "aws_dynamodb_resource_policy" "dynamodb" {
+  resource_arn = aws_dynamodb_table.tf_lock_table.arn
+  policy       = data.aws_iam_policy_document.dynamodb.json
+}
+
+resource "aws_appautoscaling_target" "dynamodb_table_read_target" {
+  max_capacity       = 200
+  min_capacity       = 1
+  resource_id        = "table/${aws_dynamodb_table.tf_lock_table.name}"
+  scalable_dimension = "dynamodb:table:ReadCapacityUnits"
+  service_namespace  = "dynamodb"
+}
+
+resource "aws_appautoscaling_policy" "dynamodb_table_read_policy" {
+  name               = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.dynamodb_table_read_target.resource_id}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.dynamodb_table_read_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.dynamodb_table_read_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.dynamodb_table_read_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "DynamoDBReadCapacityUtilization"
+    }
+
+    target_value = 80
+  }
+}
+
+resource "aws_appautoscaling_target" "dynamodb_table_write_target" {
+  depends_on         = [aws_appautoscaling_policy.dynamodb_table_read_policy]
+  max_capacity       = 200
+  min_capacity       = 1
+  resource_id        = "table/${aws_dynamodb_table.tf_lock_table.name}"
+  scalable_dimension = "dynamodb:table:WriteCapacityUnits"
+  service_namespace  = "dynamodb"
+}
+
+resource "aws_appautoscaling_policy" "dynamodb_table_write_policy" {
+  name               = "DynamoDBReadCapacityUtilization:${aws_appautoscaling_target.dynamodb_table_write_target.resource_id}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.dynamodb_table_write_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.dynamodb_table_write_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.dynamodb_table_write_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "DynamoDBWriteCapacityUtilization"
+    }
+
+    target_value = 80
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 output "key_arn" {
   value = aws_kms_key.key.arn
