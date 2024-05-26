@@ -718,9 +718,11 @@ data "aws_iam_policy_document" "dynamodb" {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values = [
-        "goldrock-tfstate-529162655134*"
+        "goldrock-tfstate-529162655134-us-east-2/*"
       ]
     }
+
+
 
 
 #goldrock-tfstate-529162655134-us-east-2/us-east-2-224172266018-ec2_serial_console-md5
