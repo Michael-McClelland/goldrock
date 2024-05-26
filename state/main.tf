@@ -715,20 +715,22 @@ data "aws_iam_policy_document" "dynamodb" {
       ]
     }
     condition {
-      test     = "ForAllValues:StringEquals"
+      test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values = [
-        "LockID"
+        "goldrock-tfstate-529162655134*"
       ]
     }
 
+
+#goldrock-tfstate-529162655134-us-east-2/us-east-2-224172266018-ec2_serial_console-md5
     # condition {
     #   test     = "ForAllValues:StringEquals"
     #   variable = "dynamodb:LeadingKeys"
     #   values = [
     #     "LockID"
     #   ]
-    # }    
+    # }
 
   }
 
