@@ -716,11 +716,19 @@ data "aws_iam_policy_document" "dynamodb" {
     }
     condition {
       test     = "ForAllValues:StringEquals"
-      variable = "dynamodb:Attributes"
+      variable = "dynamodb:LeadingKeys"
       values = [
         "LockID"
       ]
     }
+
+    # condition {
+    #   test     = "ForAllValues:StringEquals"
+    #   variable = "dynamodb:LeadingKeys"
+    #   values = [
+    #     "LockID"
+    #   ]
+    # }    
 
   }
 
