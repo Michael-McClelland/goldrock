@@ -15,7 +15,7 @@ concurrency: security_services
 jobs:
   setup:
     name: 'setup'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -52,7 +52,7 @@ jobs:
           [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq -r '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
   deploy:
     name: 'deploy'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     needs: setup
 

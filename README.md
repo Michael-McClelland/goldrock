@@ -12,7 +12,9 @@ delegated admin for cf for infrastructure accounts
 cloudtrail
 inspector2
 macie2
+fix role name
 
 ## Instructions
 1) Create AWS Organization
+2) Implement Organization Suppot for CloudFormation
 2) Deploy CF Template

@@ -16,7 +16,7 @@ concurrency: s3_block_public_access
 jobs:
   setup:
     name: 'setup'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -51,7 +51,7 @@ jobs:
           echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
   deploy:
     name: 'deploy'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     needs: setup
 
