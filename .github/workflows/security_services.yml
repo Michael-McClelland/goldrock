@@ -92,7 +92,7 @@ jobs:
             -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
             -backend-config="dynamodb_table=arn:aws:dynamodb:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
             -backend-config="kms_key_id=arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
-            -backend-config="key=us-east-2-${{steps.get_security_account.outputs.security_account_id}}-$GITHUB_WORKFLOW" \
+            -backend-config="key=us-east-2-${{needs.setup.outputs.security_account_id}}-$GITHUB_WORKFLOW" \
             -backend-config="region=us-east-2" \
             -backend-config="encrypt=true"
 
