@@ -11,3 +11,4 @@ resource "aws_securityhub_organization_configuration" "aws_securityhub_organizat
 
   depends_on = [aws_securityhub_finding_aggregator.aws_securityhub_finding_aggregator]
 }
+
