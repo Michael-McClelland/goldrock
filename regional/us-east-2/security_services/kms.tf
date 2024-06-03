@@ -1,6 +1,6 @@
 data "aws_iam_policy_document" "keypolicy" {
 
-    statement {
+  statement {
     sid = "KMSCloudTrail"
     principals {
       type = "Service"
@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "keypolicy" {
     }
   }
 
-    statement {
+  statement {
     sid = "configserviceencrypt"
     principals {
       type = "Service"

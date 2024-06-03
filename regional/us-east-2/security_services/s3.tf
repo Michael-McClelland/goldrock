@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "cloudtrail" {
 
   }
 
-    statement {
+  statement {
     sid    = "putobject-config"
     effect = "Allow"
     principals {
@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     }
 
   }
-  
+
   statement {
     sid    = "puts"
     effect = "Allow"
@@ -303,7 +303,7 @@ data "aws_iam_policy_document" "config" {
 
   }
 
-    statement {
+  statement {
     sid    = "putobject-config"
     effect = "Allow"
     principals {
@@ -326,7 +326,7 @@ data "aws_iam_policy_document" "config" {
     }
 
   }
-  
+
   statement {
     sid    = "puts"
     effect = "Allow"
