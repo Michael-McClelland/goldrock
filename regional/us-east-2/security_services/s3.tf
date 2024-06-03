@@ -219,7 +219,7 @@ data "aws_iam_policy_document" "cloudtrail" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "cloudtrail" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.cloudtrail.id
 
   rule {
     object_ownership = "BucketOwnerEnforced"
@@ -227,7 +227,7 @@ resource "aws_s3_bucket_ownership_controls" "cloudtrail" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.cloudtrail.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -240,14 +240,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
 }
 
 resource "aws_s3_bucket_versioning" "cloudtrail" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.cloudtrail.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "cloudtrail" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.cloudtrail.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -256,7 +256,7 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.cloudtrail.id
 
   rule {
     id = "standard"
@@ -490,7 +490,7 @@ data "aws_iam_policy_document" "config" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "config" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.config.id
 
   rule {
     object_ownership = "BucketOwnerEnforced"
@@ -498,7 +498,7 @@ resource "aws_s3_bucket_ownership_controls" "config" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "config" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.config.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -511,14 +511,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config" {
 }
 
 resource "aws_s3_bucket_versioning" "config" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.config.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "config" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.config.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -527,7 +527,7 @@ resource "aws_s3_bucket_public_access_block" "config" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "config" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.config.id
 
   rule {
     id = "standard"
