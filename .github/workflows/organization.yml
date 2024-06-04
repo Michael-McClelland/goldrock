@@ -78,7 +78,7 @@ jobs:
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
 
-      # - name: Terraform apply
-      #   working-directory: ${{env.WORKING_DIRECTORY}}
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      #   run: terraform apply plan
+      - name: Terraform apply
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply plan
