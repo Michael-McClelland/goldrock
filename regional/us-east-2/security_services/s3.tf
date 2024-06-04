@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}"
+      "${aws_s3_bucket.cloudtrail.arn}"
     ]
     condition {
       test     = "StringEquals"
@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:PrincipalAccount}/Config/*"
+      "${aws_s3_bucket.cloudtrail.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:PrincipalAccount}/Config/*"
     ]
     condition {
       test     = "StringEquals"
@@ -74,8 +74,8 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
     ]
     condition {
       test     = "StringEquals"
@@ -97,7 +97,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*"
+      "${aws_s3_bucket.cloudtrail.arn}/*"
     ]
     condition {
       test     = "StringNotEqualsIfExists"
@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*"
+      "${aws_s3_bucket.cloudtrail.arn}/*"
     ]
     condition {
       test     = "StringNotEquals"
@@ -163,8 +163,8 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
     ]
 
     condition {
@@ -187,8 +187,8 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
     ]
 
     condition {
@@ -209,8 +209,8 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
     ]
 
     condition {
@@ -299,7 +299,7 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}"
+      "${aws_s3_bucket.config.arn}"
     ]
     condition {
       test     = "StringEquals"
@@ -323,7 +323,7 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:PrincipalAccount}/Config/*"
+      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:PrincipalAccount}/Config/*"
     ]
     condition {
       test     = "StringEquals"
@@ -349,8 +349,8 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.config.arn}/*",
+      "${aws_s3_bucket.config.arn}",
     ]
     condition {
       test     = "StringEquals"
@@ -372,7 +372,7 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*"
+      "${aws_s3_bucket.config.arn}/*"
     ]
     condition {
       test     = "StringNotEqualsIfExists"
@@ -397,7 +397,7 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*"
+      "${aws_s3_bucket.config.arn}/*"
     ]
     condition {
       test     = "StringNotEquals"
@@ -438,8 +438,8 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.config.arn}/*",
+      "${aws_s3_bucket.config.arn}",
     ]
 
     condition {
@@ -462,8 +462,8 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.config.arn}/*",
+      "${aws_s3_bucket.config.arn}",
     ]
 
     condition {
@@ -484,8 +484,8 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.config.arn}/*",
+      "${aws_s3_bucket.config.arn}",
     ]
 
     condition {
