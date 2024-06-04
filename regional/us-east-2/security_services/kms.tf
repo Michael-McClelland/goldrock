@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "keypolicy" {
     principals {
       type = "Service"
       identifiers = [
-        "config.amzonaws.com"
+        "config.amazonaws.com"
       ]
     }
     effect = "Allow"
