@@ -1,3 +1,7 @@
+resource "aws_s3_bucket" "cloudtrail" {
+  bucket = "goldrock-cloudtrail-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+}
+
 data "aws_iam_policy_document" "cloudtrail" {
 
 
@@ -273,6 +277,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
     }
   }
 
+}
+
+resource "aws_s3_bucket" "config" {
+  bucket = "goldrock-config-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
 }
 
 data "aws_iam_policy_document" "config" {
