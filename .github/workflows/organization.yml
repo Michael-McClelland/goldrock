@@ -61,9 +61,7 @@ jobs:
       - name: orgaization import check
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          organization_management_account_id_state=$(terraform state show aws_organizations_organization.organization 2>/dev/null | grep master_account_id | tr -s ' ' | cut -d " " -f 4 | tr -d '"')
-          echo $organization_management_account_id_state
-          if [ "$organization_management_account_id_state" = "${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}" ];
+          if [ ! -z "$(terraform state list | grep -i "^aws_organizations_organization.organization$" | wc -l | tr -d " ")" ];
             then
               echo 'state exists'
               echo ORGANIZATION_EXISTS=true >> "$GITHUB_ENV"
