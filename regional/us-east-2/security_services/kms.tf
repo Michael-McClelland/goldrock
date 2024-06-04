@@ -130,7 +130,7 @@ data "aws_iam_policy_document" "keypolicy" {
 
   }
 
-    statement {
+  statement {
     sid = "config-decrypt"
     principals {
       type = "AWS"
