@@ -32,6 +32,13 @@ data "aws_iam_policy_document" "keypolicy" {
     }
     condition {
       test     = "StringEquals"
+      variable = "kms:EncryptionContext:aws:s3:arn"
+      values = [
+        aws_s3_bucket.cloudtrail.arn
+      ]
+    }
+    condition {
+      test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
         "arn:${data.aws_partition.current.partition}:cloudtrail:${var.management_account_id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
@@ -66,7 +73,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:s3:arn"
       values = [
-        aws_s3_bucket.bucket.arn
+        aws_s3_bucket.config.arn
       ]
     }
     condition {
@@ -80,7 +87,7 @@ data "aws_iam_policy_document" "keypolicy" {
   }
 
   statement {
-    sid = "read"
+    sid = "read-cloudtrail"
     principals {
       type = "AWS"
       identifiers = [
@@ -110,7 +117,51 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:s3:arn"
       values = [
-        aws_s3_bucket.bucket.arn
+        aws_s3_bucket.cloudtrail.arn
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
+
+  }
+
+    statement {
+    sid = "config-decrypt"
+    principals {
+      type = "AWS"
+      identifiers = [
+        "*"
+      ]
+    }
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt"
+    ]
+    resources = [
+      "*",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values = [
+        "s3.${data.aws_region.current.id}.amazonaws.com"
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "kms:CallerAccount"
+      values   = ["${data.aws_caller_identity.current.id}"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "kms:EncryptionContext:aws:s3:arn"
+      values = [
+        aws_s3_bucket.config.arn
       ]
     }
     condition {
