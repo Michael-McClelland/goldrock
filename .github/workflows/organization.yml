@@ -62,10 +62,12 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           if [ ! -z "$( terraform state show aws_organizations_organization.organization 2>/dev/null)" ];
-          then
-            echo ORGANIZATION_EXISTS=true >> "$GITHUB_ENV"
-          else
-            terraform import aws_organizations_organization.organization $(aws organizations describe-organization | jq -r '.Organization.Id')
+            then
+              echo 'state exists'
+              echo ORGANIZATION_EXISTS=true >> "$GITHUB_ENV"
+            else
+              echo 'state not found'
+              terraform import aws_organizations_organization.organization $(aws organizations describe-organization | jq -r '.Organization.Id')
           fi
 
       - name: Terraform plan
