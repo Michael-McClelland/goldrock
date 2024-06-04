@@ -61,9 +61,9 @@ jobs:
       - name: orgaization import check
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          if [ ! -z "$(terraform state list | grep -i "^aws_organizations_organization.organization$" | wc -l | tr -d " ")" ];
+          if [ ! "$(terraform state list | grep -i "^aws_organizations_organization.organization$" | wc -l | tr -d " ")" -eq 0 ];
             then
-              echo 'state exists'
+              echo 'state not exists'
               echo ORGANIZATION_EXISTS=true >> "$GITHUB_ENV"
             else
               echo 'state not found'
