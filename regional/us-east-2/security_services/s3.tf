@@ -2,6 +2,12 @@ resource "aws_s3_bucket" "cloudtrail" {
   bucket = "goldrock-cloudtrail-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
 }
 
+resource "aws_s3_bucket_policy" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+  policy = data.aws_iam_policy_document.cloudtrail.json
+}
+
+
 data "aws_iam_policy_document" "cloudtrail" {
 
   statement {
@@ -280,6 +286,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
 
 resource "aws_s3_bucket" "config" {
   bucket = "goldrock-configservice-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+}
+
+resource "aws_s3_bucket_policy" "config" {
+  bucket = aws_s3_bucket.config.id
+  policy = data.aws_iam_policy_document.config.json
 }
 
 data "aws_iam_policy_document" "config" {
