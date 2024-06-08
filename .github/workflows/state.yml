@@ -12,7 +12,9 @@ env:
   WORKING_DIRECTORY: ./state/
   region: us-east-2
 
-concurrency: state
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   setup:

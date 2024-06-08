@@ -11,7 +11,9 @@ env:
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./global/s3_block_public_access/
 
-concurrency: s3_block_public_access
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   setup:

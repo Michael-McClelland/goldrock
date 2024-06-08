@@ -11,7 +11,9 @@ env:
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./regional/us-east-2/ec2_serial_console/
 
-concurrency: ec2_serial_console
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   setup:

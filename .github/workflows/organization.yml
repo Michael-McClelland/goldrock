@@ -12,7 +12,9 @@ env:
   WORKING_DIRECTORY: ./organization/
   region: us-east-2
 
-concurrency: organization
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   setup:
