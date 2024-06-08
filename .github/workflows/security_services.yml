@@ -96,7 +96,8 @@ jobs:
             -backend-config="kms_key_id=arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
             -backend-config="key=us-east-2-${{needs.setup.outputs.security_account_id}}-$GITHUB_WORKFLOW" \
             -backend-config="region=us-east-2" \
-            -backend-config="encrypt=true"
+            -backend-config="encrypt=true" \
+            -backend-config="max_retries=20"
 
       - name: Terraform format check
         working-directory: ${{env.WORKING_DIRECTORY}}
