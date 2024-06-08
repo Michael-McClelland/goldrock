@@ -677,6 +677,11 @@ resource "aws_dynamodb_table" "tf_lock_table" {
     ]
   }
 
+  # ttl {
+  #   attribute_name = "ttl"
+  #   enabled        = true
+  # }
+
   attribute {
     name = "LockID"
     type = "S"
