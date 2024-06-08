@@ -4,7 +4,6 @@ resource "aws_s3_bucket" "cloudtrail" {
 
 data "aws_iam_policy_document" "cloudtrail" {
 
-
   statement {
     sid    = "getbucketacl-cloudtrail"
     effect = "Allow"
@@ -280,7 +279,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
 }
 
 resource "aws_s3_bucket" "config" {
-  bucket = "goldrock-config-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+  bucket = "goldrock-configservice-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
 }
 
 data "aws_iam_policy_document" "config" {
