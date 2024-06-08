@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:cloudtrail:arn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.management_account_id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
       ]
     }
     condition {
@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.management_account_id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
       ]
     }
   }

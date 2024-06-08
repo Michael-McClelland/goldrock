@@ -66,6 +66,7 @@ jobs:
       id-token: write
 
     strategy:
+      max-parallel: 2
       fail-fast: false
       matrix:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
