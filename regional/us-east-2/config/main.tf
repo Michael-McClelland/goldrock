@@ -16,7 +16,6 @@ resource "aws_config_delivery_channel" "config" {
 resource "aws_config_configuration_recorder" "config" {
   name     = "goldrock"
   role_arn = aws_iam_service_linked_role.config.arn
-  #role_arn = "arn::iam::398930073421:role/aws-service-role/config.amazonaws.com/AWSServiceRoleForConfig"
 
   recording_group {
     all_supported                 = true
