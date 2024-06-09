@@ -5,6 +5,6 @@ resource "aws_cloudtrail" "cloudtrail" {
   is_multi_region_trail         = true
   include_global_service_events = true
   enable_log_file_validation    = true
-  s3_key_prefix                 = ""
+  s3_key_prefix                 = "goldrock"
   kms_key_id                    = aws_kms_key.key.arn
 }
