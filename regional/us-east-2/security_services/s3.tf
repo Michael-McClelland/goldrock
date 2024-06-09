@@ -64,165 +64,165 @@ data "aws_iam_policy_document" "cloudtrail" {
 
   }
 
-  statement {
-    sid    = "puts"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:PutObject"
-    ]
+  # statement {
+  #   sid    = "puts"
+  #   effect = "Allow"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:GetObject",
+  #     "s3:ListBucket",
+  #     "s3:PutObject"
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*",
-      "${aws_s3_bucket.cloudtrail.arn}",
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values = [
-        data.aws_organizations_organization.current.id
-      ]
-    }
-  }
+  #   resources = [
+  #     "${aws_s3_bucket.cloudtrail.arn}/*",
+  #     "${aws_s3_bucket.cloudtrail.arn}",
+  #   ]
+  #   condition {
+  #     test     = "StringEquals"
+  #     variable = "aws:PrincipalOrgID"
+  #     values = [
+  #       data.aws_organizations_organization.current.id
+  #     ]
+  #   }
+  # }
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:PutObject",
-    ]
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:PutObject",
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*"
-    ]
-    condition {
-      test     = "StringNotEqualsIfExists"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["aws:kms"]
-    }
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["false"]
-    }
-  }
+  #   resources = [
+  #     "${aws_s3_bucket.cloudtrail.arn}/*"
+  #   ]
+  #   condition {
+  #     test     = "StringNotEqualsIfExists"
+  #     variable = "s3:x-amz-server-side-encryption"
+  #     values   = ["aws:kms"]
+  #   }
+  #   condition {
+  #     test     = "Null"
+  #     variable = "s3:x-amz-server-side-encryption"
+  #     values   = ["false"]
+  #   }
+  # }
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:PutObject",
-    ]
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:PutObject",
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*"
-    ]
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.key.arn]
-    }
-  }
+  #   resources = [
+  #     "${aws_s3_bucket.cloudtrail.arn}/*"
+  #   ]
+  #   condition {
+  #     test     = "StringNotEquals"
+  #     variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+  #     values   = [aws_kms_key.key.arn]
+  #   }
+  # }
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:BypassGovernanceRetention",
-      "s3:DeleteBucket",
-      "s3:DeleteBucketPolicy",
-      "s3:DeleteBucketWebsite",
-      "s3:PutAccelerateConfiguration",
-      "s3:PutAnalyticsConfiguration",
-      "s3:PutBucketAcl",
-      "s3:PutBucketCORS",
-      "s3:PutBucketLogging",
-      "s3:PutBucketNotification",
-      "s3:PutBucketOwnershipControls",
-      "s3:PutBucketPolicy",
-      "s3:PutBucketPublicAccessBlock",
-      "s3:PutBucketRequestPayment",
-      "s3:PutBucketVersioning",
-      "s3:PutBucketWebsite",
-      "s3:PutEncryptionConfiguration",
-      "s3:PutInventoryConfiguration",
-      "s3:PutLifecycleConfiguration",
-      "s3:PutMetricsConfiguration",
-      "s3:PutReplicationConfiguration",
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:BypassGovernanceRetention",
+  #     "s3:DeleteBucket",
+  #     "s3:DeleteBucketPolicy",
+  #     "s3:DeleteBucketWebsite",
+  #     "s3:PutAccelerateConfiguration",
+  #     "s3:PutAnalyticsConfiguration",
+  #     "s3:PutBucketAcl",
+  #     "s3:PutBucketCORS",
+  #     "s3:PutBucketLogging",
+  #     "s3:PutBucketNotification",
+  #     "s3:PutBucketOwnershipControls",
+  #     "s3:PutBucketPolicy",
+  #     "s3:PutBucketPublicAccessBlock",
+  #     "s3:PutBucketRequestPayment",
+  #     "s3:PutBucketVersioning",
+  #     "s3:PutBucketWebsite",
+  #     "s3:PutEncryptionConfiguration",
+  #     "s3:PutInventoryConfiguration",
+  #     "s3:PutLifecycleConfiguration",
+  #     "s3:PutMetricsConfiguration",
+  #     "s3:PutReplicationConfiguration",
 
-    ]
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*",
-      "${aws_s3_bucket.cloudtrail.arn}",
-    ]
+  #   resources = [
+  #     "${aws_s3_bucket.cloudtrail.arn}/*",
+  #     "${aws_s3_bucket.cloudtrail.arn}",
+  #   ]
 
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:PrincipalAccount"
-      values = [
-        data.aws_caller_identity.current.account_id
-      ]
-    }
-  }
+  #   condition {
+  #     test     = "StringNotEquals"
+  #     variable = "aws:PrincipalAccount"
+  #     values = [
+  #       data.aws_caller_identity.current.account_id
+  #     ]
+  #   }
+  # }
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:*",
-    ]
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:*",
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*",
-      "${aws_s3_bucket.cloudtrail.arn}",
-    ]
+  #   resources = [
+  #     "${aws_s3_bucket.cloudtrail.arn}/*",
+  #     "${aws_s3_bucket.cloudtrail.arn}",
+  #   ]
 
-    condition {
-      test     = "NumericLessThan"
-      variable = "s3:TlsVersion"
-      values   = ["1.2"]
-    }
-  }
+  #   condition {
+  #     test     = "NumericLessThan"
+  #     variable = "s3:TlsVersion"
+  #     values   = ["1.2"]
+  #   }
+  # }
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:*",
-    ]
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:*",
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*",
-      "${aws_s3_bucket.cloudtrail.arn}",
-    ]
+  #   resources = [
+  #     "${aws_s3_bucket.cloudtrail.arn}/*",
+  #     "${aws_s3_bucket.cloudtrail.arn}",
+  #   ]
 
-    condition {
-      test     = "Bool"
-      variable = "aws:SecureTransport"
-      values   = ["false"]
-    }
-  }
+  #   condition {
+  #     test     = "Bool"
+  #     variable = "aws:SecureTransport"
+  #     values   = ["false"]
+  #   }
+  # }
 
 }
 
