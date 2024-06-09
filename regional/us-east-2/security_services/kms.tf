@@ -1,7 +1,6 @@
 data "aws_iam_policy_document" "keypolicy" {
 
   statement {
-    sid = "CloudTrailDescribe"
     principals {
       type = "Service"
       identifiers = [
