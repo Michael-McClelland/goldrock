@@ -10,8 +10,7 @@ data "aws_iam_policy_document" "keypolicy" {
     }
     effect = "Allow"
     actions = [
-      "kms:GenerateDataKey",
-      "kms:Decrypt"
+      "kms:GenerateDataKey"
     ]
     resources = [
       "*",
@@ -27,7 +26,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:cloudtrail:arn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
       ]
     }
     condition {
@@ -41,11 +40,11 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
       ]
     }
   }
-
+"aws:SourceArn": "arn:aws:cloudtrail:region:account-id:trail/trail-name"
   statement {
     sid = "configserviceencrypt"
     principals {

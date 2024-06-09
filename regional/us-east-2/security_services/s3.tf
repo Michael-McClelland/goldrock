@@ -31,7 +31,6 @@ data "aws_iam_policy_document" "cloudtrail" {
         "${data.aws_organizations_organization.current.id}"
       ]
     }
-
   }
 
   statement {
@@ -45,11 +44,7 @@ data "aws_iam_policy_document" "cloudtrail" {
       "s3:PutObject"
     ]
     resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${data.aws_organizations_organization.current.id}/*",
-      # "${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${data.aws_organizations_organization.current.id}/*"
-
-
-      # AWSLogs/543343844423/*
+      "${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${data.aws_organizations_organization.current.id}/*"
     ]
     condition {
       test     = "StringEquals"
@@ -65,7 +60,6 @@ data "aws_iam_policy_document" "cloudtrail" {
         "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_caller_identity.current.id}:trail/goldrockCloudTrail"
       ]
     }
-
   }
 
   statement {
