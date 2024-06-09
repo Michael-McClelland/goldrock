@@ -1,20 +1,5 @@
 data "aws_iam_policy_document" "keypolicy" {
 
-  # statement {
-  #   principals {
-  #     type = "Service"
-  #     identifiers = [
-  #       "cloudtrail.amazonaws.com"
-  #     ]
-  #   }
-  #   effect = "Allow"
-  #   actions = [
-  #     "kms:*"
-  #   ]
-  #   resources = [
-  #     "*",
-  #   ]
-  # }
   statement {
     sid = "CloudTrailDescribe"
     principals {
@@ -37,13 +22,6 @@ data "aws_iam_policy_document" "keypolicy" {
         "${data.aws_organizations_organization.current.id}"
       ]
     }
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceArn"
-    #   values = [
-    #     "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
-    #   ]
-    # }
   }
 
   statement {
@@ -68,27 +46,27 @@ data "aws_iam_policy_document" "keypolicy" {
         "${data.aws_organizations_organization.current.id}"
       ]
     }
-    condition {
-      test     = "StringEquals"
-      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
-      values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
-      ]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "kms:EncryptionContext:aws:s3:arn"
-      values = [
-        aws_s3_bucket.cloudtrail.arn
-      ]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceArn"
-      values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
-      ]
-    }
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+    #   values = [
+    #     "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
+    #   ]
+    # }
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "kms:EncryptionContext:aws:s3:arn"
+    #   values = [
+    #     aws_s3_bucket.cloudtrail.arn
+    #   ]
+    # }
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "aws:SourceArn"
+    #   values = [
+    #     "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
+    #   ]
+    # }
   }
 
   statement {
