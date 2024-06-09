@@ -11,6 +11,23 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
 data "aws_iam_policy_document" "cloudtrail" {
 
   statement {
+    sid    = "all-cloudtrail"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions = [
+      "s3:*"
+    ]
+
+    resources = [
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
+    ]
+  }
+
+  statement {
     sid    = "getbucketacl-cloudtrail"
     effect = "Allow"
     principals {

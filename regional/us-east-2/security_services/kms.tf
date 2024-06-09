@@ -10,6 +10,22 @@ data "aws_iam_policy_document" "keypolicy" {
     }
     effect = "Allow"
     actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*",
+    ]
+  }
+  statement {
+    sid = "CloudTrailDescribe"
+    principals {
+      type = "Service"
+      identifiers = [
+        "cloudtrail.amazonaws.com"
+      ]
+    }
+    effect = "Allow"
+    actions = [
       "kms:DescribeKey"
     ]
     resources = [
