@@ -1,5 +1,5 @@
 resource "aws_cloudtrail" "cloudtrail" {
-  name                          = "goldrockCloudTrail"
+  name                          = "goldrock"
   s3_bucket_name                = aws_s3_bucket.cloudtrail.id
   is_organization_trail         = true
   is_multi_region_trail         = true
