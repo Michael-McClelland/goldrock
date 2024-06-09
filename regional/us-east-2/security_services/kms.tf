@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "keypolicy" {
       ]
     }
   }
-  
+
   statement {
     sid = "configserviceencrypt"
     principals {
