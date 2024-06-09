@@ -5,7 +5,7 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
   auto_enable_organization_members = "ALL"
 }
 
-resource "aws_guardduty_detector_feature" "this" {
+resource "aws_guardduty_detector_feature" "aws_guardduty_detector_feature" {
   for_each = toset([
     "S3_DATA_EVENTS",
     "EKS_AUDIT_LOGS",
@@ -17,6 +17,7 @@ resource "aws_guardduty_detector_feature" "this" {
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
   name        = each.value
   status      = "ENABLED"
+
 }
 
 resource "aws_guardduty_detector_feature" "runtime_monitoring" {
@@ -33,4 +34,11 @@ resource "aws_guardduty_detector_feature" "runtime_monitoring" {
     name   = "EKS_ADDON_MANAGEMENT"
     status = "ENABLED"
   }
+
+  additional_configuration {
+    name   = "EC2_AGENT_MANAGEMENT"
+    status = "ENABLED"
+  }
+
+
 }
