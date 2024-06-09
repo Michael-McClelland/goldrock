@@ -14,6 +14,3 @@ resource "aws_cloudtrail" "cloudtrail" {
     read_write_type           = "All"
   }
 }
-
-
-

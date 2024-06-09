@@ -17,7 +17,6 @@ resource "aws_guardduty_detector_feature" "aws_guardduty_detector_feature" {
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
   name        = each.value
   status      = "ENABLED"
-
 }
 
 resource "aws_guardduty_detector_feature" "runtime_monitoring" {
@@ -26,12 +25,12 @@ resource "aws_guardduty_detector_feature" "runtime_monitoring" {
   status      = "ENABLED"
 
   additional_configuration {
-    name   = "ECS_FARGATE_AGENT_MANAGEMENT"
+    name   = "EKS_ADDON_MANAGEMENT"
     status = "ENABLED"
   }
 
   additional_configuration {
-    name   = "EKS_ADDON_MANAGEMENT"
+    name   = "ECS_FARGATE_AGENT_MANAGEMENT"
     status = "ENABLED"
   }
 
@@ -39,6 +38,4 @@ resource "aws_guardduty_detector_feature" "runtime_monitoring" {
     name   = "EC2_AGENT_MANAGEMENT"
     status = "ENABLED"
   }
-
-
 }
