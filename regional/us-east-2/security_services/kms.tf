@@ -44,7 +44,6 @@ data "aws_iam_policy_document" "keypolicy" {
       ]
     }
   }
-"aws:SourceArn": "arn:aws:cloudtrail:region:account-id:trail/trail-name"
   statement {
     sid = "configserviceencrypt"
     principals {
