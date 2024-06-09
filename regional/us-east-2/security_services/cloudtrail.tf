@@ -8,3 +8,9 @@ resource "aws_cloudtrail" "cloudtrail" {
   s3_key_prefix                 = "goldrock"
   kms_key_id                    = aws_kms_key.key.arn
 }
+
+import {
+  to = aws_cloudtrail.cloudtrail
+  id = "arn:aws:cloudtrail:us-east-2:529162655134:trail/goldrock"
+}
+
