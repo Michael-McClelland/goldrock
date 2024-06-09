@@ -1,6 +1,37 @@
 data "aws_iam_policy_document" "keypolicy" {
 
   statement {
+    sid = "CloudTrailDescribe"
+    principals {
+      type = "Service"
+      identifiers = [
+        "cloudtrail.amazonaws.com"
+      ]
+    }
+    effect = "Allow"
+    actions = [
+      "kms:DescribeKey"
+    ]
+    resources = [
+      "*",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceOrgID"
+      values = [
+        "${data.aws_organizations_organization.current.id}"
+      ]
+    }
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "aws:SourceArn"
+    #   values = [
+    #     "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
+    #   ]
+    # }
+  }
+
+  statement {
     sid = "KMSCloudTrail"
     principals {
       type = "Service"
@@ -44,6 +75,7 @@ data "aws_iam_policy_document" "keypolicy" {
       ]
     }
   }
+  
   statement {
     sid = "configserviceencrypt"
     principals {
