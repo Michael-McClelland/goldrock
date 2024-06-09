@@ -7,10 +7,13 @@ resource "aws_cloudtrail" "cloudtrail" {
   enable_log_file_validation    = true
   s3_key_prefix                 = "goldrock"
   kms_key_id                    = aws_kms_key.key.arn
+
+  event_selector {
+
+    include_management_events = true
+    read_write_type           = "All"
+  }
 }
 
-import {
-  to = aws_cloudtrail.cloudtrail
-  id = "arn:aws:cloudtrail:us-east-2:529162655134:trail/goldrock"
-}
+
 
