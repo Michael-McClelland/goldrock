@@ -35,6 +35,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Handler: index.lambda_handler
+      ReservedConcurrentExecutions: 1
       Timeout: 30
       Role: !GetAtt "CROrgFunctionRole.Arn"
       Runtime: python3.12
