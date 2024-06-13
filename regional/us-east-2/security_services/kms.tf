@@ -60,13 +60,13 @@ data "aws_iam_policy_document" "keypolicy" {
         aws_s3_bucket.cloudtrail.arn
       ]
     }
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceArn"
-    #   values = [
-    #     "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
-    #   ]
-    # }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceArn"
+      values = [
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
+      ]
+    }
   }
 
   statement {
