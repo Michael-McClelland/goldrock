@@ -46,13 +46,20 @@ data "aws_iam_policy_document" "keypolicy" {
     #     "${data.aws_organizations_organization.current.id}"
     #   ]
     # }
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "kms:EncryptionContext:aws:cloudtrail:arn"
-    #   values = [
-    #     "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
-    #   ]
-    # }
+    condition {
+      test     = "StringEquals"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      values = [
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values = [
+        "s3.${data.aws_region.current.id}.amazonaws.com"
+      ]
+    }
     condition {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:s3:arn"
