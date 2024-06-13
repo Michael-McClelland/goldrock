@@ -116,6 +116,9 @@ resource "aws_organizations_organization" "organization" {
     "TAG_POLICY"
   ]
   feature_set = "ALL"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 module "organization_structure" {

@@ -682,6 +682,7 @@ resource "aws_dynamodb_table" "tf_lock_table" {
       read_capacity,
       write_capacity,
     ]
+    prevent_destroy = true
   }
 
   attribute {
@@ -692,10 +693,6 @@ resource "aws_dynamodb_table" "tf_lock_table" {
   server_side_encryption {
     enabled     = true
     kms_key_arn = aws_kms_key.key.arn
-  }
-
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
