@@ -1,29 +1,5 @@
 data "aws_iam_policy_document" "keypolicy" {
 
-  # statement {
-  #   sid = "CloudTrailDescribe"
-  #   principals {
-  #     type = "Service"
-  #     identifiers = [
-  #       "cloudtrail.amazonaws.com"
-  #     ]
-  #   }
-  #   effect = "Allow"
-  #   actions = [
-  #     "kms:DescribeKey"
-  #   ]
-  #   resources = [
-  #     "*",
-  #   ]
-  #   condition {
-  #     test     = "StringEquals"
-  #     variable = "aws:SourceOrgID"
-  #     values = [
-  #       "${data.aws_organizations_organization.current.id}"
-  #     ]
-  #   }
-  # }
-
   statement {
     sid = "KMSCloudTrail"
     principals {
