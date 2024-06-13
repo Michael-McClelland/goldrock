@@ -39,13 +39,13 @@ data "aws_iam_policy_document" "keypolicy" {
     resources = [
       "*",
     ]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceOrgID"
-      values = [
-        "${data.aws_organizations_organization.current.id}"
-      ]
-    }
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "aws:SourceOrgID"
+    #   values = [
+    #     "${data.aws_organizations_organization.current.id}"
+    #   ]
+    # }
     # condition {
     #   test     = "StringEquals"
     #   variable = "kms:EncryptionContext:aws:cloudtrail:arn"
