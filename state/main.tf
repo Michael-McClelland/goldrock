@@ -1,5 +1,8 @@
 resource "aws_s3_bucket" "bucket" {
   bucket = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_s3_bucket_policy" "bucket" {
@@ -656,6 +659,9 @@ resource "aws_kms_key" "key" {
   enable_key_rotation                = true
   multi_region                       = true
   policy                             = data.aws_iam_policy_document.keypolicy.json
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_kms_alias" "alias" {
@@ -665,10 +671,11 @@ resource "aws_kms_alias" "alias" {
 
 
 resource "aws_dynamodb_table" "tf_lock_table" {
-  name           = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
-  hash_key       = "LockID"
-  read_capacity  = 5
-  write_capacity = 5
+  name                        = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+  hash_key                    = "LockID"
+  read_capacity               = 5
+  write_capacity              = 5
+  deletion_protection_enabled = true
 
   lifecycle {
     ignore_changes = [
@@ -677,21 +684,18 @@ resource "aws_dynamodb_table" "tf_lock_table" {
     ]
   }
 
-  # ttl {
-  #   attribute_name = "ttl"
-  #   enabled        = true
-  # }
-
   attribute {
     name = "LockID"
     type = "S"
   }
 
-  deletion_protection_enabled = true
-
   server_side_encryption {
     enabled     = true
     kms_key_arn = aws_kms_key.key.arn
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -795,31 +799,4 @@ resource "aws_appautoscaling_policy" "dynamodb_table_write_policy" {
 
     target_value = 30
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-output "key_arn" {
-  value = aws_kms_key.key.arn
-}
-
-output "bucket_arn" {
-  value = aws_s3_bucket.bucket.arn
-}
-
-output "dynamodb_table" {
-  value = aws_dynamodb_table.tf_lock_table.arn
 }
