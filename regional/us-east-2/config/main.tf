@@ -12,6 +12,7 @@ resource "aws_config_delivery_channel" "config" {
   name           = "goldrock"
   s3_bucket_name = var.configservice_bucket_name
   s3_key_prefix  = data.aws_organizations_organization.current.id
+  #s3_kms_key_arn
 }
 
 resource "aws_config_configuration_recorder" "config" {
