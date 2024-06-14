@@ -11,6 +11,7 @@ resource "aws_config_configuration_recorder_status" "config" {
 resource "aws_config_delivery_channel" "config" {
   name           = "goldrock"
   s3_bucket_name = var.configservice_bucket_name
+  s3_key_prefix  = data.aws_organizations_organization.current.id
 }
 
 resource "aws_config_configuration_recorder" "config" {
@@ -31,6 +32,7 @@ resource "aws_config_retention_configuration" "example" {
   retention_period_in_days = 365
 }
 
+data "aws_organizations_organization" "current" {}
 
 variable "configservice_bucket_name" {
   type = string
