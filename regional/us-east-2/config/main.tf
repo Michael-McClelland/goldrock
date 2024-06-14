@@ -27,6 +27,16 @@ resource "aws_config_configuration_recorder" "config" {
   }
 }
 
+resource "aws_config_retention_configuration" "example" {
+  retention_period_in_days = 365
+}
+
+
 variable "configservice_bucket_name" {
   type = string
 }
+
+# terraform {
+#   backend "s3" {
+#   }
+# }

@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   GitHubOrg:
     Description: Name of GitHub organization/user (case sensitive)
-    Default: "CHANGEME-MYGITHUBORGANIZATIONORUSERNAME"
+    Default: "CHANGEME-MYGITHUBORGANIZATIONORNAME"
     Type: String
   RepositoryName:
     Description: Name of GitHub repository (case sensitive)
@@ -29,6 +29,7 @@ Resources:
       - CROrgFunctionRole
       - CROrgFunctionPolicy
     Properties:
+      ServiceTimeout: 60
       ServiceToken: !GetAtt "CROrgFunction.Arn"
 
   CROrgFunction:
