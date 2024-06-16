@@ -37,6 +37,7 @@ data "aws_organizations_organization" "current" {}
 
 variable "configservice_bucket_name" {
   type = string
+  default = "goldrock-configservice-543343844423-us-east-2"
 }
 
 # terraform {
