@@ -9,10 +9,10 @@ resource "aws_config_configuration_recorder_status" "config" {
 }
 
 resource "aws_config_delivery_channel" "config" {
-  name           = "goldrock"
+  name           = aws_config_configuration_recorder.config.name
   s3_bucket_name = var.configservice_bucket_name
   s3_key_prefix  = data.aws_organizations_organization.current.id
-  s3_kms_key_arn = "arn:aws:kms:us-east-2:543343844423:key/mrk-6e6d15e8b1b14ecb9070cddbdbe750ae"
+  #s3_kms_key_arn = var.security_services_cmk_arn
 }
 
 resource "aws_config_configuration_recorder" "config" {
@@ -39,6 +39,10 @@ variable "configservice_bucket_name" {
   type = string
   default = "goldrock-configservice-543343844423-us-east-2"
 }
+
+# variable "security_services_cmk_arn" {
+#   type = string
+# }
 
 # terraform {
 #   backend "s3" {
