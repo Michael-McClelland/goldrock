@@ -348,8 +348,7 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:SourceAccount}/Config/ConfigWritabilityCheckFile",
-      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:SourceAccount}/Config/$${aws:RequestedRegion}/*"
+      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:SourceAccount}/Config/*"
     ]
     condition {
       test     = "StringEquals"
