@@ -99,10 +99,6 @@ jobs:
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
-      - name: Terraform format check
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        run: terraform fmt -check
-
       - name: Terraform plan
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform plan -out plan

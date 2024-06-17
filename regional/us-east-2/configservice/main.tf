@@ -37,14 +37,9 @@ data "aws_organizations_organization" "current" {}
 
 variable "configservice_bucket_name" {
   type = string
-  default = "goldrock-configservice-543343844423-us-east-2"
 }
 
-# variable "security_services_cmk_arn" {
-#   type = string
-# }
-
-# terraform {
-#   backend "s3" {
-#   }
-# }
+terraform {
+  backend "s3" {
+  }
+}

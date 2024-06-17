@@ -1,15 +1,14 @@
-name: 'ssm_document_block_public_sharing'
+name: 'configservice'
 
 on:
   workflow_run:
-    workflows: ["organization"]
+    workflows: ["security_services"]
     types:
       - completed
-
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regional/us-east-2/ssm_document_block_public_sharing/
+  WORKING_DIRECTORY: ./regional/us-east-2/configservice/
 
 concurrency:
   group: ${{ github.workflow }}
@@ -29,6 +28,7 @@ jobs:
       id-token: write
 
     outputs:
+      security_account_id: ${{steps.get_security_account.outputs.security_account_id}}
       account_ids: ${{steps.list_accounts.outputs.account_ids}}
 
     steps:
@@ -47,10 +47,18 @@ jobs:
           aws-region: us-east-2
           mask-aws-account-id: false
 
+      - name: Identify Security Account
+        id: get_security_account
+        run: |
+          GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
+          SECURITYHUB_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
+          [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq -r '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
+
       - name: List accounts
         id: list_accounts
         run: |
           echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
+  
   deploy:
     name: 'deploy'
     runs-on: ubuntu-latest
@@ -64,7 +72,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-
     strategy:
       max-parallel: 2
       fail-fast: false
@@ -72,8 +79,8 @@ jobs:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
         region:
           - us-east-2
-
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -82,22 +89,26 @@ jobs:
         with:
           terraform_version: latest
 
+      - name: var test
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        run: echo "${{needs.setup.outputs.security_account_id}}"
+
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
-          aws-region: ${{matrix.region}}
+          role-to-assume: arn:aws:iam::${{needs.setup.outputs.security_account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          aws-region: us-east-2
           mask-aws-account-id: false
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
+            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
+            -backend-config="kms_key_id=arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
             -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
-            -backend-config="region=${{matrix.region}}" \
+            -backend-config="region=us-east-2" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
@@ -106,8 +117,8 @@ jobs:
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_account_id: ${{matrix.account_id}}
-          TF_VAR_region: ${{matrix.region}}
+          TF_VAR_configservice_bucket_name: ${{needs.setup.outputs.security_account_id}}
+          #TF_VAR_region: ${{matrix.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
 
@@ -115,4 +126,3 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: terraform apply plan
-
