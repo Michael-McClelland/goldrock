@@ -10,7 +10,7 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./state/
-  region: us-east-2
+  region: ${{ vars.HOME_REGION }}
 
 concurrency:
   group: ${{ github.workflow }}
@@ -63,9 +63,9 @@ jobs:
       - name: kmskey
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          if [ ! -z "$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>/dev/null)" ];
+          if [ ! -z "$(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>/dev/null)" ];
           then 
-            KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>/dev/null)
+            KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>/dev/null)
             KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId' 2>/dev/null)
             echo KMS_KEY_EXISTS=true >> "$GITHUB_ENV"
           else

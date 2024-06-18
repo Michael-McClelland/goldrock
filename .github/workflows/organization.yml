@@ -10,7 +10,7 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./organization/
-  region: us-east-2
+  region: ${{ vars.HOME_REGION }}
 
 concurrency:
   group: ${{ github.workflow }}

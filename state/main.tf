@@ -727,16 +727,6 @@ data "aws_iam_policy_document" "dynamodb" {
         "${aws_dynamodb_table.tf_lock_table.id}/*$${aws:PrincipalAccount}*"
       ]
     }
-
-    #goldrock-tfstate-529162655134-us-east-2/us-east-2-224172266018-ec2_serial_console-md5
-    # condition {
-    #   test     = "ForAllValues:StringEquals"
-    #   variable = "dynamodb:LeadingKeys"
-    #   values = [
-    #     "LockID"
-    #   ]
-    # }
-
   }
 
 }

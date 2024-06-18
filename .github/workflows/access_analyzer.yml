@@ -32,14 +32,6 @@ jobs:
       account_ids: ${{steps.list_accounts.outputs.account_ids}}
 
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-
-      # - name: Setup Terraform
-      #   uses: hashicorp/setup-terraform@v3
-      #   with:
-      #     terraform_version: latest
-
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:

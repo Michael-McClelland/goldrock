@@ -32,14 +32,6 @@ jobs:
       account_ids: ${{steps.list_accounts.outputs.account_ids}}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: latest
-
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -78,7 +70,7 @@ jobs:
       matrix:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
         region:
-          - us-east-2
+          - ${{ vars.HOME_REGION }}
     steps:
 
       - name: Checkout
@@ -104,11 +96,11 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-2" \
-            -backend-config="kms_key_id=arn:aws:kms:us-east-2:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
+            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
             -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
-            -backend-config="region=us-east-2" \
+            -backend-config="region=${{env.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
