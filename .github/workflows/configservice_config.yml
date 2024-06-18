@@ -9,6 +9,7 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
   WORKING_DIRECTORY: ./regional/configservice/
+  region: ${{ vars.HOME_REGION }}
 
 concurrency:
   group: ${{ github.workflow }}
@@ -96,11 +97,11 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
+            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
             -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
-            -backend-config="region=${{env.region}}" \
+            -backend-config="region=${{matrix.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
