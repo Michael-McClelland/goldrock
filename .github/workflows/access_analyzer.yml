@@ -9,7 +9,7 @@ on:
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regional/us-east-2/access_analyzer/
+  WORKING_DIRECTORY: ./regional/access_analyzer/
 
 concurrency:
   group: ${{ github.workflow }}
@@ -32,19 +32,19 @@ jobs:
       account_ids: ${{steps.list_accounts.outputs.account_ids}}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # - name: Checkout
+      #   uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: latest
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
+      #   with:
+      #     terraform_version: latest
 
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
-          aws-region: us-east-2
+          aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
 
       - name: List accounts
@@ -71,7 +71,7 @@ jobs:
       matrix:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
         region:
-          - us-east-2
+          - ${{ vars.HOME_REGION }}
 
     steps:
       - name: Checkout

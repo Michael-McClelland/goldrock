@@ -9,7 +9,7 @@ on:
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regional/us-east-2/ec2_ami_block_public_sharing/
+  WORKING_DIRECTORY: ./regional/ec2_ami_block_public_sharing/
 
 concurrency:
   group: ${{ github.workflow }}
@@ -44,7 +44,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
-          aws-region: us-east-2
+          aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
 
       - name: List accounts

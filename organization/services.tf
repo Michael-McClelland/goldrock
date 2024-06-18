@@ -23,8 +23,3 @@ resource "aws_organizations_delegated_administrator" "cloudtrail" {
   account_id        = module.organization_structure.all_accounts.goldrock-securityservices.id
   service_principal = "cloudtrail.amazonaws.com"
 }
-
-# resource "aws_organizations_delegated_administrator" "guardduty" {
-#   account_id        = module.organization_structure.all_accounts.goldrock-securityservices.id
-#   service_principal = "guardduty.amazonaws.com"
-# }
