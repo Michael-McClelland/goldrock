@@ -1,12 +1,5 @@
 locals {
   organization = {
-    # accounts = [
-    #   {
-    #     name  = "Default"
-    #     key   = "goldrock-default"
-    #     email = "root@company.com"
-    #   }
-    # ]
     units = [
       {
         name = "security",
@@ -22,24 +15,10 @@ locals {
           {
             name = "forensics",
             key  = "goldrock-security-forensics"
-            # accounts = [
-            #   {
-            #     name  = "Blue"
-            #     key   = "goldrock-myproduct-development-blue"
-            #     email = "development@company.com"
-            #   }
-            # ]
           },
           {
             name = "teneble",
             key  = "goldrock-security-teneble"
-            # accounts = [
-            #   {
-            #     name  = "Blue"
-            #     key   = "goldrock-myproduct-production-blue"
-            #     email = "production@company.com"
-            #   }
-            # ]
           }
         ]
       },
@@ -50,35 +29,14 @@ locals {
           {
             name = "development",
             key  = "goldrock-infrastructure-development"
-            # accounts = [
-            #   {
-            #     name  = "Blue"
-            #     key   = "goldrock-myproduct-development-blue"
-            #     email = "development@company.com"
-            #   }
-            # ]
           },
           {
             name = "testing",
             key  = "goldrock-infrastructure-testing"
-            # accounts = [
-            #   {
-            #     name  = "Blue"
-            #     key   = "goldrock-myproduct-production-blue"
-            #     email = "production@company.com"
-            #   }
-            # ]
           },
           {
             name = "production",
             key  = "goldrock-infrastructure-production"
-            # accounts = [
-            #   {
-            #     name  = "Blue"
-            #     key   = "goldrock-myproduct-production-blue"
-            #     email = "production@company.com"
-            #   }
-            # ]
           }
         ]
       }
