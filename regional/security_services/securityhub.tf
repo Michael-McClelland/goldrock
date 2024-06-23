@@ -1,9 +1,3 @@
-resource "aws_securityhub_account" "securityhub" {
-  auto_enable_controls      = false
-  control_finding_generator = "SECURITY_CONTROL"
-  enable_default_standards  = false
-}
-
 resource "aws_securityhub_finding_aggregator" "aws_securityhub_finding_aggregator" {
   linking_mode = "ALL_REGIONS"
 
@@ -13,7 +7,7 @@ resource "aws_securityhub_finding_aggregator" "aws_securityhub_finding_aggregato
 }
 
 resource "aws_securityhub_organization_configuration" "aws_securityhub_organization_configuration" {
-  auto_enable           = false
+  auto_enable           = true
   auto_enable_standards = "NONE"
   organization_configuration {
     configuration_type = "CENTRAL"
