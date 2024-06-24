@@ -21,8 +21,8 @@ resource "aws_securityhub_configuration_policy" "aws_securityhub_configuration_p
   configuration_policy {
     service_enabled = true
     enabled_standard_arns = [
-      "arn:aws:securityhub:us-east-1::standards/aws-foundational-security-best-practices/v/1.0.0",
-      "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0",
+      "arn:${data.aws_partition.current.id}:securityhub:${data.aws_region.current.id}::standards/aws-foundational-security-best-practices/v/1.0.0",
+      "arn:${data.aws_partition.current.id}:securityhub:${data.aws_region.current.id}::standards/cis-aws-foundations-benchmark/v/3.0.0",
     ]
     security_controls_configuration {
       disabled_control_identifiers = []
