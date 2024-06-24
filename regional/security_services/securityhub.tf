@@ -29,7 +29,7 @@ resource "aws_securityhub_configuration_policy" "aws_securityhub_configuration_p
     }
   }
 
-  depends_on = [aws_securityhub_organization_configuration.example]
+  depends_on = [aws_securityhub_organization_configuration.aws_securityhub_organization_configuration]
 }
 
 resource "aws_securityhub_configuration_policy_association" "root" {
