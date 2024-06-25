@@ -4,6 +4,16 @@ resource "aws_guardduty_organization_admin_account" "aws_guardduty_organization_
 
 resource "aws_securityhub_organization_admin_account" "aws_securityhub_organization_admin_account" {
   admin_account_id = module.organization_structure.all_accounts.goldrock-securityservices.id
+
+  depends_on = [aws_securityhub_account.aws_securityhub_management_account]
+}
+
+#Workaround for SecurityHub Central Configuration
+resource "aws_securityhub_account" "aws_securityhub_management_account" {}
+
+import {
+  to = aws_securityhub_account.aws_securityhub_management_account
+  id = data.aws_caller_identity.caller.account_id
 }
 
 resource "aws_detective_organization_admin_account" "aws_detective_organization_admin_account" {
