@@ -12,7 +12,7 @@ resource "aws_securityhub_organization_admin_account" "aws_securityhub_organizat
 resource "aws_securityhub_account" "aws_securityhub_management_account" {
   auto_enable_controls = true
   control_finding_generator = "SECURITY_CONTROL"
-  enable_default_standards = true
+  enable_default_standards = false
 }
 
 # import {
