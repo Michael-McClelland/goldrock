@@ -9,12 +9,16 @@ resource "aws_securityhub_organization_admin_account" "aws_securityhub_organizat
 }
 
 #Workaround for SecurityHub Central Configuration
-resource "aws_securityhub_account" "aws_securityhub_management_account" {}
-
-import {
-  to = aws_securityhub_account.aws_securityhub_management_account
-  id = data.aws_caller_identity.caller.account_id
+resource "aws_securityhub_account" "aws_securityhub_management_account" {
+  auto_enable_controls = true
+  control_finding_generator = "SECURITY_CONTROL"
+  enable_default_standards = true
 }
+
+# import {
+#   to = aws_securityhub_account.aws_securityhub_management_account
+#   id = data.aws_caller_identity.caller.account_id
+# }
 
 resource "aws_detective_organization_admin_account" "aws_detective_organization_admin_account" {
   account_id = module.organization_structure.all_accounts.goldrock-securityservices.id
