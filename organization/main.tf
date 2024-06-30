@@ -89,7 +89,6 @@ module "organization_structure" {
 data "aws_iam_policy_document" "organizations_policy" {
 
     statement {
-    sid = "organizational-read"
     principals {
       type = "AWS"
       identifiers = [
@@ -114,10 +113,15 @@ data "aws_iam_policy_document" "organizations_policy" {
   }
 }
 
-
-resource "aws_organizations_resource_policy" "aws_organizations_resource_policy" {
-  content = data.aws_iam_policy_document.organizations_policy.json
+output "name" {
+  value = data.aws_iam_policy_document.organizations_policy.json
 }
+
+
+
+# resource "aws_organizations_resource_policy" "aws_organizations_resource_policy" {
+#   content = data.aws_iam_policy_document.organizations_policy.json
+# }
 
 terraform {
   backend "s3" {
