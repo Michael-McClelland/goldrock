@@ -85,30 +85,38 @@ module "organization_structure" {
   organization = local.organization
 }
 
-resource "aws_organizations_resource_policy" "aws_organizations_resource_policy" {
-  content = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": [
-        "organizations:Describe*",
-        "organizations:List*"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:PrincipalOrgID": $${data.aws_organizations_organization.organization.id}
-        }
-      }
+
+data "aws_iam_policy_document" "organizations_policy" {
+
+    statement {
+    sid = "organizational-read"
+    principals {
+      type = "AWS"
+      identifiers = [
+        "*"
+      ]
     }
-  ]
+    effect = "Allow"
+    actions = [
+      "organizations:Describe*",
+      "organizations:List*"
+    ]
+    resources = [
+      "*",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
+  }
 }
-EOF
+
+
+resource "aws_organizations_resource_policy" "aws_organizations_resource_policy" {
+  content = data.aws_iam_policy_document.organizations_policy.json
 }
 
 terraform {
