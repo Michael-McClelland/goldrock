@@ -3,11 +3,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   GitHubOrg:
     Description: Name of GitHub organization/user (case sensitive)
-    Default: "CHANGEME-MYGITHUBORGANIZATIONORNAME"
+    Default: "Michael-McClelland"
     Type: String
   RepositoryName:
     Description: Name of GitHub repository (case sensitive)
-    Default: "CHANGEME-REPOSITORYNAME"
+    Default: "goldrock"
     Type: String
   OIDCProviderArn:
     Description: Arn for the GitHub OIDC Provider.  If a Github OIDC has not yet been deployed leave this as blank.
@@ -37,7 +37,7 @@ Resources:
     Properties:
       Handler: index.lambda_handler
       ReservedConcurrentExecutions: 1
-      Timeout: 30
+      Timeout: 60
       Role: !GetAtt "CROrgFunctionRole.Arn"
       Runtime: python3.12
       Architectures:
@@ -99,6 +99,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub "${RepositoryName}-github-actions"
+      MaxSessionDuration: 43200
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -187,6 +188,7 @@ Resources:
             Type: AWS::IAM::Role
             Properties:
               RoleName: !Sub "${RepositoryName}-github-actions"
+              MaxSessionDuration: 14400
               AssumeRolePolicyDocument:
                 Statement:
                   - Effect: Allow

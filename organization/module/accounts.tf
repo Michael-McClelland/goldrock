@@ -122,19 +122,10 @@ resource "aws_organizations_account" "account" {
   parent_id = each.value.parent.id
 }
 
-# resource "time_sleep" "account_creation" {
-#   create_duration = "900s"
-
-#   triggers = {
-#     account_id = aws_organizations_account.account.id
-#   }
-# }
-
-# data "aws_organizations_delegated_services" "example" {
-#   for_each = { for account in time_sleep.account_creation : account.key => record }
-#   time_sleep.account_creation.triggers["account_id"]
-#   account_id = "AWS ACCOUNT ID"
-# }
+resource "time_sleep" "account_creation" {
+  for_each ={ for record in local.all_accounts : record.key => record }
+  create_duration = "15m"
+}
 
 
 

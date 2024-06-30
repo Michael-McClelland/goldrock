@@ -44,6 +44,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
           aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
+          role-duration-seconds: 43200
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
