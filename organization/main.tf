@@ -108,7 +108,7 @@ data "aws_iam_policy_document" "organizations_policy" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
   }
