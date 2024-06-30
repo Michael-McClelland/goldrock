@@ -102,7 +102,7 @@ resource "aws_organizations_resource_policy" "aws_organizations_resource_policy"
       "Resource": "*",
       "Condition": {
         "StringEquals": {
-          "aws:PrincipalOrgID": ${data.aws_organizations_organization.organization.id}
+          "aws:PrincipalOrgID": $${data.aws_organizations_organization.organization.id}
         }
       }
     }
