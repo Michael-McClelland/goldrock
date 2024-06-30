@@ -10,9 +10,9 @@ resource "aws_securityhub_organization_admin_account" "aws_securityhub_organizat
 
 #Workaround for SecurityHub Central Configuration
 resource "aws_securityhub_account" "aws_securityhub_management_account" {
-  auto_enable_controls = true
+  auto_enable_controls      = true
   control_finding_generator = "STANDARD_CONTROL"
-  enable_default_standards = false
+  enable_default_standards  = false
 }
 
 # import {

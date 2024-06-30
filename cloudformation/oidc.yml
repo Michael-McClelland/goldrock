@@ -139,10 +139,9 @@ Resources:
         RetainStacksOnAccountRemoval: false
       ManagedExecution:
         Active: true
-      # OperationPreferences:
-      #   RegionConcurrencyType: PARALLEL
-      #   FailureTolerancePercentage: 50
-      #   MaxConcurrentPercentage: 100
+      OperationPreferences:
+        MaxConcurrentPercentage: 100
+        FailureTolerancePercentage: 10
       StackInstancesGroup:
         - DeploymentTargets:
             OrganizationalUnitIds:
