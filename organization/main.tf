@@ -113,15 +113,9 @@ data "aws_iam_policy_document" "organizations_policy" {
   }
 }
 
-output "name" {
-  value = data.aws_iam_policy_document.organizations_policy.json
+resource "aws_organizations_resource_policy" "aws_organizations_resource_policy" {
+  content = data.aws_iam_policy_document.organizations_policy.json
 }
-
-
-
-# resource "aws_organizations_resource_policy" "aws_organizations_resource_policy" {
-#   content = data.aws_iam_policy_document.organizations_policy.json
-# }
 
 terraform {
   backend "s3" {
