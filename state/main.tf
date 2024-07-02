@@ -713,13 +713,13 @@ data "aws_iam_policy_document" "dynamodb" {
     resources = [
       aws_dynamodb_table.tf_lock_table.arn
     ]
-#    condition {
-#      test     = "StringEquals"
-#      variable = "aws:PrincipalOrgID"
-#      values = [
-#        data.aws_organizations_organization.current.id
-#      ]
-#    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
     condition {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
