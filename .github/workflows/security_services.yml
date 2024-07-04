@@ -108,10 +108,7 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform plan -out plan
         env:
-          TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
-          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
           TF_VAR_securityhub_full_deploy: ${{needs.setup.outputs.securityhub_full_deploy}}
-          TF_VAR_ref: ${{github.ref_name}}
 
       - name: Terraform apply
         working-directory: ${{env.WORKING_DIRECTORY}}

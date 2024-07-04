@@ -85,8 +85,3 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: terraform apply plan
-
-      - name: Sleep
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
-        run: sleep 900

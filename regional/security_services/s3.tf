@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "cloudtrail" {
       test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${var.management_account_id}:trail/goldrock"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.current.master_account_id}:trail/goldrock"
       ]
     }
   }

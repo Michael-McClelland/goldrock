@@ -124,7 +124,7 @@ resource "aws_organizations_account" "account" {
 
 resource "time_sleep" "account_creation" {
   for_each ={ for record in local.all_accounts : record.key => record }
-  create_duration = "15m"
+  create_duration = "20m"
 }
 
 

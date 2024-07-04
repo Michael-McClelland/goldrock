@@ -1,8 +1,10 @@
 resource "aws_securityhub_finding_aggregator" "aws_securityhub_finding_aggregator" {
+  count   = var.securityhub_full_deploy ? 1 : 0
   linking_mode = "ALL_REGIONS"
 }
 
 resource "aws_securityhub_organization_configuration" "aws_securityhub_organization_configuration" {
+  count   = var.securityhub_full_deploy ? 1 : 0
   auto_enable           = false
   auto_enable_standards = "NONE"
   organization_configuration {
@@ -15,6 +17,7 @@ resource "aws_securityhub_organization_configuration" "aws_securityhub_organizat
 }
 
 resource "aws_securityhub_configuration_policy" "aws_securityhub_configuration_policy" {
+  count   = var.securityhub_full_deploy ? 1 : 0
   name        = "default"
   description = "default"
 
@@ -33,6 +36,7 @@ resource "aws_securityhub_configuration_policy" "aws_securityhub_configuration_p
 }
 
 resource "aws_securityhub_configuration_policy_association" "root" {
+  count   = var.securityhub_full_deploy ? 1 : 0
   target_id = data.aws_organizations_organization.current.roots[0].id
-  policy_id = aws_securityhub_configuration_policy.aws_securityhub_configuration_policy.id
+  policy_id = aws_securityhub_configuration_policy.aws_securityhub_configuration_policy[0].id
 }
