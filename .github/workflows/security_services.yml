@@ -30,6 +30,7 @@ jobs:
 
     outputs:
       security_account_id: ${{steps.get_security_account.outputs.security_account_id}}
+      securityhub_full_deploy: ${{steps.get_security_account.outputs.securityhub_full_deploy}}
 
     steps:
       - name: Authenticate with AWS
@@ -45,6 +46,17 @@ jobs:
           GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
           SECURITYHUB_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
           [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq -r '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
+          CURRENT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+          CREATED_DATE=$(aws organizations describe-account --account-id $CURRENT_ACCOUNT --query Account.JoinedTimestamp --output text)
+          CREATED_DATE_EPOCH=$(date -d"$CREATED_DATE" +%s)
+          READY_DATE=$(( $CREATED_DATE_EPOCH + 345600 ))
+          if [[ $READY_DATE -le $EPOCHSECONDS ]]; 
+          then 
+            echo "securityhub_full_deploy=true" >> "$GITHUB_OUTPUT"
+          else 
+            echo "securityhub_full_deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
     name: 'deploy'
     runs-on: ubuntu-latest
@@ -96,11 +108,10 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform plan -out plan
         env:
-          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          #TF_VAR_account_id: ${{matrix.account_id}}
-          #TF_VAR_region: ${{matrix.region}}
-          TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
+          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+          TF_VAR_securityhub_full_deploy: ${{needs.setup.outputs.securityhub_full_deploy}}
+          TF_VAR_ref: ${{github.ref_name}}
 
       - name: Terraform apply
         working-directory: ${{env.WORKING_DIRECTORY}}
