@@ -1,4 +1,4 @@
-name: 'iam_password_policy'
+name: 'access-analyzer'
 
 on:
   workflow_run:
@@ -8,8 +8,8 @@ on:
  
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-  COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./global/iam_password_policy/
+  ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
+  WORKING_DIRECTORY: ./regional/access-analyzer/
 
 concurrency:
   group: ${{ github.workflow }}
@@ -35,7 +35,7 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
           aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
 
@@ -77,7 +77,7 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
           aws-region: ${{matrix.region}}
           mask-aws-account-id: false
 
@@ -85,10 +85,10 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
+            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
+            -backend-config="key=${{matrix.account_id}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
             -backend-config="region=${{matrix.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
@@ -101,7 +101,7 @@ jobs:
           TF_VAR_account_id: ${{matrix.account_id}}
           TF_VAR_region: ${{matrix.region}}
           TF_VAR_ref: ${{github.ref_name}}
-          TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
+          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
 
       - name: Terraform apply
         working-directory: ${{env.WORKING_DIRECTORY}}

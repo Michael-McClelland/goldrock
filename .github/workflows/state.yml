@@ -9,7 +9,7 @@ on:
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-  COMPANY_IDENTIFIER: goldrock
+  ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
   WORKING_DIRECTORY: ./state/
   region: ${{ vars.HOME_REGION }}
 
@@ -47,14 +47,14 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
           aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
 
       - name: s3bucket
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          if [ ! -z "$( aws s3api head-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null)" ];
+          if [ ! -z "$( aws s3api head-bucket --bucket ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null)" ];
           then
             echo BUCKET_EXISTS=true >> "$GITHUB_ENV"
           else
@@ -64,9 +64,9 @@ jobs:
       - name: kmskey
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          if [ ! -z "$(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>/dev/null)" ];
+          if [ ! -z "$(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate 2>/dev/null)" ];
           then 
-            KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate 2>/dev/null)
+            KMS_KEY_EXISTS_CHECK=$(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate 2>/dev/null)
             KMS_KEY_ACCOUNT=$(echo $KMS_KEY_EXISTS_CHECK | jq -r '.KeyMetadata.AWSAccountId' 2>/dev/null)
             echo KMS_KEY_EXISTS=true >> "$GITHUB_ENV"
           else
@@ -76,9 +76,9 @@ jobs:
       - name: dynamodbtable
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          if [ ! -z "$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null)" ];
+          if [ ! -z "$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null)" ];
           then 
-            DYNAMODB_TABLE_EXISTS_CHECK=$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null | jq -r '.Table.TableArn' )
+            DYNAMODB_TABLE_EXISTS_CHECK=$( aws dynamodb describe-table --table-name arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} 2>/dev/null | jq -r '.Table.TableArn' )
             DYNAMODB_ACCOUNT=$(echo $DYNAMODB_TABLE_EXISTS_CHECK | cut -d ":" -f5 2>/dev/null)
             echo DYNAMODB_TABLE_EXISTS=true >> "$GITHUB_ENV"
           else
@@ -91,9 +91,9 @@ jobs:
         run: |
           if [ ${{env.region}} = "us-east-1" ];
           then
-            aws s3api create-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-1
+            aws s3api create-bucket --bucket ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-us-east-1
           else
-            aws s3api create-bucket --bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} --region ${{env.region}} --create-bucket-configuration LocationConstraint=${{env.region}}
+            aws s3api create-bucket --bucket ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} --region ${{env.region}} --create-bucket-configuration LocationConstraint=${{env.region}}
           fi
           sleep 180
 
@@ -102,15 +102,15 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           KEY_ID=$(aws kms create-key --multi-region | jq -r '.KeyMetadata.KeyId')
-          aws kms create-alias --alias-name alias/${{env.COMPANY_IDENTIFIER}}-tfstate --target-key-id $KEY_ID
+          aws kms create-alias --alias-name alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate --target-key-id $KEY_ID
           sleep 180
 
       - name: create dynamodb table
         if: ${{ env.DYNAMODB_TABLE_EXISTS == 'false' }}
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          aws dynamodb create-table --table-name ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} \
-          --sse-specification Enabled=true,SSEType=KMS,KMSMasterKeyId=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate \
+          aws dynamodb create-table --table-name ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} \
+          --sse-specification Enabled=true,SSEType=KMS,KMSMasterKeyId=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate \
           --attribute-definitions AttributeName=LockID,AttributeType=S \
           --key-schema AttributeName=LockID,KeyType=HASH \
           --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
@@ -119,13 +119,13 @@ jobs:
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
         env:
-          TF_VAR_name: ${{env.COMPANY_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{env.region}}-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-$GITHUB_WORKFLOW" \
+            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
+            -backend-config="key=${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}/${{env.region}}/-$GITHUB_WORKFLOW" \
             -backend-config="region=${{env.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
@@ -134,26 +134,26 @@ jobs:
         if: ${{ env.BUCKET_EXISTS == 'false' }}
         working-directory: ${{env.WORKING_DIRECTORY}}
         env:
-          TF_VAR_name: ${{env.COMPANY_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
-          terraform import aws_s3_bucket.bucket ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}
+          terraform import aws_s3_bucket.bucket ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}
 
       - name: Terraform import kms key
         if: ${{ env.KMS_KEY_EXISTS == 'false' }}
         working-directory: ${{env.WORKING_DIRECTORY}}
         env:
-          TF_VAR_name: ${{env.COMPANY_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
-          terraform import aws_kms_alias.alias alias/${{env.COMPANY_IDENTIFIER}}-tfstate
-          terraform import aws_kms_key.key $(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate | jq -r '.KeyMetadata.KeyId')
+          terraform import aws_kms_alias.alias alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          terraform import aws_kms_key.key $(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate | jq -r '.KeyMetadata.KeyId')
       
       - name: Terraform import dynamodb table
         if: ${{ env.DYNAMODB_TABLE_EXISTS == 'false' }}
         working-directory: ${{env.WORKING_DIRECTORY}}
         env:
-          TF_VAR_name: ${{env.COMPANY_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
-          terraform import aws_dynamodb_table.tf_lock_table ${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}
+          terraform import aws_dynamodb_table.tf_lock_table ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}
 
       - name: Terraform plan
         working-directory: ${{env.WORKING_DIRECTORY}}
@@ -163,8 +163,8 @@ jobs:
           TF_VAR_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
           TF_VAR_region: ${{env.region}}
           TF_VAR_ref: ${{github.ref_name}}
-          TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
-          TF_VAR_name: ${{env.COMPANY_IDENTIFIER}}-tfstate
+          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
 
       - name: Terraform apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

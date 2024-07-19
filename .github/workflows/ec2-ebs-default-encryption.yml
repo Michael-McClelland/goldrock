@@ -1,15 +1,15 @@
-name: 'configservice'
+name: 'ec2-ebs-default-encryption'
 
 on:
   workflow_run:
-    workflows: ["security_services"]
+    workflows: ["organization"]
     types:
       - completed
+
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-  COMPANY_IDENTIFIER: goldrock
-  WORKING_DIRECTORY: ./regional/configservice/
-  region: ${{ vars.HOME_REGION }}
+  ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
+  WORKING_DIRECTORY: ./regional/ec2-ebs-default-encryption/
 
 concurrency:
   group: ${{ github.workflow }}
@@ -29,29 +29,20 @@ jobs:
       id-token: write
 
     outputs:
-      security_account_id: ${{steps.get_security_account.outputs.security_account_id}}
       account_ids: ${{steps.list_accounts.outputs.account_ids}}
 
     steps:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
           aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
-
-      - name: Identify Security Account
-        id: get_security_account
-        run: |
-          GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
-          SECURITYHUB_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
-          [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq -r '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
 
       - name: List accounts
         id: list_accounts
         run: |
           echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
-  
   deploy:
     name: 'deploy'
     runs-on: ubuntu-latest
@@ -65,6 +56,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
     strategy:
       max-parallel: 2
       fail-fast: false
@@ -72,8 +64,8 @@ jobs:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
         region:
           - ${{ vars.HOME_REGION }}
-    steps:
 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -82,25 +74,21 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: var test
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        run: echo "${{needs.setup.outputs.security_account_id}}"
-
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.COMPANY_IDENTIFIER}}-github-actions
-          aws-region: ${{ vars.HOME_REGION }}
+          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
+          aws-region: ${{matrix.region}}
           mask-aws-account-id: false
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.COMPANY_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.COMPANY_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{matrix.region}}-${{matrix.account_id}}-$GITHUB_WORKFLOW" \
+            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
+            -backend-config="key=${{matrix.account_id}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
             -backend-config="region=${{matrix.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
@@ -110,10 +98,10 @@ jobs:
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_security_account_id: ${{needs.setup.outputs.security_account_id}}
-          #TF_VAR_region: ${{matrix.region}}
+          TF_VAR_account_id: ${{matrix.account_id}}
+          TF_VAR_region: ${{matrix.region}}
           TF_VAR_ref: ${{github.ref_name}}
-          TF_VAR_company_identifier: ${{env.COMPANY_IDENTIFIER}}
+          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
 
       - name: Terraform apply
         working-directory: ${{env.WORKING_DIRECTORY}}
