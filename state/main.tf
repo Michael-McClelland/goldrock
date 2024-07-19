@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "bucket" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
+      "${aws_s3_bucket.bucket.arn}/$${aws:PrincipalAccount}/*",
       "${aws_s3_bucket.bucket.arn}",
     ]
     condition {
@@ -36,13 +36,6 @@ data "aws_iam_policy_document" "bucket" {
         data.aws_organizations_organization.current.id
       ]
     }
-    # condition {
-    #   test     = "StringNotEquals"
-    #   variable = "aws:PrincipalAccount"
-    #   values = [
-    #     data.aws_caller_identity.current.account_id
-    #   ]
-    # }
   }
 
   statement {
