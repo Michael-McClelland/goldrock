@@ -55,7 +55,6 @@ jobs:
         id: Puppeteer-Requirements
         if: ${{ env.SSO_EXISTS == 'false' }}
         run: |
-          echo "$PWD"
           sudo apt-get update
           sudo apt-get install -y libgbm1
           npm install
@@ -69,12 +68,14 @@ jobs:
       - name: Puppeteer Requirements NODE
         id: Puppeteer-Requirements-NODE
         if: ${{ env.SSO_EXISTS == 'false' }}
+        working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           npm install npm --prefix ./ install
 
       - name: Puppeteer Enable SSO
         id: Puppeteer-Enable-SSO
         if: ${{ env.SSO_EXISTS == 'false' }}
+        working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           node enable-sso.js
           sleep 90
