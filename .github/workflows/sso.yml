@@ -54,10 +54,10 @@ jobs:
       - name: Puppeteer Requirements
         id: Puppeteer-Requirements
         if: ${{ env.SSO_EXISTS == 'false' }}
+        working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           sudo apt-get update
           sudo apt-get install -y libgbm1
-          npm install
 
       - name: Install Node.js
         if: ${{ env.SSO_EXISTS == 'false' }}
