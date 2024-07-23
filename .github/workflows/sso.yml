@@ -5,7 +5,6 @@ on:
     workflows: ["organization"]
     types:
       - completed
-  workflow_dispatch:
 
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
@@ -40,6 +39,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
           aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
+          role-duration-seconds: 43200
 
       - name: Check SSO Status
         id: check-sso-status
@@ -87,8 +87,6 @@ jobs:
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
-        env:
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
           terraform init \
             -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
@@ -108,9 +106,8 @@ jobs:
           TF_VAR_region: ${{env.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
 
       - name: Terraform apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ${{env.WORKING_DIRECTORY}}
+        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: terraform apply plan
