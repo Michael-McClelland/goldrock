@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   setup:
-    name: 'sso-status-check'
+    name: 'sso'
     runs-on: ubuntu-latest
 
     defaults:
@@ -69,7 +69,7 @@ jobs:
         id: Puppeteer-Requirements-NODE
         if: ${{ env.SSO_EXISTS == 'false' }}
         run: |
-          npm install
+          npm install npm --prefix ./ install
 
       - name: Puppeteer Enable SSO
         id: Puppeteer-Enable-SSO

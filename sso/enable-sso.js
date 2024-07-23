@@ -28,17 +28,21 @@ exports.handler = async function() {
     const destination = 'https://console.aws.amazon.com/';
     url = `${baseUrl}?Action=login&Destination=${encodeURIComponent(destination)}&SigninToken=${encodeURIComponent(signinToken)}`;
   });
-  const browser = await puppeteer.launch({ headless: true, args: [
-    `--no-sandbox`,
-    `--disable-setuid-sandbox`
-  ], 
+  const browser = await puppeteer.launch({ headless: true, 
+  //   args: [
+  //   `--no-sandbox`,
+  //   `--disable-setuid-sandbox`
+  // ], 
     slowMo: 200 });
   const page = await browser.newPage();
   await page.goto(url);
   await page.goto('https://'+process.env.region+'.console.aws.amazon.com/singlesignon/home?region='+process.env.region+'#!/');
   await page.waitForSelector("::-p-xpath(//button[@data-testid='enable-sso-btn'])");
   const button = await page.waitForSelector("::-p-xpath(//button[@data-testid='enable-sso-btn'])");
-  button.click();
+  await button.click();
+  await new Promise(r => setTimeout(r, 60000));
+  browser.close
+  process.exit(0)
 }
 
 exports.handler()
