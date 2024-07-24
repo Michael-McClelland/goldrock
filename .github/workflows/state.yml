@@ -167,6 +167,6 @@ jobs:
           TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
 
       - name: Terraform apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main'
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform apply plan
