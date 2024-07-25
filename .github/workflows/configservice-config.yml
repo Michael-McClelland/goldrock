@@ -2,7 +2,7 @@ name: 'configservice'
 
 on:
   workflow_run:
-    workflows: ["security_services"]
+    workflows: ["security-services"]
     types:
       - completed
 env:

@@ -44,7 +44,7 @@ jobs:
       - name: Check SSO Status
         id: check-sso-status
         run: |
-          if [ ! -z "$(aws sso-admin list-instances --region ${{env.region}} | jq .Instances[0].IdentityStoreId | tr -d "'\"")" ];
+          if [ ! -z "$(aws sso-admin list-instances --region us-east-2 --output text )" ];
           then 
             echo SSO_EXISTS=true >> "$GITHUB_ENV"
           else

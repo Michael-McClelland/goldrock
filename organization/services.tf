@@ -55,3 +55,8 @@ resource "aws_organizations_delegated_administrator" "cloudtrail" {
     prevent_destroy = true
   }
 }
+
+resource "aws_iam_service_linked_role" "cloudtrail" {
+  depends_on = [aws_organizations_delegated_administrator.cloudtrail]
+  aws_service_name = "cloudtrail.amazonaws.com"
+}
