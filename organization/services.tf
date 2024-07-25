@@ -59,4 +59,13 @@ resource "aws_organizations_delegated_administrator" "cloudtrail" {
 resource "aws_iam_service_linked_role" "cloudtrail" {
   depends_on = [aws_organizations_delegated_administrator.cloudtrail]
   aws_service_name = "cloudtrail.amazonaws.com"
+  
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+import {
+  to = aws_iam_service_linked_role.cloudtrail
+  id = "arn:aws:iam::${data.aws_caller_identity.caller.id}:role/aws-service-role/cloudtrail.amazonaws.com/AWSServiceRoleForCloudTrail"
 }
