@@ -64,8 +64,3 @@ resource "aws_iam_service_linked_role" "cloudtrail" {
     prevent_destroy = true
   }
 }
-
-import {
-  to = aws_iam_service_linked_role.cloudtrail
-  id = "arn:aws:iam::${data.aws_caller_identity.caller.id}:role/aws-service-role/cloudtrail.amazonaws.com/AWSServiceRoleForCloudTrail"
-}
