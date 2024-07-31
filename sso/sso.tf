@@ -23,6 +23,13 @@ module "aws-iam-identity-center" {
 
   // Create desired USERS in IAM Identity Center
   sso_users = {
+    demo : {
+      group_membership = ["Admin"]
+      user_name        = "demo"
+      given_name       = "demo"
+      family_name      = "user"
+      email            = "mccmcc+demo@amazon.com"
+    }
     michael_mcclelland : {
       group_membership = ["Admin", "Dev", "QA", "Audit"]
       user_name        = "michael_mcclelland"
