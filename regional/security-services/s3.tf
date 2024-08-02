@@ -11,23 +11,6 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
 data "aws_iam_policy_document" "cloudtrail" {
 
   statement {
-    sid    = "all-cloudtrail"
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-    actions = [
-      "s3:*"
-    ]
-
-    resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/*",
-      "${aws_s3_bucket.cloudtrail.arn}",
-    ]
-  }
-
-  statement {
     sid    = "getbucketacl-cloudtrail"
     effect = "Allow"
     principals {
@@ -41,11 +24,18 @@ data "aws_iam_policy_document" "cloudtrail" {
     resources = [
       "${aws_s3_bucket.cloudtrail.arn}"
     ]
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "aws:SourceOrgID"
+    #   values = [
+    #     "${data.aws_organizations_organization.current.id}"
+    #   ]
+    # }
     condition {
       test     = "StringEquals"
-      variable = "aws:SourceOrgID"
+      variable = "aws:SourceArn"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.current.master_account_id}:trail/goldrock"
       ]
     }
   }
@@ -63,13 +53,13 @@ data "aws_iam_policy_document" "cloudtrail" {
     resources = [
       "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.current.id}/*"
     ]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceOrgID"
-      values = [
-        "${data.aws_organizations_organization.current.id}"
-      ]
-    }
+    # condition {
+    #   test     = "StringEquals"
+    #   variable = "aws:SourceOrgID"
+    #   values = [
+    #     "${data.aws_organizations_organization.current.id}"
+    #   ]
+    # }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
@@ -195,49 +185,49 @@ data "aws_iam_policy_document" "cloudtrail" {
   #   }
   # }
 
-  # statement {
-  #   effect = "Deny"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["*"]
-  #   }
-  #   actions = [
-  #     "s3:*",
-  #   ]
+  statement {
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:*",
+    ]
 
-  #   resources = [
-  #     "${aws_s3_bucket.cloudtrail.arn}/*",
-  #     "${aws_s3_bucket.cloudtrail.arn}",
-  #   ]
+    resources = [
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
+    ]
 
-  #   condition {
-  #     test     = "NumericLessThan"
-  #     variable = "s3:TlsVersion"
-  #     values   = ["1.2"]
-  #   }
-  # }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
+    }
+  }
 
-  # statement {
-  #   effect = "Deny"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["*"]
-  #   }
-  #   actions = [
-  #     "s3:*",
-  #   ]
+  statement {
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:*",
+    ]
 
-  #   resources = [
-  #     "${aws_s3_bucket.cloudtrail.arn}/*",
-  #     "${aws_s3_bucket.cloudtrail.arn}",
-  #   ]
+    resources = [
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
+    ]
 
-  #   condition {
-  #     test     = "Bool"
-  #     variable = "aws:SecureTransport"
-  #     values   = ["false"]
-  #   }
-  # }
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
 
 }
 

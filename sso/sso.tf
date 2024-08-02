@@ -3,9 +3,9 @@ module "aws-iam-identity-center" {
 
   // Create desired GROUPS in IAM Identity Center
   sso_groups = {
-    Admin : {
-      group_name        = "Admin"
-      group_description = "Admin IAM Identity Center Group"
+    admin : {
+      group_name        = "admin"
+      group_description = "admin IAM Identity Center Group"
     },
     Dev : {
       group_name        = "Dev"
@@ -24,14 +24,14 @@ module "aws-iam-identity-center" {
   // Create desired USERS in IAM Identity Center
   sso_users = {
     demo : {
-      group_membership = ["Admin"]
+      group_membership = ["admin"]
       user_name        = "demo"
       given_name       = "demo"
       family_name      = "user"
       email            = "mccmcc+demo@amazon.com"
     }
     michael_mcclelland : {
-      group_membership = ["Admin", "Dev", "QA", "Audit"]
+      group_membership = ["admin", "Dev", "QA", "Audit"]
       user_name        = "michael_mcclelland"
       given_name       = "Michael"
       family_name      = "McClelland"
@@ -81,8 +81,8 @@ module "aws-iam-identity-center" {
   }
 
   account_assignments = {
-    Admin : {
-      principal_name  = "Admin"                                   # name of the user or group you wish to have access to the account(s)
+    admin : {
+      principal_name  = "admin"                                   # name of the user or group you wish to have access to the account(s)
       principal_type  = "GROUP"                                   # principal type (user or group) you wish to have access to the account(s)
       principal_idp   = "INTERNAL"                                # type of Identity Provider you are using. Valid values are "INTERNAL" (using Identity Store) or "EXTERNAL" (using external IdP such as EntraID, Okta, Google, etc.)
       permission_sets = ["AdministratorAccess", "ViewOnlyAccess"] # permissions the user/group will have in the account(s)
