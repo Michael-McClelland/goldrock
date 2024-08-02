@@ -43,7 +43,7 @@ module "aws-iam-identity-center" {
   permission_sets = {
     AdministratorAccess = {
       description          = "Provides AWS full access permissions.",
-      session_duration     = "PT4H", // how long until session expires - this means 4 hours. max is 12 hours
+      session_duration     = "PT12H", // how long until session expires - this means 4 hours. max is 12 hours
       aws_managed_policies = [
         "arn:aws:iam::aws:policy/AdministratorAccess"
         ]
