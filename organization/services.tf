@@ -1,12 +1,12 @@
 resource "aws_guardduty_organization_admin_account" "aws_guardduty_organization_admin_account" {
-  admin_account_id = module.organization_structure.all_accounts.goldrock-securityservices.id
+  admin_account_id = module.organization_structure.security_account
   lifecycle {
     prevent_destroy = true
   }
 }
 
 resource "aws_securityhub_organization_admin_account" "aws_securityhub_organization_admin_account" {
-  admin_account_id = module.organization_structure.all_accounts.goldrock-securityservices.id
+  admin_account_id = module.organization_structure.security_account
 
   lifecycle {
     prevent_destroy = true
@@ -23,7 +23,7 @@ resource "aws_securityhub_account" "aws_securityhub_management_account" {
 }
 
 resource "aws_detective_organization_admin_account" "aws_detective_organization_admin_account" {
-  account_id = module.organization_structure.all_accounts.goldrock-securityservices.id
+  account_id = module.organization_structure.security_account
 
   lifecycle {
     prevent_destroy = true
@@ -31,7 +31,7 @@ resource "aws_detective_organization_admin_account" "aws_detective_organization_
 }
 
 resource "aws_macie2_organization_admin_account" "aws_macie2_organization_admin_account" {
-  admin_account_id = module.organization_structure.all_accounts.goldrock-securityservices.id
+  admin_account_id = module.organization_structure.security_account
 
   lifecycle {
     prevent_destroy = true
@@ -39,7 +39,7 @@ resource "aws_macie2_organization_admin_account" "aws_macie2_organization_admin_
 }
 
 resource "aws_organizations_delegated_administrator" "access_analyzer" {
-  account_id        = module.organization_structure.all_accounts.goldrock-securityservices.id
+  account_id        = module.organization_structure.security_account
   service_principal = "access-analyzer.amazonaws.com"
 
   lifecycle {
@@ -48,7 +48,7 @@ resource "aws_organizations_delegated_administrator" "access_analyzer" {
 }
 
 resource "aws_organizations_delegated_administrator" "cloudtrail" {
-  account_id        = module.organization_structure.all_accounts.goldrock-securityservices.id
+  account_id        = module.organization_structure.security_account
   service_principal = "cloudtrail.amazonaws.com"
 
   lifecycle {
