@@ -93,8 +93,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo pip3 install boto3
-
+          python -m pip install --upgrade boto3
+          
       - name: StackSet Waiter
         working-directory: "./python/"
         run: |
