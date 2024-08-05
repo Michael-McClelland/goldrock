@@ -83,5 +83,10 @@ jobs:
 
       - name: Terraform apply
         working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: terraform apply plan
+
+      - name: StackSet Waiter
+        working-directory: "./python/"
+        run: |
+          python cloudformationstacksetwaiter.py
+
