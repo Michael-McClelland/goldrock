@@ -85,6 +85,16 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform apply plan
 
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          sudo pip3 install boto3
+
       - name: StackSet Waiter
         working-directory: "./python/"
         run: |
