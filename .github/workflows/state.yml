@@ -95,7 +95,7 @@ jobs:
           else
             aws s3api create-bucket --bucket ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}} --region ${{env.region}} --create-bucket-configuration LocationConstraint=${{env.region}}
           fi
-          sleep 180
+          sleep 60
 
       - name: create key
         if: ${{ env.KMS_KEY_EXISTS == 'false' }}
@@ -103,7 +103,7 @@ jobs:
         run: |
           KEY_ID=$(aws kms create-key --multi-region | jq -r '.KeyMetadata.KeyId')
           aws kms create-alias --alias-name alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate --target-key-id $KEY_ID
-          sleep 180
+          sleep 60
 
       - name: create dynamodb table
         if: ${{ env.DYNAMODB_TABLE_EXISTS == 'false' }}
@@ -114,7 +114,7 @@ jobs:
           --attribute-definitions AttributeName=LockID,AttributeType=S \
           --key-schema AttributeName=LockID,KeyType=HASH \
           --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
-          sleep 180
+          aws dynamodb wait table-exists --table-name ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
