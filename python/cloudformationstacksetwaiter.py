@@ -27,4 +27,4 @@ while ( not organizations_account_set.issubset(cloudformation_stack_instances_se
   for keys in paginator_iterator:
     for keyitem in keys['Summaries']:
       cloudformation_stack_instances_set.add(keyitem['Account'])
-  time.sleep(60)
+  time.sleep(5)
