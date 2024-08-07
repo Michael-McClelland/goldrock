@@ -93,7 +93,7 @@ module "aws-iam-identity-center" {
       principal_type  = "GROUP"
       principal_idp   = "INTERNAL"
       permission_sets = ["ViewOnlyAccess"]
-      account_ids = ["398930073421"]
+      account_ids = data.aws_organizations_organization.current.accounts.*.id
     },
   }
 
