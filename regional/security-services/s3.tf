@@ -153,8 +153,8 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "${aws_s3_bucket.bucket.arn}/*",
-      "${aws_s3_bucket.bucket.arn}",
+      "${aws_s3_bucket.cloudtrail.arn}/*",
+      "${aws_s3_bucket.cloudtrail.arn}",
     ]
     condition {
       test     = "StringEquals"
