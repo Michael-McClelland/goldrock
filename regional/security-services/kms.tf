@@ -383,7 +383,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:PrincipalArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-github-actions"
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-cloudtrail-management"
       ]
     }
   }
