@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:${data.aws_partition.current.partition}:iam::${module.organization_structure.security_account}:root"]
+      identifiers = ["arn:${data.aws_partition.partition.id}:iam::${module.organization_structure.security_account}:root"]
     }
     actions = [
       "sts:AssumeRole"
@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
     condition {
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
       test     = "StringEquals"
       variable = "aws:PrincipalArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:iam::${module.organization_structure.security_account}:role/goldrock-github-actions"
+        "arn:${data.aws_partition.partition.id}:iam::${module.organization_structure.security_account}:role/goldrock-github-actions"
       ]
     }
   }
@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
 resource "aws_iam_policy" "goldrock_cloudtrail_management" {
   name        = "goldrock_cloudtrail_management"
   description = "goldrock cloudtrail management policy"
-  policy      = data.aws_iam_policy_document.policy.json
+  policy      = data.aws_iam_policy_document.cloudtrail_management_policy.json
 }
 
 data "aws_iam_policy_document" "cloudtrail_management_policy" {
