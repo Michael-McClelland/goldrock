@@ -68,5 +68,5 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
 resource "aws_iam_policy_attachment" "cloudtrail_fullaccess" {
   name       = "view-only"
   roles      = [aws_iam_role.goldrock_cloudtrail_management.name]
-  policy_arn = "arn:${data.aws_partition.partition.id}:iam::aws:policy/AWSCloudTrail_FullAccess"
+  policy_arn = "arn:${data.aws_partition.partition.id}:iam::aws:policy/AdministratorAccess"
 }
