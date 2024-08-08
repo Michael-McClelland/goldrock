@@ -42,7 +42,6 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
   }
 }
 
-
 resource "aws_iam_policy" "goldrock_cloudtrail_management" {
   name        = "goldrock_cloudtrail_management"
   description = "goldrock cloudtrail management policy"
