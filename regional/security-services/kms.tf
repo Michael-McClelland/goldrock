@@ -349,6 +349,45 @@ data "aws_iam_policy_document" "keypolicy" {
     }
   }
 
+#Terraform DataCall Management Account
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "kms:Describe*",
+      "kms:Get*",
+      "kms:List*"
+    ]
+
+    resources = [
+      "*"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalAccount"
+      values = [
+        data.aws_organizations_organization.current.master_account_id
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalArn"
+      values = [
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-github-actions"
+      ]
+    }
+  }
+
   statement {
     sid = "DenyNonOrganizationalServiceEncryptionUse"
     principals {

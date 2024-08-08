@@ -7,7 +7,6 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
   policy = data.aws_iam_policy_document.cloudtrail.json
 }
 
-
 data "aws_iam_policy_document" "cloudtrail" {
 
   statement {
@@ -140,6 +139,45 @@ data "aws_iam_policy_document" "cloudtrail" {
   #     values   = [aws_kms_key.key.arn]
   #   }
   # }
+
+#Terraform DataCall Management Account
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:Get*",
+      "s3:List*",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.bucket.arn}/*",
+      "${aws_s3_bucket.bucket.arn}",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.current.id
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalAccount"
+      values = [
+        data.aws_organizations_organization.current.master_account_id
+      ]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalArn"
+      values = [
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-github-actions"
+      ]
+    }
+  }
 
   statement {
     effect = "Deny"
