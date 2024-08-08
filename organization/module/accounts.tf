@@ -122,12 +122,6 @@ resource "aws_organizations_account" "account" {
   parent_id = each.value.parent.id
 }
 
-# resource "time_sleep" "account_creation" {
-#   for_each ={ for record in local.all_accounts : record.key => record }
-#   create_duration = "20m"
-# }
-
-
 locals {
   all_account_attributes = {
     for account in local.all_accounts :

@@ -116,6 +116,11 @@ resource "aws_organizations_organization" "organization" {
   }
 }
 
+resource "time_sleep" "organization_service_principal_activation" {
+  depends_on      = [aws_organizations_organization.organization]
+  create_duration = "5m"
+}
+
 module "organization_structure" {
   source = "./module"
 

@@ -3,7 +3,10 @@ resource "aws_guardduty_organization_admin_account" "aws_guardduty_organization_
   lifecycle {
     prevent_destroy = true
   }
-  depends_on = [aws_organizations_organization.organization]
+  depends_on = [
+    aws_organizations_organization.organization,
+    time_sleep.organization_service_principal_activation
+  ]
 }
 
 
@@ -64,7 +67,10 @@ resource "aws_organizations_delegated_administrator" "access_analyzer" {
   lifecycle {
     prevent_destroy = true
   }
-  depends_on = [aws_organizations_organization.organization]
+  depends_on = [
+    aws_organizations_organization.organization,
+    time_sleep.organization_service_principal_activation
+  ]
 }
 
 resource "aws_organizations_delegated_administrator" "cloudtrail" {
@@ -74,7 +80,10 @@ resource "aws_organizations_delegated_administrator" "cloudtrail" {
   lifecycle {
     prevent_destroy = true
   }
-  depends_on = [aws_organizations_organization.organization]
+  depends_on = [
+    aws_organizations_organization.organization,
+    time_sleep.organization_service_principal_activation
+  ]
 }
 
 resource "aws_iam_service_linked_role" "cloudtrail" {
@@ -85,6 +94,7 @@ resource "aws_iam_service_linked_role" "cloudtrail" {
   }
   depends_on = [
     aws_organizations_organization.organization,
-    aws_organizations_delegated_administrator.cloudtrail
+    aws_organizations_delegated_administrator.cloudtrail,
+    time_sleep.organization_service_principal_activation
   ]
 }
