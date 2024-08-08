@@ -42,31 +42,31 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
   }
 }
 
-resource "aws_iam_policy" "goldrock_cloudtrail_management" {
-  name        = "goldrock_cloudtrail_management"
-  description = "goldrock cloudtrail management policy"
-  policy      = data.aws_iam_policy_document.cloudtrail_management_policy.json
-}
-
-data "aws_iam_policy_document" "cloudtrail_management_policy" {
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "cloudtrail:*"
-    ]
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_policy_attachment" "cloudtrail_management_policy" {
-  name       = "cloudtrail_management_policy"
-  roles      = [aws_iam_role.goldrock_cloudtrail_management.name]
-  policy_arn = aws_iam_policy.goldrock_cloudtrail_management.arn
-}
-
-# resource "aws_iam_policy_attachment" "test-attach" {
-#   name       = "view-only"
-#   roles      = [aws_iam_role.goldrock_cloudtrail_management.name]
-#   policy_arn = 
+# resource "aws_iam_policy" "goldrock_cloudtrail_management" {
+#   name        = "goldrock_cloudtrail_management"
+#   description = "goldrock cloudtrail management policy"
+#   policy      = data.aws_iam_policy_document.cloudtrail_management_policy.json
 # }
+
+# data "aws_iam_policy_document" "cloudtrail_management_policy" {
+
+#   statement {
+#     effect = "Allow"
+#     actions = [
+#       "cloudtrail:*"
+#     ]
+#     resources = ["*"]
+#   }
+# }
+
+# resource "aws_iam_policy_attachment" "cloudtrail_management_policy" {
+#   name       = "cloudtrail_management_policy"
+#   roles      = [aws_iam_role.goldrock_cloudtrail_management.name]
+#   policy_arn = aws_iam_policy.goldrock_cloudtrail_management.arn
+# }
+
+resource "aws_iam_policy_attachment" "cloudtrail_fullaccess" {
+  name       = "view-only"
+  roles      = [aws_iam_role.goldrock_cloudtrail_management.name]
+  policy_arn = "arn:${data.aws_partition.partition.id}:iam::aws:policy/AWSCloudTrail_FullAccess"
+}
