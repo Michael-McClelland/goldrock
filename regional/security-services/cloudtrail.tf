@@ -20,6 +20,6 @@ provider "aws" {
   alias   = "cloudtrail"
 
   assume_role {
-    role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-cloudtrail-management"
+    role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-cloudtrail-management2"
   }
 }
