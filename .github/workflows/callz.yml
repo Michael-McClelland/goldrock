@@ -9,9 +9,7 @@ on:
 
 jobs:
   called:
-
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: ["us-east-2"]
