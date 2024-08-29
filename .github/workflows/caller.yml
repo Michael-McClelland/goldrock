@@ -1,0 +1,64 @@
+name: Caller
+on:
+  workflow_dispatch:
+env:
+  ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
+  ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
+  WORKING_DIRECTORY: ./regional/ec2-serial-console/
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    name: 'setup'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      account_ids: ${{steps.list_accounts.outputs.account_ids}}
+
+    steps:
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/goldrock-github-actions
+          aws-region: ${{ vars.HOME_REGION }}
+          mask-aws-account-id: false
+
+      - name: List accounts
+        id: list_accounts
+        run: |
+          account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
+          for account in $account_ids; do OUT+=$account; done
+          echo "account_ids="$(echo $OUT | fold -w 252) >> "$GITHUB_OUTPUT"
+  deploy:
+    name: 'matrix'
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        accounts: ${{fromJson(needs.setup.outputs.account_ids)}}
+    uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
+    with:
+      accountbundle: ${{ matrix.accounts }}

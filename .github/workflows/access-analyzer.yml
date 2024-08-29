@@ -35,7 +35,7 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/goldrock-github-actions
           aws-region: ${{ vars.HOME_REGION }}
           mask-aws-account-id: false
 
@@ -77,7 +77,7 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/${{env.ORGANIZATION_IDENTIFIER}}-github-actions
+          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/goldrock-github-actions
           aws-region: ${{matrix.region}}
           mask-aws-account-id: false
 

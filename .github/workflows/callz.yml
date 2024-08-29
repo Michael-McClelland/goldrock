@@ -1,0 +1,26 @@
+name: callz
+
+on:
+  workflow_call:
+    inputs:
+      accountbundle:
+        required: true
+        type: string
+
+jobs:
+  called:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: ["us-east-2"]
+
+    steps:
+
+      - name: Print OS
+        run: |
+          echo ${{ matrix.os }}
+          echo ${{ inputs.accountbundle }} | fold -w12
+        shell: bash
+
