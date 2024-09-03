@@ -59,6 +59,6 @@ jobs:
       fail-fast: false
       matrix:
         accounts: ${{fromJson(needs.setup.outputs.account_ids)}}
-    uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
+    uses: Michael-McClelland/goldrock/.github/workflows/callz.yml
     with:
       accountbundle: ${{ matrix.accounts }}
