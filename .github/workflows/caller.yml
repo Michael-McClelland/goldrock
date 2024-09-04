@@ -39,27 +39,70 @@ jobs:
         run: |
           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
           for account in $account_ids; do OUT+=$account; done
-          echo "account_ids="$(echo $OUT | fold -w 36) >> "$GITHUB_OUTPUT" 
+          echo "account_ids="$(echo $OUT | fold -w 36) >> "$GITHUB_OUTPUT"
   deploy:
-    reusabletest:
-      name: 'matrix'
-      runs-on: ubuntu-latest
+    name: 'deploy'
+    runs-on: ubuntu-latest
 
-      needs: setup
+    needs: setup
 
-      defaults:
-        run:
-          shell: bash
+    defaults:
+      run:
+        shell: bash
 
-      permissions:
-        contents: read
-        id-token: write
+    permissions:
+      contents: read
+      id-token: write
 
-      strategy:
-        max-parallel: 1
-        fail-fast: false
-        matrix:
-          accounts: ${{fromJson(needs.setup.outputs.account_ids)}}
-      uses: ./.github/workflows/callz.yml
-      with:
-        accountbundle: ${{ matrix.accounts }}
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+
+    steps:
+      - name: test
+        run: |
+          echo ${{ matrix.accountbundle }}
+          echo ${{ matrix.accountbundle }} | fold -w12
+        shell: bash
+  # deploy:
+  #   reusabletest:
+  #     name: 'matrix'
+  #     runs-on: ubuntu-latest
+  #     needs: setup
+  #     defaults:
+  #       run:
+  #         shell: bash
+  #     permissions:
+  #       contents: read
+  #       id-token: write
+  #     steps:
+  #       - name: Authenticate with AWS
+  #         uses: aws-actions/configure-aws-credentials@v4
+  #         with:
+  #           role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/goldrock-github-actions
+  #           aws-region: ${{ vars.HOME_REGION }}
+  #           mask-aws-account-id: false
+
+  #       - name: List accounts
+  #         id: list_accounts
+  #         run: |
+  #           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
+  #           for account in $account_ids; do OUT+=$account; done
+  #           echo "account_ids="$(echo $OUT | fold -w 36) >> "$GITHUB_OUTPUT" 
+
+
+
+  #       # strategy:
+  #       #   max-parallel: 1
+  #       #   fail-fast: false
+  #       #   matrix:
+  #       #     accounts: ${{fromJson(needs.setup.outputs.account_ids)}}
+  #       # steps:
+  #       #   - name: fanout
+  #       #     uses: ./.github/workflows/callz.yml
+  #       #     with:
+  #       #       accountbundle: ${{ matrix.accounts }}
+  
+  
