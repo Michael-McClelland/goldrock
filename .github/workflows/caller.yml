@@ -39,7 +39,7 @@ jobs:
         run: |
           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
           for account in $account_ids; do OUT+=$account; done
-          echo "account_ids="$(echo $OUT | fold -w 252) >> "$GITHUB_OUTPUT"
+          echo "account_ids="$(echo $OUT | fold -w 36) >> "$GITHUB_OUTPUT" 
   deploy:
     name: 'matrix'
     runs-on: ubuntu-latest
