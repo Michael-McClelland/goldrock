@@ -39,8 +39,7 @@ jobs:
         run: |
           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
           for account in $account_ids; do OUT+=$account; done
-          echo $OUT | fold -w 36
-          echo "account_ids="$(echo $OUT | fold -w 36) >> "$GITHUB_OUTPUT"
+          echo "account_ids="$(echo $OUT | fold -w 36 | fold -w 36 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   deploy:
     name: 'deploy'
     runs-on: ubuntu-latest
