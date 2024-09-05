@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v4
         name: Checkout
       - name: test
-        uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main ./.github/workflows/callz
+        uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
         with:
           accountbundle: ${{ matrix.accountbundle }}
 
