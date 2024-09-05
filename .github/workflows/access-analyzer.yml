@@ -15,9 +15,9 @@ env:
   ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
   WORKING_DIRECTORY: ./regional/access-analyzer/
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
+# concurrency:
+#   group: ${{ github.workflow }}
+#   cancel-in-progress: false
 
 jobs:
   deploy:
