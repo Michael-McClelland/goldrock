@@ -61,7 +61,11 @@ jobs:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
 
     steps:
+      - uses: actions/checkout@v4
+        name: Checkout
       - name: test
         uses: ./.github/workflows/callz.yml
         with:
           accountbundle: ${{ matrix.accountbundle }}
+
+
