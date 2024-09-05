@@ -1,4 +1,4 @@
-name: 'access-analyzer'
+name: 'reusable-tf-deployer'
 
 on:
   workflow_call:

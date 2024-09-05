@@ -27,9 +27,9 @@ jobs:
         id: unbundle_accounts
         run: |
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
-  called:
-    name: 'fanout'
-    uses: ./.github/workflows/access-analyzer.yml
+  access-analyzer:
+    name: 'access-analyzer'
+    uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
       account_id: ${{matrix.account_id}}
       region: ${{matrix.region}}
