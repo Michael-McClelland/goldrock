@@ -63,6 +63,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: Checkout
+      - name: List accounts
+        id: list_accounts
+        run: |
+          ls -lah
+          pwd
+          ls -lah ./.github/workflows/
       - name: test
         uses: ./.github/workflows/callz.yml
         with:
