@@ -26,18 +26,22 @@ jobs:
       - name: unbundle accounts
         id: unbundle_accounts
         run: |
+          account_ids=$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . )
+          echo $account_ids
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   called:
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     region: 
-    #       - ${{ vars.HOME_REGION }}
-    #     account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
+    needs: setup
+    strategy:
+      matrix:
+        region: 
+          - ${{ vars.HOME_REGION }}
+        account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
 
     steps:
       - name: Print OS
         run: |
-          echo ${{needs.setup.outputs.account_ids}}
+          echo ${{matrix.account_id}}
+          echo ${{matrix.region}}
         shell: bash
 
