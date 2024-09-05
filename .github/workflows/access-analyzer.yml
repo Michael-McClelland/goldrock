@@ -9,15 +9,16 @@ on:
       region:
         required: true
         type: string
+      workflow:
+        required: true
+        type: string
+      workingdirectory:
+        required: true
+        type: string
  
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
-  WORKING_DIRECTORY: ./regional/access-analyzer/
-
-# concurrency:
-#   group: ${{ github.workflow }}
-#   cancel-in-progress: false
 
 jobs:
   deploy:
@@ -50,19 +51,19 @@ jobs:
           mask-aws-account-id: false
 
       - name: Terraform init
-        working-directory: ${{env.WORKING_DIRECTORY}}
+        working-directory: ${{inputs.workingdirectory}}
         run: |
           terraform init \
             -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{inputs.region}}" \
             -backend-config="dynamodb_table=arn:aws:dynamodb:${{inputs.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{inputs.region}}" \
             -backend-config="kms_key_id=arn:aws:kms:${{inputs.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{inputs.account_id}}/${{inputs.region}}/$GITHUB_WORKFLOW" \
+            -backend-config="key=${{inputs.account_id}}/${{inputs.region}}/${{inputs.workflow}}" \
             -backend-config="region=${{inputs.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
       - name: Terraform plan
-        working-directory: ${{env.WORKING_DIRECTORY}}
+        working-directory: ${{inputs.workingdirectory}}
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
@@ -72,7 +73,7 @@ jobs:
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
 
       - name: Terraform apply
-        working-directory: ${{env.WORKING_DIRECTORY}}
+        working-directory: ${{inputs.workingdirectory}}
         if: github.ref == 'refs/heads/main'
         run: terraform apply plan
 

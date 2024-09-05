@@ -33,6 +33,8 @@ jobs:
     with:
       account_id: ${{matrix.account_id}}
       region: ${{matrix.region}}
+      workflow: 'access-analyzer'
+      workingdirectory: './regional/access-analyzer/'
     needs: setup
     permissions:
       contents: read
