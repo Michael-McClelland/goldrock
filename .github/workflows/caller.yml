@@ -42,30 +42,35 @@ jobs:
           echo "account_ids="$(echo $OUT | fold -w 36 | fold -w 36 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   deploy:
     name: 'deploy'
-    runs-on: ubuntu-latest
-
+    uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
+    with:
+      accountbundle: ${{ matrix.accountbundle }}
     needs: setup
-
-    defaults:
-      run:
-        shell: bash
-
     permissions:
       contents: read
       id-token: write
-
     strategy:
       max-parallel: 1
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+    #runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-        name: Checkout
-      - name: test
-        uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
-        with:
-          accountbundle: ${{ matrix.accountbundle }}
+    
+
+    # defaults:
+    #   run:
+    #     shell: bash
+
+
+
+
+
+    # steps:
+    #   - uses: actions/checkout@v4
+    #     name: Checkout
+    #   - name: test
+    #     uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
+
 
 
