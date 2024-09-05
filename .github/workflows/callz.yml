@@ -26,22 +26,21 @@ jobs:
       - name: unbundle accounts
         id: unbundle_accounts
         run: |
-          account_ids=$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . )
-          echo $account_ids
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   called:
-    runs-on: ubuntu-latest
+    name: 'fanout'
+    uses: ./.github/workflows/access-analyzer.yml@main
+    with:
+      account_id: ${{matrix.account_id}}
+      region: ${{matrix.region}}
     needs: setup
+    permissions:
+      contents: read
+      id-token: write
     strategy:
+      max-parallel: 1
+      fail-fast: false
       matrix:
         region: 
           - ${{ vars.HOME_REGION }}
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
-
-    steps:
-      - name: Print OS
-        run: |
-          echo ${{matrix.account_id}}
-          echo ${{matrix.region}}
-        shell: bash
-

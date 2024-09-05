@@ -1,10 +1,14 @@
 name: 'access-analyzer'
 
 on:
-  workflow_run:
-    workflows: ["organization"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      account_id:
+        required: true
+        type: string
+      region:
+        required: true
+        type: string
  
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
@@ -16,38 +20,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  setup:
-    name: 'setup'
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
-
-    permissions:
-      contents: read
-      id-token: write
-
-    outputs:
-      account_ids: ${{steps.list_accounts.outputs.account_ids}}
-
-    steps:
-      - name: Authenticate with AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:role/goldrock-github-actions
-          aws-region: ${{ vars.HOME_REGION }}
-          mask-aws-account-id: false
-
-      - name: List accounts
-        id: list_accounts
-        run: |
-          echo "account_ids="$(aws organizations list-accounts | jq '.Accounts | map(select(.Status == "ACTIVE")) | map(.Id)') >> "$GITHUB_OUTPUT"
   deploy:
     name: 'deploy'
     runs-on: ubuntu-latest
 
-    needs: setup
 
     defaults:
       run:
@@ -77,19 +53,19 @@ jobs:
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/goldrock-github-actions
-          aws-region: ${{matrix.region}}
+          role-to-assume: arn:aws:iam::${{inputs.account_id}}:role/goldrock-github-actions
+          aws-region: ${{inputs.region}}
           mask-aws-account-id: false
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
           terraform init \
-            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{matrix.account_id}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
-            -backend-config="region=${{matrix.region}}" \
+            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{inputs.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{inputs.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{inputs.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{inputs.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
+            -backend-config="key=${{inputs.account_id}}/${{inputs.region}}/$GITHUB_WORKFLOW" \
+            -backend-config="region=${{inputs.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
@@ -98,13 +74,13 @@ jobs:
         run: terraform plan -out plan
         env:
           TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_account_id: ${{matrix.account_id}}
-          TF_VAR_region: ${{matrix.region}}
+          TF_VAR_account_id: ${{inputs.account_id}}
+          TF_VAR_region: ${{inputs.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
 
       - name: Terraform apply
         working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
+        if: github.ref == 'refs/heads/main'
         run: terraform apply plan
 
