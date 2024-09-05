@@ -70,7 +70,7 @@ jobs:
           pwd
           ls -lah ./.github/workflows/
       - name: test
-        uses: ./.github/workflows/callz.yml
+        uses: ./.github/workflows/callz.yml@main
         with:
           accountbundle: ${{ matrix.accountbundle }}
 
