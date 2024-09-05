@@ -54,23 +54,5 @@ jobs:
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-    #runs-on: ubuntu-latest
-
-    
-
-    # defaults:
-    #   run:
-    #     shell: bash
-
-
-
-
-
-    # steps:
-    #   - uses: actions/checkout@v4
-    #     name: Checkout
-    #   - name: test
-    #     uses: Michael-McClelland/goldrock/.github/workflows/callz.yml@main
-
 
 
