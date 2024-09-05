@@ -1,0 +1,23 @@
+name: callzz
+
+on:
+  workflow_call:
+    inputs:
+      accountbundle:
+        required: true
+        type: string
+
+jobs:
+  called:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        regions: ${{ vars.HOME_REGION }}
+
+    steps:
+
+      - name: Print OS
+        run: |
+          echo ${{ matrix.region }}
+          echo ${{ inputs.accountbundle }} | fold -w12
+        shell: bash
