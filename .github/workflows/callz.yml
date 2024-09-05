@@ -29,7 +29,7 @@ jobs:
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   called:
     name: 'fanout'
-    uses: ./.github/workflows/access-analyzer.yml@main
+    uses: ./.github/workflows/access-analyzer.yml
     with:
       account_id: ${{matrix.account_id}}
       region: ${{matrix.region}}
