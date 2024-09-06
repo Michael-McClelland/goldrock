@@ -7,10 +7,16 @@ on:
         required: true
         type: string
       additionalregions:
-        required: true
+        required: false
         type: boolean
         default: false
-  
+      workflow:
+        required: true
+        type: string
+      workingdirectory:
+        required: true
+        type: string
+
 jobs:
   setup:
     name: 'setup'
@@ -39,14 +45,14 @@ jobs:
             echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           fi
 
-  access-analyzer:
-    name: 'access-analyzer'
+  fan-out:
+    name: 'fan-out'
     uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
       account_id: ${{matrix.account_id}}
       region: ${{matrix.region}}
-      workflow: 'access-analyzer'
-      workingdirectory: './regional/access-analyzer/'
+      workflow: ${{inputs.workflow}} 'access-analyzer'
+      workingdirectory: ${{inputs.workingdirectory}} './regional/access-analyzer/'
     needs: setup
     permissions:
       contents: read

@@ -40,10 +40,13 @@ jobs:
           for account in $account_ids; do OUT+=$account; done
           echo "account_ids="$(echo $OUT | fold -w 36 | fold -w 36 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   deploy:
-    name: 'deploy'
+    name: 'access-analyzer'
     uses: ./.github/workflows/reusable-fanout.yml
     with:
       accountbundle: ${{ matrix.accountbundle }}
+      #additionalregions: 
+      workflow: 'access-analyzer'
+      workingdirectory: './regional/access-analyzer/'
     needs: setup
     permissions:
       contents: read
