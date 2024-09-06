@@ -40,8 +40,10 @@ jobs:
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           if [ ${{ inputs.additionalregions }}  ];
           then
+            echo "true"
             echo "regions="$(echo "${{ vars.HOME_REGION }} ${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           else
+            echo "false"
             echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           fi
 
@@ -51,8 +53,8 @@ jobs:
     with:
       account_id: ${{matrix.account_id}}
       region: ${{matrix.regions}}
-      workflow: ${{inputs.workflow}} 'access-analyzer'
-      workingdirectory: ${{inputs.workingdirectory}} './regional/access-analyzer/'
+      workflow: ${{inputs.workflow}}
+      workingdirectory: ${{inputs.workingdirectory}}
     needs: setup
     permissions:
       contents: read
