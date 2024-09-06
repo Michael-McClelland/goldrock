@@ -1,4 +1,4 @@
-name: callz
+name: reusable-fanout
 
 on:
   workflow_call:
@@ -6,6 +6,10 @@ on:
       accountbundle:
         required: true
         type: string
+      additionalregions:
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   setup:
@@ -22,11 +26,19 @@ jobs:
 
     outputs:
       account_ids: ${{steps.unbundle_accounts.outputs.account_ids}}
+      regions: ${{steps.unbundle_accounts.outputs.regions}}
     steps:
       - name: unbundle accounts
         id: unbundle_accounts
         run: |
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+          if [ ${{ inputs.additionalregions }}  ];
+          then
+            echo "regions="$(echo "${{ vars.HOME_REGION }} ${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+          else
+            echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+          fi
+
   access-analyzer:
     name: 'access-analyzer'
     uses: ./.github/workflows/reusable-tf-deploy.yml
@@ -43,6 +55,5 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        region: 
-          - ${{ vars.HOME_REGION }}
+        regions: ${{fromJson(needs.setup.outputs.regions)}}
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
