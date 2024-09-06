@@ -38,12 +38,10 @@ jobs:
         id: unbundle_accounts
         run: |
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
-          if [ ${{ inputs.additionalregions }}  ];
+          if [ "${{ inputs.additionalregions }}" = true ];
           then
-            echo "true"
             echo "regions="$(echo "${{ vars.HOME_REGION }} ${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           else
-            echo "false"
             echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           fi
 
