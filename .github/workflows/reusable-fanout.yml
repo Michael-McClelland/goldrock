@@ -10,7 +10,7 @@ on:
         required: true
         type: boolean
         default: false
-
+  
 jobs:
   setup:
     name: 'setup'
