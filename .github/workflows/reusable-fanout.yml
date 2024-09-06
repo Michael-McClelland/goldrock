@@ -50,7 +50,7 @@ jobs:
     uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
       account_id: ${{matrix.account_id}}
-      region: ${{matrix.region}}
+      region: ${{matrix.regions}}
       workflow: ${{inputs.workflow}} 'access-analyzer'
       workingdirectory: ${{inputs.workingdirectory}} './regional/access-analyzer/'
     needs: setup
