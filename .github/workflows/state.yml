@@ -288,7 +288,7 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         run: |
           
-          aws kms replicate-key --key-id $(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/goldrock-tfstate | jq -r '.KeyMetadata.Arn') --replica-region ${{matrix.region}}
+          aws kms replicate-key --key-id $(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/goldrock-tfstate --region ${{env.region}} | jq -r '.KeyMetadata.Arn') --replica-region ${{matrix.region}}
           aws kms create-alias --alias-name alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate --target-key-id $(aws kms describe-key --key-id arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/goldrock-tfstate | jq -r '.KeyMetadata.KeyId'))
           sleep 60
 
@@ -340,7 +340,7 @@ jobs:
         env:
           TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
-          terraform import aws_dynamodb_table.tf_lock_table ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}
+          terraform import aws_dynamodb_table.aws_dynamodb_table ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}
 
       - name: Terraform plan
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
