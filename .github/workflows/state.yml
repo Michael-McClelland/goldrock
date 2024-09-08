@@ -189,8 +189,10 @@ jobs:
       max-parallel: 2
       fail-fast: false
       matrix:
-        account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
-        region: ${{ vars.ADDITIONAL_REGIONS }}
+        account_id:
+          - ${{ vars.MANAGEMENT_ACCOUNT_ID }}
+        region: 
+          - ${{ vars.ADDITIONAL_REGIONS }}
 
     outputs:
       BUCKET_EXISTS: ${{steps.s3bucket.outputs.BUCKET_EXISTS}}
