@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "bucket" {
     condition {
       test     = "StringNotEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.key.arn]
+      values   = [aws_kms_replica_key.key.arn]
     }
   }
 
@@ -642,16 +642,14 @@ data "aws_iam_policy_document" "keypolicy" {
   }
 }
 
-resource "aws_kms_key" "key" {
+resource "aws_kms_replica_key" "replica" {
   description                        = var.name
   deletion_window_in_days            = 30
   key_usage                          = "ENCRYPT_DECRYPT"
-  customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  is_enabled                         = true
-  enable_key_rotation                = true
-  multi_region                       = true
+  enabled                            = true
   policy                             = data.aws_iam_policy_document.keypolicy.json
+  primary_key_arn                    = data.aws_kms_key.primary_cmk.arn
   lifecycle {
     prevent_destroy = true
   }
@@ -663,7 +661,7 @@ resource "aws_kms_alias" "alias" {
 }
 
 
-resource "aws_dynamodb_table" "tf_lock_table" {
+resource "aws_dynamodb_table" "aws_dynamodb_table" {
   name                        = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
   hash_key                    = "LockID"
   read_capacity               = 5
@@ -685,7 +683,7 @@ resource "aws_dynamodb_table" "tf_lock_table" {
 
   server_side_encryption {
     enabled     = true
-    kms_key_arn = aws_kms_key.key.arn
+    kms_key_arn = aws_kms_replica_key.key.arn
   }
 }
 
@@ -704,7 +702,7 @@ data "aws_iam_policy_document" "dynamodb" {
       "dynamodb:PutItem",
     ]
     resources = [
-      aws_dynamodb_table.tf_lock_table.arn
+      aws_dynamodb_table.aws_dynamodb_table.arn
     ]
     condition {
       test     = "StringEquals"
@@ -717,21 +715,22 @@ data "aws_iam_policy_document" "dynamodb" {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values = [
-        "${aws_dynamodb_table.tf_lock_table.id}/*$${aws:PrincipalAccount}*"
+        "${aws_dynamodb_table.aws_dynamodb_table.id}/*$${aws:PrincipalAccount}*"
       ]
     }
   }
+
 }
 
 resource "aws_dynamodb_resource_policy" "dynamodb" {
-  resource_arn = aws_dynamodb_table.tf_lock_table.arn
+  resource_arn = aws_dynamodb_table.aws_dynamodb_table.arn
   policy       = data.aws_iam_policy_document.dynamodb.json
 }
 
 resource "aws_appautoscaling_target" "dynamodb_table_read_target" {
   max_capacity       = 200
   min_capacity       = 1
-  resource_id        = "table/${aws_dynamodb_table.tf_lock_table.name}"
+  resource_id        = "table/${aws_dynamodb_table.aws_dynamodb_table.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
 }
@@ -756,7 +755,7 @@ resource "aws_appautoscaling_target" "dynamodb_table_write_target" {
   depends_on         = [aws_appautoscaling_policy.dynamodb_table_read_policy]
   max_capacity       = 200
   min_capacity       = 1
-  resource_id        = "table/${aws_dynamodb_table.tf_lock_table.name}"
+  resource_id        = "table/${aws_dynamodb_table.aws_dynamodb_table.name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
 }
