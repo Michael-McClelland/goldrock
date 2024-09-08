@@ -191,8 +191,8 @@ jobs:
       - name: list regions
         id: list_regions
         run: |
-          echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | tr -d '\r' | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
-          echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . 
+          echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | tr -d '\r' | jq -R . | jq -s . | tr -d '\r' | | tr -d ' ') >> "$GITHUB_OUTPUT"
+          echo "${{ vars.ADDITIONAL_REGIONS }}" | tr -d '\r' | jq -R . | jq -s . | tr -d '\r' | | tr -d ' ' 
 
 
   additional_regions:
