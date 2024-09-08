@@ -172,11 +172,33 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform apply plan
 
+  parse_additional_regions:
+    if: ${{  vars.ADDITIONAL_REGIONS != '' }}
+    name: 'parse_additional_regions'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      regions: ${{steps.list_regions.outputs.regions}}
+    steps:
+      - name: list regions
+        id: list_regions
+        run: |
+          echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+
+
   additional_regions:
     if: ${{  vars.ADDITIONAL_REGIONS != '' }}
     name: 'additional_regions'
     runs-on: ubuntu-latest
-    needs: deploy_home_region
+    needs: parse_additional_regions
     defaults:
       run:
         shell: bash
@@ -191,8 +213,7 @@ jobs:
       matrix:
         account_id:
           - ${{ vars.MANAGEMENT_ACCOUNT_ID }}
-        region: 
-          - ${{ vars.ADDITIONAL_REGIONS }}
+        region: ${{fromJson(needs.parse_additional_regions.outputs.regions)}}
 
     outputs:
       BUCKET_EXISTS: ${{steps.s3bucket.outputs.BUCKET_EXISTS}}
