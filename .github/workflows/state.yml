@@ -192,6 +192,7 @@ jobs:
         id: list_regions
         run: |
           echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+          echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . 
 
 
   additional_regions:
