@@ -12,9 +12,3 @@ terraform {
   backend "s3" {
   }
 }
-
-
-provider "aws_home_region" {
-  alias = "home_region"
-  region = var.HOME_REGION
-}
