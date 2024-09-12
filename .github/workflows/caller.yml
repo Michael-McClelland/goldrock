@@ -39,12 +39,11 @@ jobs:
           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
           for account in $account_ids; do OUT+=$account; done
           echo "account_ids="$(echo $OUT | fold -w 36 | fold -w 36 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
-  deploy:
+  access-analyzer:
     name: 'access-analyzer'
     uses: ./.github/workflows/reusable-fanout.yml
     with:
       accountbundle: ${{ matrix.accountbundle }}
-      #additionalregions: 
       workflow: 'access-analyzer'
       workingdirectory: './regional/access-analyzer/'
     needs: setup
