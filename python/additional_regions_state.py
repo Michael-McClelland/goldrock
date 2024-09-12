@@ -68,7 +68,7 @@ try:
       TableName='goldrock-tfstate-' + account_id +'-' + os.environ['PY_REGION']
   )
   dynamodb_table_exists = True
-except dynamodb_client.exceptions.NotFoundException:
+except dynamodb_client.exceptions.ResourceNotFoundException:
   dynamodb_table_exists = False
 if not dynamodb_table_exists:
   dynamodb_response = dynamodb_client.create_table(
