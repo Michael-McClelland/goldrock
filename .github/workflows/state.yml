@@ -324,6 +324,7 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         env:
           TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
         run: |
           terraform init \
             -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
@@ -338,6 +339,7 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         env:
           TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
         run: |
           if [[ $(terraform state list | grep 'aws_s3_bucket.bucket' 2>/dev/null) ]]; then
             echo "bucket already in state"
@@ -370,8 +372,17 @@ jobs:
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
           TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
 
       - name: Terraform apply
         if: github.ref == 'refs/heads/main'
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         run: terraform apply plan
+        env:
+          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+          TF_VAR_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+          TF_VAR_region: ${{matrix.region}}
+          TF_VAR_ref: ${{github.ref_name}}
+          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
