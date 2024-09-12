@@ -303,6 +303,15 @@ jobs:
       #     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
       #     aws dynamodb wait table-exists --table-name ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade boto3
+
       - name: Setup State
         working-directory: "./python/"
         env:
