@@ -126,7 +126,7 @@ jobs:
             -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
             -backend-config="dynamodb_table=arn:aws:dynamodb:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{env.region}}" \
             -backend-config="kms_key_id=arn:aws:kms:${{env.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}/${{env.region}}/$GITHUB_WORKFLOW" \
+            -backend-config="key=${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}/${{env.region}}/state" \
             -backend-config="region=${{env.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
@@ -329,7 +329,7 @@ jobs:
             -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
             -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
             -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
+            -backend-config="key=${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}/${{matrix.region}}/state" \
             -backend-config="region=${{matrix.region}}" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
