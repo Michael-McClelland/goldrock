@@ -339,22 +339,22 @@ jobs:
         env:
           TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
         run: |
-          if [[ $(terraform state list | grep 'aws_s3_bucket.bucket') ]]; then
+          if [[ $(terraform state list | grep 'aws_s3_bucket.bucket' 2>/dev/null) ]]; then
             echo "bucket already in state"
           else
             terraform import aws_s3_bucket.bucket ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}
           fi
-          if [[ $(terraform state list | grep 'aws_kms_replica_key.replica') ]]; then
+          if [[ $(terraform state list | grep 'aws_kms_replica_key.replica' 2>/dev/null) ]]; then
             echo "key already in state"
           else
             terraform import aws_kms_replica_key.replica $(aws kms describe-key --key-id arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate | jq -r '.KeyMetadata.KeyId')
           fi
-          if [[ $(terraform state list | grep 'aws_kms_alias.alias') ]]; then
+          if [[ $(terraform state list | grep 'aws_kms_alias.alias' 2>/dev/null) ]]; then
             echo "alias already in state"
           else
             terraform import aws_kms_alias.alias alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate
           fi
-          if [[ $(terraform state list | grep 'aws_dynamodb_table.aws_dynamodb_table') ]]; then
+          if [[ $(terraform state list | grep 'aws_dynamodb_table.aws_dynamodb_table' 2>/dev/null) ]]; then
             echo "table already in state"
           else
             terraform import aws_dynamodb_table.aws_dynamodb_table ${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}
