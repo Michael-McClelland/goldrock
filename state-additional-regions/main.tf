@@ -648,7 +648,7 @@ resource "aws_kms_replica_key" "replica" {
   bypass_policy_lockout_safety_check = false
   enabled                            = true
   policy                             = data.aws_iam_policy_document.keypolicy.json
-  primary_key_arn                    = one(data.aws_kms_key.multiregionkey.*.multi_region_configuration.primary_key.arn)
+  primary_key_arn                    = data.aws_kms_key.multiregionkey.multi_region_configuration[0].primary_key[0].arn
   lifecycle {
     prevent_destroy = true
   }
