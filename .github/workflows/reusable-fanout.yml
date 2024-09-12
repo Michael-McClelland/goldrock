@@ -40,9 +40,9 @@ jobs:
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           if [ "${{ inputs.additionalregions }}" = true ];
           then
-            echo "regions="$(echo "${{ vars.HOME_REGION }} ${{ vars.ADDITIONAL_REGIONS }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+            echo "regions="$(echo "${{ vars.HOME_REGION }} ${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
           else
-            echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+            echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
           fi
 
   fan-out:
