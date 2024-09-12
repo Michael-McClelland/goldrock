@@ -187,7 +187,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.replica.arn
+      kms_master_key_id = aws_kms_replica_key.replica.arn
       sse_algorithm     = "aws:kms"
     }
     bucket_key_enabled = true
@@ -649,7 +649,7 @@ resource "aws_kms_replica_key" "replica" {
   bypass_policy_lockout_safety_check = false
   enabled                            = true
   policy                             = data.aws_iam_policy_document.keypolicy.json
-  primary_key_arn                    = data.aws_kms_key.multiregionkey.multi_region_configuration.primary_key.arn
+  primary_key_arn                    = one(data.aws_kms_key.multiregionkey.*.multi_region_configuration.primary_key.arn)
   lifecycle {
     prevent_destroy = true
   }
@@ -657,7 +657,7 @@ resource "aws_kms_replica_key" "replica" {
 
 resource "aws_kms_alias" "alias" {
   name          = "alias/${var.name}"
-  target_key_id = aws_kms_key.replica.key_id
+  target_key_id = aws_kms_replica_key.replica.key_id
 }
 
 
