@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "bucket" {
     condition {
       test     = "StringNotEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_replica_key.key.arn]
+      values   = [aws_kms_replica_key.replica.arn]
     }
   }
 
@@ -187,7 +187,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.key.arn
+      kms_master_key_id = aws_kms_key.replica.arn
       sse_algorithm     = "aws:kms"
     }
     bucket_key_enabled = true
@@ -657,7 +657,7 @@ resource "aws_kms_replica_key" "replica" {
 
 resource "aws_kms_alias" "alias" {
   name          = "alias/${var.name}"
-  target_key_id = aws_kms_key.key.key_id
+  target_key_id = aws_kms_key.replica.key_id
 }
 
 
@@ -683,7 +683,7 @@ resource "aws_dynamodb_table" "aws_dynamodb_table" {
 
   server_side_encryption {
     enabled     = true
-    kms_key_arn = aws_kms_replica_key.key.arn
+    kms_key_arn = aws_kms_replica_key.replica.arn
   }
 }
 
