@@ -1,4 +1,4 @@
-name: Caller
+name: regional-dispatch
 on:
   workflow_dispatch:
 env:
@@ -46,6 +46,7 @@ jobs:
       accountbundle: ${{ matrix.accountbundle }}
       workflow: 'access-analyzer'
       workingdirectory: './regional/access-analyzer/'
+      additionalregions: True
     needs: setup
     permissions:
       contents: read
