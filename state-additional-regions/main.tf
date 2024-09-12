@@ -645,7 +645,6 @@ data "aws_iam_policy_document" "keypolicy" {
 resource "aws_kms_replica_key" "replica" {
   description                        = var.name
   deletion_window_in_days            = 30
-  key_usage                          = "ENCRYPT_DECRYPT"
   bypass_policy_lockout_safety_check = false
   enabled                            = true
   policy                             = data.aws_iam_policy_document.keypolicy.json
