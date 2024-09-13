@@ -730,7 +730,7 @@ resource "aws_dynamodb_resource_policy" "dynamodb" {
 
 resource "aws_appautoscaling_target" "dynamodb_table_read_target" {
   max_capacity       = 200
-  min_capacity       = 1
+  min_capacity       = 10
   resource_id        = "table/${aws_dynamodb_table.tf_lock_table.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
@@ -755,7 +755,7 @@ resource "aws_appautoscaling_policy" "dynamodb_table_read_policy" {
 resource "aws_appautoscaling_target" "dynamodb_table_write_target" {
   depends_on         = [aws_appautoscaling_policy.dynamodb_table_read_policy]
   max_capacity       = 200
-  min_capacity       = 1
+  min_capacity       = 10
   resource_id        = "table/${aws_dynamodb_table.tf_lock_table.name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
