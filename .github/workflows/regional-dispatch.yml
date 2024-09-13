@@ -59,5 +59,37 @@ jobs:
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-
-
+  ec2-serial-console:
+    name: 'ec2-serial-console'
+    uses: ./.github/workflows/reusable-fanout.yml
+    with:
+      accountbundle: ${{ matrix.accountbundle }}
+      workflow: 'ec2-serial-console'
+      workingdirectory: './regional/ec2-serial-console/'
+      additionalregions: True
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+  ec2-destroy-default-vpc:
+    name: 'ec2-destroy-default-vpc'
+    uses: ./.github/workflows/reusable-fanout.yml
+    with:
+      accountbundle: ${{ matrix.accountbundle }}
+      workflow: 'ec2-serial-console'
+      workingdirectory: './regional/ec2-destroy-default-vpc/'
+      additionalregions: True
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
