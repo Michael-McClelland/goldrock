@@ -41,7 +41,7 @@ jobs:
         run: |
           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
           for account in $account_ids; do OUT+=$account; done
-          echo "account_ids="$(echo $OUT | fold -w 36 | fold -w 36 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+          echo "account_ids="$(echo $OUT | fold -w 252 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
   access-analyzer:
     name: 'access-analyzer'
     uses: ./.github/workflows/reusable-fanout.yml
@@ -67,7 +67,7 @@ jobs:
       workflow: 'ec2-serial-console'
       workingdirectory: './regional/ec2-serial-console/'
       additionalregions: True
-    needs: access-analyzer
+    needs: [setup, access-analyzer]
     permissions:
       contents: read
       id-token: write
@@ -84,7 +84,7 @@ jobs:
       workflow: 'ec2-serial-console'
       workingdirectory: './regional/ec2-destroy-default-vpc/'
       additionalregions: True
-    needs: ec2-serial-console
+    needs: [setup, access-analyzer, ec2-serial-console]
     permissions:
       contents: read
       id-token: write
@@ -101,7 +101,7 @@ jobs:
       workflow: 'ec2-serial-console'
       workingdirectory: './regional/emr-block-public-access-configuration/'
       additionalregions: True
-    needs: ec2-destroy-default-vpc
+    needs: [setup, access-analyzer, ec2-serial-console, ec2-destroy-default-vpc]
     permissions:
       contents: read
       id-token: write
