@@ -390,31 +390,32 @@ data "aws_iam_policy_document" "config" {
 
   }
 
-  statement {
-    sid    = "puts"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:PutObject"
-    ]
+#TODOMAKESURETHISWORKS
+  # statement {
+  #   sid    = "puts"
+  #   effect = "Allow"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:GetObject",
+  #     "s3:ListBucket",
+  #     "s3:PutObject"
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.config.arn}/*",
-      "${aws_s3_bucket.config.arn}",
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values = [
-        data.aws_organizations_organization.current.id
-      ]
-    }
-  }
+  #   resources = [
+  #     "${aws_s3_bucket.config.arn}/*",
+  #     "${aws_s3_bucket.config.arn}",
+  #   ]
+  #   condition {
+  #     test     = "StringEquals"
+  #     variable = "aws:PrincipalOrgID"
+  #     values = [
+  #       data.aws_organizations_organization.current.id
+  #     ]
+  #   }
+  # }
 
   # statement {
   #   effect = "Deny"
