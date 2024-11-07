@@ -123,3 +123,8 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: terraform destroy --auto-approve
+        env:
+          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+          TF_VAR_security_account_id: ${{needs.setup.outputs.security_account_id}}
+          TF_VAR_ref: ${{github.ref_name}}
+          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
