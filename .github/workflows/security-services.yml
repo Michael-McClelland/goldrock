@@ -59,7 +59,7 @@ jobs:
           fi
 
   deploy_home_region:
-    name: 'deploy'
+    name: 'deploy_home_region'
     runs-on: ubuntu-latest
 
     needs: setup
@@ -73,7 +73,7 @@ jobs:
       id-token: write
 
     outputs:
-      home_region_cmk_arn: ${{steps.Terraform_apply.outputs.home_region_cmk_arn}}
+      home_region_cmk_arn: ${{steps.terraform_apply.outputs.home_region_cmk_arn}}
 
     steps:
 
@@ -110,7 +110,8 @@ jobs:
         env:
           TF_VAR_securityhub_full_deploy: ${{needs.setup.outputs.securityhub_full_deploy}}
 
-      - name: Terraform_apply
+      - name: Terraform apply
+        id: terraform_apply
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: |

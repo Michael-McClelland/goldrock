@@ -90,41 +90,41 @@ jobs:
   #       uses: aws-actions/configure-aws-credentials@v4
   #       with:
   #         role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/goldrock-github-actions
-          aws-region: ${{ vars.HOME_REGION }}
-          mask-aws-account-id: false
+  #         aws-region: ${{ vars.HOME_REGION }}
+  #         mask-aws-account-id: false
 
-      - name: Terraform init
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        run: |
-          terraform init \
-            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
-            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
-            -backend-config="key=${{matrix.account_id}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
-            -backend-config="region=${{matrix.region}}" \
-            -backend-config="encrypt=true" \
-            -backend-config="max_retries=20"
+  #     - name: Terraform init
+  #       working-directory: ${{env.WORKING_DIRECTORY}}
+  #       run: |
+  #         terraform init \
+  #           -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+  #           -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+  #           -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
+  #           -backend-config="key=${{matrix.account_id}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
+  #           -backend-config="region=${{matrix.region}}" \
+  #           -backend-config="encrypt=true" \
+  #           -backend-config="max_retries=20"
 
-      - name: Terraform plan
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        run: terraform plan -out plan
-        env:
-          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_security_account_id: ${{needs.setup.outputs.security_account_id}}
-          TF_VAR_ref: ${{github.ref_name}}
-          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
+  #     - name: Terraform plan
+  #       working-directory: ${{env.WORKING_DIRECTORY}}
+  #       run: terraform plan -out plan
+  #       env:
+  #         TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+  #         TF_VAR_security_account_id: ${{needs.setup.outputs.security_account_id}}
+  #         TF_VAR_ref: ${{github.ref_name}}
+  #         TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
 
-      - name: Terraform apply
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
-        run: terraform apply plan
+  #     - name: Terraform apply
+  #       working-directory: ${{env.WORKING_DIRECTORY}}
+  #       if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
+  #       run: terraform apply plan
 
-      - name: Terraform destroy
-        working-directory: ${{env.WORKING_DIRECTORY}}
-        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
-        run: terraform destroy --auto-approve
-        env:
-          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_security_account_id: ${{needs.setup.outputs.security_account_id}}
-          TF_VAR_ref: ${{github.ref_name}}
-          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
+  #     - name: Terraform destroy
+  #       working-directory: ${{env.WORKING_DIRECTORY}}
+  #       if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
+  #       run: terraform destroy --auto-approve
+  #       env:
+  #         TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+  #         TF_VAR_security_account_id: ${{needs.setup.outputs.security_account_id}}
+  #         TF_VAR_ref: ${{github.ref_name}}
+  #         TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
