@@ -107,3 +107,8 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: terraform apply plan
+
+      - name: Terraform destroy
+        working-directory: ${{env.WORKING_DIRECTORY}}
+        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
+        run: terraform destroy --auto-approve
