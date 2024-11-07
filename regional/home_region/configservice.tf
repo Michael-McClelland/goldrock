@@ -38,8 +38,3 @@ data "aws_region" "current" {}
 variable "security_account_id" {
   type = string
 }
-
-terraform {
-  backend "s3" {
-  }
-}
