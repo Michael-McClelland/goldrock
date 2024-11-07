@@ -1,4 +1,4 @@
-name: regional-dispatch
+name: reusable-dispatch
 on:
   workflow_run:
     workflows: ["security-services"]
@@ -42,72 +42,72 @@ jobs:
           account_ids=$(aws organizations list-accounts --output text --query 'Accounts[*].Id')
           for account in $account_ids; do OUT+=$account; done
           echo "account_ids="$(echo $OUT | fold -w 252 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
-  access-analyzer:
-    name: 'access-analyzer'
+  global:
+    name: 'global'
     uses: ./.github/workflows/reusable-fanout.yml
     with:
       accountbundle: ${{ matrix.accountbundle }}
-      workflow: 'access-analyzer'
-      workingdirectory: './regional/access-analyzer/'
-      additionalregions: True
+      workflow: 'global'
+      workingdirectory: './global/'
+      additionalregions: False
     needs: setup
     permissions:
       contents: read
       id-token: write
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-  ec2-serial-console:
-    name: 'ec2-serial-console'
+  home_region:
+    name: 'home_region'
     uses: ./.github/workflows/reusable-fanout.yml
     with:
       accountbundle: ${{ matrix.accountbundle }}
-      workflow: 'ec2-serial-console'
-      workingdirectory: './regional/ec2-serial-console/'
+      workflow: 'home_region'
+      workingdirectory: './regional/home_region/'
       additionalregions: True
-    needs: [setup, access-analyzer]
+    needs: [setup, global]
     permissions:
       contents: read
       id-token: write
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-  ec2-destroy-default-vpc:
-    name: 'ec2-destroy-default-vpc'
-    uses: ./.github/workflows/reusable-fanout.yml
-    with:
-      accountbundle: ${{ matrix.accountbundle }}
-      workflow: 'ec2-serial-console'
-      workingdirectory: './regional/ec2-destroy-default-vpc/'
-      additionalregions: True
-    needs: [setup, access-analyzer, ec2-serial-console]
-    permissions:
-      contents: read
-      id-token: write
-    strategy:
-      max-parallel: 1
-      fail-fast: false
-      matrix:
-        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-  emr-block-public-access-configuration:
-    name: 'emr-block-public-access-configuration'
-    uses: ./.github/workflows/reusable-fanout.yml
-    with:
-      accountbundle: ${{ matrix.accountbundle }}
-      workflow: 'ec2-serial-console'
-      workingdirectory: './regional/emr-block-public-access-configuration/'
-      additionalregions: True
-    needs: [setup, access-analyzer, ec2-serial-console, ec2-destroy-default-vpc]
-    permissions:
-      contents: read
-      id-token: write
-    strategy:
-      max-parallel: 1
-      fail-fast: false
-      matrix:
-        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+  # ec2-destroy-default-vpc:
+  #   name: 'ec2-destroy-default-vpc'
+  #   uses: ./.github/workflows/reusable-fanout.yml
+  #   with:
+  #     accountbundle: ${{ matrix.accountbundle }}
+  #     workflow: 'ec2-serial-console'
+  #     workingdirectory: './regional/ec2-destroy-default-vpc/'
+  #     additionalregions: True
+  #   needs: [setup, access-analyzer, ec2-serial-console]
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   strategy:
+  #     max-parallel: 1
+  #     fail-fast: false
+  #     matrix:
+  #       accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+  # emr-block-public-access-configuration:
+  #   name: 'emr-block-public-access-configuration'
+  #   uses: ./.github/workflows/reusable-fanout.yml
+  #   with:
+  #     accountbundle: ${{ matrix.accountbundle }}
+  #     workflow: 'ec2-serial-console'
+  #     workingdirectory: './regional/emr-block-public-access-configuration/'
+  #     additionalregions: True
+  #   needs: [setup, access-analyzer, ec2-serial-console, ec2-destroy-default-vpc]
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   strategy:
+  #     max-parallel: 1
+  #     fail-fast: false
+  #     matrix:
+  #       accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
 

@@ -510,3 +510,7 @@ resource "aws_kms_alias" "alias" {
   name          = "alias/goldrock-security"
   target_key_id = aws_kms_key.key.key_id
 }
+
+output "home_region_cmk_arn" {
+  value = aws_kms_key.key.arn
+}

@@ -4,7 +4,3 @@ resource "aws_s3_account_public_access_block" "aws_s3_account_public_access_bloc
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-terraform {
-  backend "s3" {
-  }
-}
