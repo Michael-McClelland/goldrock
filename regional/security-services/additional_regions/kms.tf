@@ -41,50 +41,6 @@ data "aws_iam_policy_document" "keypolicy" {
   }
 
   statement {
-    sid = "readobjectsfrombucket"
-    principals {
-      type = "AWS"
-      identifiers = [
-        "*"
-      ]
-    }
-    effect = "Allow"
-    actions = [
-      "kms:Decrypt"
-    ]
-    resources = [
-      "*",
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "kms:ViaService"
-      values = [
-        "s3.${data.aws_region.current.id}.amazonaws.com"
-      ]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "kms:CallerAccount"
-      values   = ["${data.aws_caller_identity.current.id}"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "kms:EncryptionContext:aws:s3:arn"
-      values = [
-        aws_s3_bucket.cloudtrail.arn
-      ]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values = [
-        data.aws_organizations_organization.current.id
-      ]
-    }
-
-  }
-
-  statement {
     sid = "config-decrypt"
     principals {
       type = "AWS"
