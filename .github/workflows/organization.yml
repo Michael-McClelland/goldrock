@@ -30,6 +30,9 @@ jobs:
       contents: read
       id-token: write
 
+    outputs:
+      security_account_id: ${{steps.get_security_account.outputs.security_account_id}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,6 +101,13 @@ jobs:
         working-directory: "./python/"
         run: |
           python cloudformationstacksetwaiter.py
+
+      - name: Identify Security Account
+        id: get_security_account
+        run: |
+          GUARDDUTY_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal guardduty.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
+          SECURITYHUB_ACCOUNT_ID=$(aws organizations list-delegated-administrators --service-principal securityhub.amazonaws.com | jq -r '.DelegatedAdministrators[0].Id')
+          [ "$GUARDDUTY_ACCOUNT_ID" = "$SECURITYHUB_ACCOUNT_ID" ] && echo "security_account_id="$(aws guardduty list-organization-admin-accounts | jq -r '.AdminAccounts[0].AdminAccountId') >> "$GITHUB_OUTPUT" || exit r-66y
 
   parse_additional_regions:
     if: ${{  vars.ADDITIONAL_REGIONS != '' }}
@@ -173,8 +183,15 @@ jobs:
       - name: Terraform plan
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         run: terraform plan -out plan
+        env:
+          TF_VAR_security_account_id: ${{needs.deploy_home_region.outputs.security_account_id}}
 
       - name: Terraform apply
         if: github.ref == 'refs/heads/main'
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         run: terraform apply plan
+
+
+
+
+  
