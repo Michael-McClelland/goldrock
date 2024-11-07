@@ -10,6 +10,7 @@ env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
   WORKING_DIRECTORY: ./organization/
+  WORKING_DIRECTORY_ADDITIONAL_REGIONS: ./organization/additional_regions/
   region: ${{ vars.HOME_REGION }}
 
 concurrency:
@@ -17,8 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  setup:
-    name: 'setup'
+  deploy_home_region:
+    name: 'deploy_home_region'
     runs-on: ubuntu-latest
 
     defaults:
@@ -69,7 +70,6 @@ jobs:
               echo 'state not found'
               terraform import aws_organizations_organization.organization $(aws organizations describe-organization | jq -r '.Organization.Id')
           fi
-          
 
       - name: Terraform plan
         working-directory: ${{env.WORKING_DIRECTORY}}
@@ -85,7 +85,6 @@ jobs:
         working-directory: ${{env.WORKING_DIRECTORY}}
         run: terraform apply plan
 
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -100,3 +99,82 @@ jobs:
         run: |
           python cloudformationstacksetwaiter.py
 
+  parse_additional_regions:
+    if: ${{  vars.ADDITIONAL_REGIONS != '' }}
+    name: 'parse_additional_regions'
+    runs-on: ubuntu-latest
+    needs: deploy_home_region
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      regions: ${{steps.list_regions.outputs.regions}}
+    steps:
+      - name: list regions
+        id: list_regions
+        run: |
+          echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")') >> "$GITHUB_OUTPUT"
+          echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' 
+
+  additional_regions:
+    if: ${{  vars.ADDITIONAL_REGIONS != '' }}
+    name: 'additional_regions'
+    runs-on: ubuntu-latest
+    needs: [ deploy_home_region, parse_additional_regions ]
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+        account_id:
+          - ${{ vars.MANAGEMENT_ACCOUNT_ID }}
+        region: ${{fromJson(needs.parse_additional_regions.outputs.regions)}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{matrix.account_id}}:role/goldrock-github-actions
+          aws-region: ${{ matrix.region }}
+          mask-aws-account-id: false
+
+      - name: Terraform init
+        working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
+        run: |
+          terraform init \
+            -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="dynamodb_table=arn:aws:dynamodb:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{matrix.region}}" \
+            -backend-config="kms_key_id=arn:aws:kms:${{matrix.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
+            -backend-config="key=${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}/${{matrix.region}}/$GITHUB_WORKFLOW" \
+            -backend-config="region=${{matrix.region}}" \
+            -backend-config="encrypt=true" \
+            -backend-config="max_retries=20"
+      
+      - name: Terraform plan
+        working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
+        run: terraform plan -out plan
+
+      - name: Terraform apply
+        if: github.ref == 'refs/heads/main'
+        working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
+        run: terraform apply plan
