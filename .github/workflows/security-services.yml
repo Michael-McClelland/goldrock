@@ -116,7 +116,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_run'
         run: |
           terraform apply plan
-          echo 'home_region_cmk_arn=$(terraform output -raw home_region_cmk_arn)' >> "$GITHUB_OUTPUT"
+          echo "home_region_cmk_arn=$(terraform output -raw home_region_cmk_arn)" >> "$GITHUB_OUTPUT"
 
   parse_additional_regions:
     if: ${{  vars.ADDITIONAL_REGIONS != '' }}
