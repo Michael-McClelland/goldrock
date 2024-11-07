@@ -8,8 +8,8 @@ on:
 env:
   ORGANIZATION_MANAGEMENT_ACCOUNT_ID: ${{ vars.MANAGEMENT_ACCOUNT_ID }}
   ORGANIZATION_IDENTIFIER: ${{ vars.ORGANIZATION_IDENTIFIER }}
-  WORKING_DIRECTORY: ./regional/home_region/security-services/
-  WORKING_DIRECTORY_ADDITIONAL_REGIONS: ./regional/additional_regions/security-services/
+  WORKING_DIRECTORY: ./regional/security-services/home_region/
+  WORKING_DIRECTORY_ADDITIONAL_REGIONS: ./regional/security-services/additional_regions/
   region: ${{ vars.HOME_REGION }}
 
 concurrency:
