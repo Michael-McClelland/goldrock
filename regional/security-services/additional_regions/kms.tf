@@ -414,7 +414,6 @@ data "aws_iam_policy_document" "keypolicy" {
 resource "aws_kms_replica_key" "key" {
   description                        = "kms key for goldrock"
   deletion_window_in_days            = 30
-  key_usage                          = "ENCRYPT_DECRYPT"
   bypass_policy_lockout_safety_check = false
   policy                             = data.aws_iam_policy_document.keypolicy.json
   primary_key_arn = var.home_region_cmk_arn

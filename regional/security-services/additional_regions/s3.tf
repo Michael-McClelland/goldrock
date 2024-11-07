@@ -136,7 +136,7 @@ data "aws_iam_policy_document" "cloudtrail" {
   #   condition {
   #     test     = "StringNotEquals"
   #     variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-  #     values   = [aws_kms_key.key.arn]
+  #     values   = [aws_kms_replica_key.key.arn]
   #   }
   # }
 
@@ -284,7 +284,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.key.arn
+      kms_master_key_id = aws_kms_replica_key.key.arn
       sse_algorithm     = "aws:kms"
     }
     bucket_key_enabled = true
@@ -566,7 +566,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.key.arn
+      kms_master_key_id = aws_kms_replica_key.key.arn
       sse_algorithm     = "aws:kms"
     }
     bucket_key_enabled = true
