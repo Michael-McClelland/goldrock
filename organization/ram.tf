@@ -12,5 +12,5 @@ resource "aws_ram_resource_association" "goldrock_parameters" {
 
 resource "aws_ram_principal_association" "goldrock_parameters" {
   principal          = aws_organizations_organization.organization.arn
-  resource_share_arn = aws_ram_resource_share.example.arn
+  resource_share_arn = aws_ram_resource_share.goldrock_parameters.arn
 }
