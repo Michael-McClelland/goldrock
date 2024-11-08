@@ -13,3 +13,6 @@ data "aws_organizations_organizational_unit_descendant_accounts" "org" {
   parent_id = each.value
 }
 
+data "aws_kms_key" "goldrock_tfstate" {
+  key_id = "goldrock-tfstate" 
+}
