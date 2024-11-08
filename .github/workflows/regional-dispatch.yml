@@ -59,55 +59,20 @@ jobs:
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-  # home_region:
-  #   name: 'home_region'
-  #   uses: ./.github/workflows/reusable-fanout.yml
-  #   with:
-  #     accountbundle: ${{ matrix.accountbundle }}
-  #     workflow: 'home_region'
-  #     workingdirectory: './regional/home_region/'
-  #     additionalregions: True
-  #   needs: [setup, global]
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-  #   strategy:
-  #     max-parallel: 2
-  #     fail-fast: false
-  #     matrix:
-  #       accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-  # ec2-destroy-default-vpc:
-  #   name: 'ec2-destroy-default-vpc'
-  #   uses: ./.github/workflows/reusable-fanout.yml
-  #   with:
-  #     accountbundle: ${{ matrix.accountbundle }}
-  #     workflow: 'ec2-serial-console'
-  #     workingdirectory: './regional/ec2-destroy-default-vpc/'
-  #     additionalregions: True
-  #   needs: [setup, access-analyzer, ec2-serial-console]
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-  #   strategy:
-  #     max-parallel: 1
-  #     fail-fast: false
-  #     matrix:
-  #       accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-  # emr-block-public-access-configuration:
-  #   name: 'emr-block-public-access-configuration'
-  #   uses: ./.github/workflows/reusable-fanout.yml
-  #   with:
-  #     accountbundle: ${{ matrix.accountbundle }}
-  #     workflow: 'ec2-serial-console'
-  #     workingdirectory: './regional/emr-block-public-access-configuration/'
-  #     additionalregions: True
-  #   needs: [setup, access-analyzer, ec2-serial-console, ec2-destroy-default-vpc]
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-  #   strategy:
-  #     max-parallel: 1
-  #     fail-fast: false
-  #     matrix:
-  #       accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
-
+  regional:
+    name: 'home_region'
+    uses: ./.github/workflows/reusable-fanout.yml
+    with:
+      accountbundle: ${{ matrix.accountbundle }}
+      workflow: 'home_region'
+      workingdirectory: './regional/home_region/'
+      additionalregions: True
+    needs: [setup, global]
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
