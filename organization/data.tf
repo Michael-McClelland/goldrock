@@ -14,5 +14,5 @@ data "aws_organizations_organizational_unit_descendant_accounts" "org" {
 }
 
 data "aws_kms_key" "goldrock_tfstate" {
-  key_id = "goldrock-tfstate" 
+  key_id = "alias/goldrock-tfstate" 
 }
