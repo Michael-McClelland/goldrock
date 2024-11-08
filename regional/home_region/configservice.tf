@@ -31,10 +31,3 @@ resource "aws_config_configuration_recorder" "config" {
 resource "aws_config_retention_configuration" "example" {
   retention_period_in_days = 365
 }
-
-data "aws_organizations_organization" "current" {}
-data "aws_region" "current" {}
-
-variable "security_account_id" {
-  type = string
-}
