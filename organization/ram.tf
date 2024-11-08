@@ -6,7 +6,7 @@ resource "aws_ram_resource_share" "goldrock_parameters" {
 }
 
 resource "aws_ram_resource_association" "goldrock_parameters" {
-  resource_arn       = aws_ssm_parameter.goldrock_security_account_id
+  resource_arn       = aws_ssm_parameter.goldrock_security_account_id.arn
   resource_share_arn = aws_ram_resource_share.goldrock_parameters.arn
 }
 
