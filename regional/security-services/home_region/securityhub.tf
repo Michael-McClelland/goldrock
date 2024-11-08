@@ -37,6 +37,6 @@ resource "aws_securityhub_configuration_policy" "aws_securityhub_configuration_p
 
 resource "aws_securityhub_configuration_policy_association" "root" {
   count   = var.securityhub_full_deploy ? 1 : 0
-  target_id = data.aws_organizations_organization.current.roots[0].id
+  target_id = data.aws_organizations_organization.organization.roots[0].id
   policy_id = aws_securityhub_configuration_policy.aws_securityhub_configuration_policy[0].id
 }

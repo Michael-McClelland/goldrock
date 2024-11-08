@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "bucket" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
   }
@@ -278,7 +278,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
 
@@ -318,7 +318,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
 
@@ -420,7 +420,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
   }
 
@@ -456,7 +456,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
   }
 
@@ -497,7 +497,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
     condition {
       test     = "StringEquals"
@@ -581,7 +581,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringNotEqualsIfExists"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
     condition {
@@ -619,7 +619,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringNotEqualsIfExists"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
   }
 
@@ -733,7 +733,7 @@ data "aws_iam_policy_document" "dynamodb" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
     condition {

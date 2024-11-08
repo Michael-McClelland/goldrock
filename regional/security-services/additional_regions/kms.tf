@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
 
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
 
@@ -116,7 +116,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
   }
 
@@ -157,7 +157,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
     condition {
       test     = "StringEquals"
@@ -242,21 +242,21 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalAccount"
       values = [
-        data.aws_organizations_organization.current.master_account_id
+        data.aws_organizations_organization.organization.master_account_id
       ]
     }
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-cloudtrail-management"
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.organization.master_account_id}:role/goldrock-cloudtrail-management"
       ]
     }
   }
@@ -280,7 +280,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringNotEqualsIfExists"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
     condition {
@@ -318,7 +318,7 @@ data "aws_iam_policy_document" "keypolicy" {
     condition {
       test     = "StringNotEqualsIfExists"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = ["${data.aws_organizations_organization.organization.id}"]
     }
   }
 

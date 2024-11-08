@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "config" {
       test     = "StringEquals"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
 
@@ -48,13 +48,13 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:SourceAccount}/Config/*"
+      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.organization.id}/AWSLogs/$${aws:SourceAccount}/Config/*"
     ]
     condition {
       test     = "StringEquals"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
 
@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "config" {
   #     test     = "StringEquals"
   #     variable = "aws:PrincipalOrgID"
   #     values = [
-  #       data.aws_organizations_organization.current.id
+  #       data.aws_organizations_organization.organization.id
   #     ]
   #   }
   # }

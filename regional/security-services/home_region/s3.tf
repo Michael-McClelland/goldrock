@@ -27,14 +27,14 @@ data "aws_iam_policy_document" "cloudtrail" {
     #   test     = "StringEquals"
     #   variable = "aws:SourceOrgID"
     #   values = [
-    #     "${data.aws_organizations_organization.current.id}"
+    #     "${data.aws_organizations_organization.organization.id}"
     #   ]
     # }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.current.master_account_id}:trail/goldrock"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.organization.master_account_id}:trail/goldrock"
       ]
     }
   }
@@ -50,21 +50,21 @@ data "aws_iam_policy_document" "cloudtrail" {
       "s3:PutObject"
     ]
     resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.current.id}/*",
-      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.current.master_account_id}/*"
+      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.id}/*",
+      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.master_account_id}/*"
     ]
     # condition {
     #   test     = "StringEquals"
     #   variable = "aws:SourceOrgID"
     #   values = [
-    #     "${data.aws_organizations_organization.current.id}"
+    #     "${data.aws_organizations_organization.organization.id}"
     #   ]
     # }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.current.master_account_id}:trail/goldrock"
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.organization.master_account_id}:trail/goldrock"
       ]
     }
   }
@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "cloudtrail" {
   #     test     = "StringEquals"
   #     variable = "aws:PrincipalOrgID"
   #     values = [
-  #       data.aws_organizations_organization.current.id
+  #       data.aws_organizations_organization.organization.id
   #     ]
   #   }
   # }
@@ -160,21 +160,21 @@ data "aws_iam_policy_document" "cloudtrail" {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values = [
-        data.aws_organizations_organization.current.id
+        data.aws_organizations_organization.organization.id
       ]
     }
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalAccount"
       values = [
-        data.aws_organizations_organization.current.master_account_id
+        data.aws_organizations_organization.organization.master_account_id
       ]
     }
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalArn"
       values = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.current.master_account_id}:role/goldrock-cloudtrail-management"
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_organizations_organization.organization.master_account_id}:role/goldrock-cloudtrail-management"
         
       ]
     }
@@ -360,7 +360,7 @@ data "aws_iam_policy_document" "config" {
       test     = "StringEquals"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
 
@@ -378,13 +378,13 @@ data "aws_iam_policy_document" "config" {
     ]
 
     resources = [
-      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.current.id}/AWSLogs/$${aws:SourceAccount}/Config/*"
+      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.organization.id}/AWSLogs/$${aws:SourceAccount}/Config/*"
     ]
     condition {
       test     = "StringEquals"
       variable = "aws:SourceOrgID"
       values = [
-        "${data.aws_organizations_organization.current.id}"
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
 
@@ -412,7 +412,7 @@ data "aws_iam_policy_document" "config" {
   #     test     = "StringEquals"
   #     variable = "aws:PrincipalOrgID"
   #     values = [
-  #       data.aws_organizations_organization.current.id
+  #       data.aws_organizations_organization.organization.id
   #     ]
   #   }
   # }

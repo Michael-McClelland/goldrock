@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:${data.aws_partition.partition.id}:iam::${module.organization_structure.security_account}:root"]
+      identifiers = ["arn:${data.aws_partition.current.id}:iam::${module.organization_structure.security_account}:root"]
     }
     actions = [
       "sts:AssumeRole"
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
       test     = "StringEquals"
       variable = "aws:PrincipalArn"
       values = [
-        "arn:${data.aws_partition.partition.id}:iam::${module.organization_structure.security_account}:role/goldrock-github-actions"
+        "arn:${data.aws_partition.current.id}:iam::${module.organization_structure.security_account}:role/goldrock-github-actions"
       ]
     }
   }
@@ -61,5 +61,5 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
 
 resource "aws_iam_role_policy_attachment" "cloudtrail_fullaccess" {
   role      = aws_iam_role.goldrock_cloudtrail_management.name
-  policy_arn = "arn:${data.aws_partition.partition.id}:iam::aws:policy/AdministratorAccess"
+  policy_arn = "arn:${data.aws_partition.current.id}:iam::aws:policy/AdministratorAccess"
 }
