@@ -36,11 +36,13 @@ jobs:
     outputs:
       account_ids: ${{steps.unbundle_accounts.outputs.account_ids}}
       regions: ${{steps.unbundle_accounts.outputs.regions}}
+      home_region: ${{steps.unbundle_accounts.outputs.home_region}}
     steps:
       - name: unbundle accounts
         id: unbundle_accounts
         run: |
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
+          echo "home_region="$(echo "${{ vars.HOME_REGION }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
           if [ "${{ inputs.additionalregions }}" = true ];
           then
             echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
@@ -63,7 +65,7 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        regions: ${{ vars.HOME_REGION }}
+        regions: ${{fromJson(needs.setup.outputs.home_region)}}
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
 
   fan-out-additional-regions:
@@ -84,5 +86,5 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        regions: ${{fromJson(needs.setup.outputs.regions)}}
+        regions: ${{fromJson(needs.setup.outputs.home_region)}}
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
