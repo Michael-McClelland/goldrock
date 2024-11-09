@@ -1,4 +1,5 @@
 resource "aws_iam_service_linked_role" "config" {
+  #count = var.home_region == data.aws_region.current.id ? 1 : 0
   aws_service_name = "config.amazonaws.com"
 }
 

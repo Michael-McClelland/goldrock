@@ -50,6 +50,7 @@ jobs:
       workflow: 'global'
       workingdirectory: './global/'
       additionalregions: False
+      home_region: ${{ vars.HOME_REGION }}
     needs: setup
     permissions:
       contents: read
@@ -67,6 +68,7 @@ jobs:
       workflow: 'home_region'
       workingdirectory: './regional/home_region/'
       additionalregions: True
+      home_region: ${{ vars.HOME_REGION }}
     needs: [setup, global]
     permissions:
       contents: read

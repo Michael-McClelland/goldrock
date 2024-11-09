@@ -16,6 +16,9 @@ on:
       workingdirectory:
         required: true
         type: string
+      home_region:
+        required: true
+        type: string
 
 jobs:
   setup:
@@ -53,6 +56,7 @@ jobs:
       region: ${{matrix.regions}}
       workflow: ${{inputs.workflow}}
       workingdirectory: ${{inputs.workingdirectory}}
+      home_region: ${{inputs.home_region}}
     needs: setup
     permissions:
       contents: read
