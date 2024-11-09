@@ -7,3 +7,8 @@ CloudTrail has to be deployed from management account because TF halts on creati
 TODO:
 configservice bucket policy changes
 add key to config recorder config
+
+
+
+
+asdf
