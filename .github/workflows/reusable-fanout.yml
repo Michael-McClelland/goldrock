@@ -43,13 +43,32 @@ jobs:
           echo "account_ids="$(echo ${{ inputs.accountbundle }} | fold -w12 |  jq -R . | jq -s . ) >> "$GITHUB_OUTPUT"
           if [ "${{ inputs.additionalregions }}" = true ];
           then
-            echo "regions="$(echo "${{ vars.HOME_REGION }} ${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
-          else
-            echo "regions="$(echo "${{ vars.HOME_REGION }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
+            echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
           fi
 
-  fan-out:
-    name: 'fan-out'
+  fan-out-home:
+    name: 'fan-out-home'
+    uses: ./.github/workflows/reusable-tf-deploy.yml
+    with:
+      account_id: ${{matrix.account_id}}
+      region: ${{ vars.HOME_REGION }}
+      workflow: ${{inputs.workflow}}
+      workingdirectory: ${{inputs.workingdirectory}}
+      home_region: ${{inputs.home_region}}
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        regions: ${{ vars.HOME_REGION }}
+        account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
+
+  fan-out-additional-regions:
+    if: ${{  inputs.additionalregions == true }}
+    name: 'fan-out-home'
     uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
       account_id: ${{matrix.account_id}}
@@ -57,7 +76,7 @@ jobs:
       workflow: ${{inputs.workflow}}
       workingdirectory: ${{inputs.workingdirectory}}
       home_region: ${{inputs.home_region}}
-    needs: setup
+    needs: [ setup, fan-out-home ]
     permissions:
       contents: read
       id-token: write
