@@ -12,7 +12,7 @@ resource "aws_config_delivery_channel" "config" {
 
 resource "aws_config_configuration_recorder" "config" {
   name     = "goldrock"
-  role_arn = aws_iam_service_linked_role.config.arn
+  role_arn = data.aws_iam_role.configservice.arn
 
   recording_group {
     all_supported                 = true
