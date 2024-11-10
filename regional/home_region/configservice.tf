@@ -1,3 +1,7 @@
+resource "aws_iam_service_linked_role" "config" {
+  aws_service_name = "config.amazonaws.com"
+}
+
 resource "aws_config_configuration_recorder_status" "config" {
   name       = aws_config_configuration_recorder.config.name
   is_enabled = true
