@@ -51,12 +51,13 @@ jobs:
       workingdirectory: './global/'
       additionalregions: False
       home_region: ${{ vars.HOME_REGION }}
+      deployhomeregion: True
     needs: setup
     permissions:
       contents: read
       id-token: write
     strategy:
-      max-parallel: 2
+      max-parallel: 10
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
@@ -69,6 +70,7 @@ jobs:
       workingdirectory: './regional/home_region/'
       additionalregions: True
       home_region: ${{ vars.HOME_REGION }}
+      deployhomeregion: True
     needs: [setup, global]
     permissions:
       contents: read
@@ -78,3 +80,24 @@ jobs:
       fail-fast: false
       matrix:
         accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+  additional_regions:
+    name: 'additional_regions'
+    uses: ./.github/workflows/reusable-fanout.yml
+    with:
+      accountbundle: ${{ matrix.accountbundle }}
+      workflow: 'additional_regions'
+      workingdirectory: './regional/additional_regions/'
+      additionalregions: True
+      home_region: ${{ vars.HOME_REGION }}
+      deployhomeregion: False
+    needs: [setup, global, regional ]
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+        accountbundle: ${{fromJson(needs.setup.outputs.account_ids)}}
+
+#TODO need to pass regions instead of additional regions
