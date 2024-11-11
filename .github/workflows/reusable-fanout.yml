@@ -8,8 +8,8 @@ on:
         type: string
       additionalregions:
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: "false"
       workflow:
         required: true
         type: string
@@ -53,7 +53,7 @@ jobs:
           fi
 
   fan-out-home:
-    if: ${{  inputs.deployhomeregion != false }}
+    if: ${{  inputs.deployhomeregion }} == "true"
     name: 'fan-out-home'
     uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
@@ -74,7 +74,7 @@ jobs:
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}
 
   fan-out-additional-regions:
-    if: ${{  inputs.additionalregions != false }}
+    if: ${{  inputs.additionalregions }} == "true"
     name: 'fan-out-home'
     uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
