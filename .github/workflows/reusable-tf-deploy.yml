@@ -64,26 +64,9 @@ jobs:
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
 
-      - name: Terraform plan
-        working-directory: ${{inputs.workingdirectory}}
-        run: terraform plan -out plan
-        env:
-          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
-          TF_VAR_account_id: ${{inputs.account_id}}
-          TF_VAR_region: ${{inputs.region}}
-          TF_VAR_ref: ${{github.ref_name}}
-          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
-          TF_VAR_home_region: ${{inputs.home_region}}
-
-      - name: Terraform apply
-        working-directory: ${{inputs.workingdirectory}}
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply plan
-
-      # - name: Terraform destroy
+      # - name: Terraform plan
       #   working-directory: ${{inputs.workingdirectory}}
-      #   if: github.ref == 'refs/heads/main'
-      #   run: terraform destroy --auto-approve
+      #   run: terraform plan -out plan
       #   env:
       #     TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
       #     TF_VAR_account_id: ${{inputs.account_id}}
@@ -91,3 +74,28 @@ jobs:
       #     TF_VAR_ref: ${{github.ref_name}}
       #     TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
       #     TF_VAR_home_region: ${{inputs.home_region}}
+
+      # - name: Terraform apply
+      #   working-directory: ${{inputs.workingdirectory}}
+      #   if: github.ref == 'refs/heads/main'
+      #   run: terraform apply plan
+      #   env:
+      #     TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+      #     TF_VAR_account_id: ${{inputs.account_id}}
+      #     TF_VAR_region: ${{inputs.region}}
+      #     TF_VAR_ref: ${{github.ref_name}}
+      #     TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
+      #     TF_VAR_home_region: ${{inputs.home_region}}
+
+      - name: Terraform destroy
+        working-directory: ${{inputs.workingdirectory}}
+        if: github.ref == 'refs/heads/main'
+        run: terraform destroy --auto-approve
+        env:
+          TF_VAR_management_account_id: ${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}
+          TF_VAR_account_id: ${{inputs.account_id}}
+          TF_VAR_region: ${{inputs.region}}
+          TF_VAR_ref: ${{github.ref_name}}
+          TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
+          TF_VAR_home_region: ${{inputs.home_region}}
+          
