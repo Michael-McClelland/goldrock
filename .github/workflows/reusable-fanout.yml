@@ -83,7 +83,7 @@ jobs:
       workflow: ${{inputs.workflow}}
       workingdirectory: ${{inputs.workingdirectory}}
       home_region: ${{inputs.home_region}}
-    needs: [ setup, fan-out-home ]
+    needs: [ setup ]
     permissions:
       contents: read
       id-token: write
