@@ -39,7 +39,7 @@ jobs:
 
     outputs:
       account_ids: ${{steps.unbundle_accounts.outputs.account_ids}}
-      regions: ${{steps.unbundle_accounts.outputs.regions}}
+      additional_deploy_regions: ${{steps.unbundle_accounts.outputs.additional_deploy_regions}}
       home_region: ${{steps.unbundle_accounts.outputs.home_region}}
     steps:
       - name: unbundle accounts
@@ -49,7 +49,7 @@ jobs:
           echo "home_region="$(echo "${{ vars.HOME_REGION }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
           if [ "${{ inputs.additionalregions }}" = true ];
           then
-            echo "regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
+            echo "additional_deploy_regions="$(echo "${{ vars.ADDITIONAL_REGIONS }}" | jq -cR 'split(" ")' ) >> "$GITHUB_OUTPUT"
           fi
 
   fan-out-home:
@@ -75,7 +75,7 @@ jobs:
 
   fan-out-additional-regions:
     if: ${{  inputs.additionalregions == 'true' }}
-    name: 'fan-out-home'
+    name: 'fan-out-additional-regions'
     uses: ./.github/workflows/reusable-tf-deploy.yml
     with:
       account_id: ${{matrix.account_id}}
@@ -91,5 +91,5 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        regions: ${{fromJson(needs.setup.outputs.home_region)}}
+        regions: ${{fromJson(needs.setup.outputs.additional_deploy_regions)}}
         account_id: ${{fromJson(needs.setup.outputs.account_ids)}}

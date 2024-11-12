@@ -49,9 +49,9 @@ jobs:
       accountbundle: ${{ matrix.accountbundle }}
       workflow: 'global'
       workingdirectory: './global/'
-      additionalregions: "false"
+      additionalregions: 'false'
       home_region: ${{ vars.HOME_REGION }}
-      deployhomeregion: "true"
+      deployhomeregion: 'true'
     needs: setup
     permissions:
       contents: read
@@ -68,9 +68,9 @@ jobs:
       accountbundle: ${{ matrix.accountbundle }}
       workflow: 'home_region'
       workingdirectory: './regional/home_region/'
-      additionalregions: "false"
+      additionalregions: 'false'
       home_region: ${{ vars.HOME_REGION }}
-      deployhomeregion: "true"
+      deployhomeregion: 'true'
     needs: [setup, global]
     permissions:
       contents: read
@@ -87,9 +87,9 @@ jobs:
       accountbundle: ${{ matrix.accountbundle }}
       workflow: 'additional_regions'
       workingdirectory: './regional/additional_regions/'
-      additionalregions: "true"
+      additionalregions: 'true'
       home_region: ${{ vars.HOME_REGION }}
-      deployhomeregion: "false"
+      deployhomeregion: 'false'
     needs: [setup, global, regional ]
     permissions:
       contents: read
