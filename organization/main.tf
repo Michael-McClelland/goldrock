@@ -90,6 +90,7 @@ resource "aws_organizations_organization" "organization" {
     "detective.amazonaws.com",
     "fms.amazonaws.com",
     "guardduty.amazonaws.com",
+    "iam.amazonaws.com",
     "inspector2.amazonaws.com",
     "ipam.amazonaws.com",
     "macie.amazonaws.com",
@@ -107,6 +108,7 @@ resource "aws_organizations_organization" "organization" {
   enabled_policy_types = [
     "AISERVICES_OPT_OUT_POLICY",
     "BACKUP_POLICY",
+    "RESOURCE_CONTROL_POLICY",
     "SERVICE_CONTROL_POLICY",
     "TAG_POLICY"
   ]
