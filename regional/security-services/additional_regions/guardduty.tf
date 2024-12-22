@@ -3,6 +3,7 @@ data "aws_guardduty_detector" "aws_guardduty_detector" {}
 resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_configuration" {
   detector_id                      = data.aws_guardduty_detector.aws_guardduty_detector.id
   auto_enable_organization_members = "ALL"
+  
 
   datasources {
     s3_logs {
@@ -27,11 +28,11 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
 
 resource "aws_guardduty_detector_feature" "aws_guardduty_detector_feature" {
   for_each = toset([
-    "S3_DATA_EVENTS",
-    "EKS_AUDIT_LOGS",
     "EBS_MALWARE_PROTECTION",
+    "EKS_AUDIT_LOGS",
+    "LAMBDA_NETWORK_LOGS",
     "RDS_LOGIN_EVENTS",
-    "LAMBDA_NETWORK_LOGS"
+    "S3_DATA_EVENTS"
   ])
 
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
