@@ -4,26 +4,9 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
   detector_id                      = data.aws_guardduty_detector.aws_guardduty_detector.id
   auto_enable_organization_members = "ALL"
 
-  datasources {
-    s3_logs {
-      auto_enable = true
-    }
-    kubernetes {
-      audit_logs {
-        enable = true
-      }
-    }
-    malware_protection {
-      scan_ec2_instance_with_findings {
-        ebs_volumes {
-          auto_enable = true
-        }
-      }
-    }
-  }
 }
 
-resource "aws_guardduty_detector_feature" "aws_guardduty_detector_feature" {
+resource "aws_guardduty_organization_configuration_feature" "aws_guardduty_organization_configuration_feature" {
   for_each = toset([
     "EBS_MALWARE_PROTECTION",
     "EKS_AUDIT_LOGS",
@@ -37,7 +20,7 @@ resource "aws_guardduty_detector_feature" "aws_guardduty_detector_feature" {
   status      = "ENABLED"
 }
 
-resource "aws_guardduty_detector_feature" "runtime_monitoring" {
+resource "aws_guardduty_organization_configuration_feature" "aws_guardduty_organization_configuration_feature_runtime_monitoring" {
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
   name        = "RUNTIME_MONITORING"
   status      = "ENABLED"
