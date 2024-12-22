@@ -27,16 +27,16 @@ resource "aws_guardduty_organization_configuration_feature" "aws_guardduty_organ
 
   additional_configuration {
     name   = "EKS_ADDON_MANAGEMENT"
-    status = "ENABLED"
+    auto_enable = "ALL"
   }
 
   additional_configuration {
     name   = "ECS_FARGATE_AGENT_MANAGEMENT"
-    status = "ENABLED"
+    auto_enable = "ALL"
   }
 
   additional_configuration {
     name   = "EC2_AGENT_MANAGEMENT"
-    status = "ENABLED"
+    auto_enable = "ALL"
   }
 }
