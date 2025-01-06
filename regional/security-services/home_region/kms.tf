@@ -15,13 +15,6 @@ data "aws_iam_policy_document" "keypolicy" {
     resources = [
       "*",
     ]
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceOrgID"
-    #   values = [
-    #     "${data.aws_organizations_organization.organization.id}"
-    #   ]
-    # }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
@@ -46,13 +39,6 @@ data "aws_iam_policy_document" "keypolicy" {
     resources = [
       "*",
     ]
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceOrgID"
-    #   values = [
-    #     "${data.aws_organizations_organization.organization.id}"
-    #   ]
-    # }
     condition {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:cloudtrail:arn"
@@ -124,7 +110,7 @@ data "aws_iam_policy_document" "keypolicy" {
   }
 
   statement {
-    sid = "readobjectsfrombucket"
+    sid = "org-read-cloudtrail-objects-from-bucket"
     principals {
       type = "AWS"
       identifiers = [
@@ -147,11 +133,6 @@ data "aws_iam_policy_document" "keypolicy" {
     }
     condition {
       test     = "StringEquals"
-      variable = "kms:CallerAccount"
-      values   = ["${data.aws_caller_identity.current.id}"]
-    }
-    condition {
-      test     = "StringEquals"
       variable = "kms:EncryptionContext:aws:s3:arn"
       values = [
         aws_s3_bucket.cloudtrail.arn
@@ -168,7 +149,7 @@ data "aws_iam_policy_document" "keypolicy" {
   }
 
   statement {
-    sid = "config-decrypt"
+    sid = "config-bucket-decrypt-self-account"
     principals {
       type = "AWS"
       identifiers = [
