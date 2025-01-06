@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
     condition {
       test     = "StringEquals"
-      variable = "aws:SourceOrgID"
+      variable = "aws:PrincipalOrgID"
       values = [
         "${data.aws_organizations_organization.organization.id}"
       ]
