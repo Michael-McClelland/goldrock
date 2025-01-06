@@ -199,27 +199,27 @@ data "aws_iam_policy_document" "config" {
   #   }
   # }
 
-  # statement {
-  #   effect = "Deny"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["*"]
-  #   }
-  #   actions = [
-  #     "s3:*",
-  #   ]
+  statement {
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:*",
+    ]
 
-  #   resources = [
-  #     "${aws_s3_bucket.config.arn}/*",
-  #     "${aws_s3_bucket.config.arn}",
-  #   ]
+    resources = [
+      "${aws_s3_bucket.config.arn}/*",
+      "${aws_s3_bucket.config.arn}",
+    ]
 
-  #   condition {
-  #     test     = "Bool"
-  #     variable = "aws:SecureTransport"
-  #     values   = ["false"]
-  #   }
-  # }
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
 
 }
 

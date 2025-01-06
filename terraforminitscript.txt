@@ -6,3 +6,5 @@
             -backend-config="region=us-east-2" \
             -backend-config="encrypt=true" \
             -backend-config="max_retries=20"
+
+            export AWS_DEFAULT_REGION=us-east-2 
