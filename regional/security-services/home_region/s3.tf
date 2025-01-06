@@ -23,13 +23,6 @@ data "aws_iam_policy_document" "cloudtrail" {
     resources = [
       "${aws_s3_bucket.cloudtrail.arn}"
     ]
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceOrgID"
-    #   values = [
-    #     "${data.aws_organizations_organization.organization.id}"
-    #   ]
-    # }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
@@ -53,18 +46,35 @@ data "aws_iam_policy_document" "cloudtrail" {
       "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.id}/*",
       "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.master_account_id}/*"
     ]
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "aws:SourceOrgID"
-    #   values = [
-    #     "${data.aws_organizations_organization.organization.id}"
-    #   ]
-    # }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
       values = [
         "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.organization.master_account_id}:trail/goldrock"
+      ]
+    }
+  }
+
+  statement {
+    sid    = "access-analyzer-policy-generation"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket"
+    ]
+    resources = [
+      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.id}/$${aws:PrincipalAccount}/*",
+      "${aws_s3_bucket.cloudtrail.arn}"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceOrgID"
+      values = [
+        "${data.aws_organizations_organization.organization.id}"
       ]
     }
   }

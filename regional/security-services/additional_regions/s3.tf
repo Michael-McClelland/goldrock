@@ -265,7 +265,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "config" {
 
   rule {
     id = "standard"
-
     status = "Enabled"
 
     noncurrent_version_expiration {
@@ -273,7 +272,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "config" {
     }
 
     abort_incomplete_multipart_upload {
-
       days_after_initiation = 7
     }
   }
