@@ -42,23 +42,6 @@ data "aws_iam_policy_document" "cloudtrail_management_trust_policy" {
   }
 }
 
-# resource "aws_iam_policy" "goldrock_cloudtrail_management" {
-#   name        = "goldrock_cloudtrail_management"
-#   description = "goldrock cloudtrail management policy"
-#   policy      = data.aws_iam_policy_document.cloudtrail_management_policy.json
-# }
-
-# data "aws_iam_policy_document" "cloudtrail_management_policy" {
-
-#   statement {
-#     effect = "Allow"
-#     actions = [
-#       "cloudtrail:*"
-#     ]
-#     resources = ["*"]
-#   }
-# }
-
 resource "aws_iam_role_policy_attachment" "cloudtrail_fullaccess" {
   role      = aws_iam_role.goldrock_cloudtrail_management.name
   policy_arn = "arn:${data.aws_partition.current.id}:iam::aws:policy/AdministratorAccess"
