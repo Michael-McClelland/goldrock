@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "config" {
     condition {
       test     = "StringNotEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.key.arn]
+      values   = [aws_kms_replica_key.key.arn]
     }
   }
 
