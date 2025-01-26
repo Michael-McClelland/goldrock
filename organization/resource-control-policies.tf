@@ -1,5 +1,25 @@
 data "aws_iam_policy_document" "resource_control_standard_policy" {
 
+  statement {
+    principals {
+      type = "AWS"
+      identifiers = [
+        "*"
+      ]
+    }
+    effect = "Deny"
+    actions = [
+      "kms:PutKeyPolicy"
+    ]
+    resources = [
+      "*",
+    ]
+    condition {
+      test     = "Bool"
+      variable = "kms:BypassPolicyLockoutSafetyCheck"
+      values   = ["true"]
+    }
+  }
 
   statement {
     principals {
