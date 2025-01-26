@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
       test     = "NumericLessThan"
       variable = "s3:TlsVersion"
       values = [
-        "1.3"
+        "1.2"
       ]
     }
   }
