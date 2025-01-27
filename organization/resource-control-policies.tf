@@ -21,52 +21,52 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
     }
   }
 
-  statement {
-    principals {
-      type = "AWS"
-      identifiers = [
-        "*"
-      ]
-    }
-    effect = "Deny"
-    actions = [
-      "s3:*",
-    ]
-    resources = [
-      "*",
-    ]
-    condition {
-      test     = "NumericLessThan"
-      variable = "s3:TlsVersion"
-      values = [
-        "1.2"
-      ]
-    }
-  }
+  # statement {
+  #   principals {
+  #     type = "AWS"
+  #     identifiers = [
+  #       "*"
+  #     ]
+  #   }
+  #   effect = "Deny"
+  #   actions = [
+  #     "s3:*",
+  #   ]
+  #   resources = [
+  #     "*",
+  #   ]
+  #   condition {
+  #     test     = "NumericLessThan"
+  #     variable = "s3:TlsVersion"
+  #     values = [
+  #       "1.2"
+  #     ]
+  #   }
+  # }
 
-  statement {
-    principals {
-      type = "AWS"
-      identifiers = [
-        "*"
-      ]
-    }
-    effect = "Deny"
-    actions = [
+  # statement {
+  #   principals {
+  #     type = "AWS"
+  #     identifiers = [
+  #       "*"
+  #     ]
+  #   }
+  #   effect = "Deny"
+  #   actions = [
 
-      "s3:*",
-    ]
-    resources = [
-      "*",
-    ]
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values = [
-        "true"
-      ]
-    }
-  }
+  #     "s3:*",
+  #   ]
+  #   resources = [
+  #     "*",
+  #   ]
+  #   condition {
+  #     test     = "Null"
+  #     variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+  #     values = [
+  #       "true"
+  #     ]
+  #   }
+  # }
 
   # statement {
   #   principals {
@@ -93,44 +93,44 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
   #   }
   # }
 
-  statement {
-    principals {
-      type = "AWS"
-      identifiers = [
-        "*"
-      ]
-    }
-    effect = "Deny"
-    actions = [
-      "s3:*",
-      "secretsmanager:*",
-      "sqs:*",
-    ]
-    resources = [
-      "*",
-    ]
-    condition {
-      test     = "StringNotEqualsIfExists"
-      variable = "aws:SourceOrgID"
-      values = [
-        data.aws_organizations_organization.organization.id
-      ]
-    }
-    condition {
-      test     = "Bool"
-      variable = "aws:PrincipalIsAWSService"
-      values = [
-        "true"
-      ]
-    }
-    condition {
-      test     = "Null"
-      variable = "aws:SourceAccount"
-      values = [
-        "false"
-      ]
-    }
-  }
+  # statement {
+  #   principals {
+  #     type = "AWS"
+  #     identifiers = [
+  #       "*"
+  #     ]
+  #   }
+  #   effect = "Deny"
+  #   actions = [
+  #     "s3:*",
+  #     "secretsmanager:*",
+  #     "sqs:*",
+  #   ]
+  #   resources = [
+  #     "*",
+  #   ]
+  #   condition {
+  #     test     = "StringNotEqualsIfExists"
+  #     variable = "aws:SourceOrgID"
+  #     values = [
+  #       data.aws_organizations_organization.organization.id
+  #     ]
+  #   }
+  #   condition {
+  #     test     = "Bool"
+  #     variable = "aws:PrincipalIsAWSService"
+  #     values = [
+  #       "true"
+  #     ]
+  #   }
+  #   condition {
+  #     test     = "Null"
+  #     variable = "aws:SourceAccount"
+  #     values = [
+  #       "false"
+  #     ]
+  #   }
+  # }
 }
 
 resource "aws_organizations_policy" "resource_control_standard_policy" {
