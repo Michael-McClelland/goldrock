@@ -21,28 +21,28 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
     }
   }
 
-  # statement {
-  #   principals {
-  #     type = "AWS"
-  #     identifiers = [
-  #       "*"
-  #     ]
-  #   }
-  #   effect = "Deny"
-  #   actions = [
-  #     "s3:*",
-  #   ]
-  #   resources = [
-  #     "*",
-  #   ]
-  #   condition {
-  #     test     = "NumericLessThan"
-  #     variable = "s3:TlsVersion"
-  #     values = [
-  #       "1.2"
-  #     ]
-  #   }
-  # }
+  statement {
+    principals {
+      type = "AWS"
+      identifiers = [
+        "*"
+      ]
+    }
+    effect = "Deny"
+    actions = [
+      "s3:*",
+    ]
+    resources = [
+      "*",
+    ]
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values = [
+        "1.2"
+      ]
+    }
+  }
 
   # statement {
   #   principals {
