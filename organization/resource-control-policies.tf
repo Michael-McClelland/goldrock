@@ -139,8 +139,8 @@ resource "aws_organizations_policy" "resource_control_standard_policy" {
   content = data.aws_iam_policy_document.resource_control_standard_policy.json
 }
 
-# resource "aws_organizations_policy_attachment" "resource_control_standard_policy" {
-#   policy_id = aws_organizations_policy.resource_control_standard_policy.id
-#   target_id = data.aws_organizations_organization.organization.roots[0].id
-# }
+resource "aws_organizations_policy_attachment" "resource_control_standard_policy" {
+  policy_id = aws_organizations_policy.resource_control_standard_policy.id
+  target_id = data.aws_organizations_organization.organization.roots[0].id
+}
 
