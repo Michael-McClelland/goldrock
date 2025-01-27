@@ -44,29 +44,29 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
     }
   }
 
-  statement {
-    principals {
-      type = "AWS"
-      identifiers = [
-        "*"
-      ]
-    }
-    effect = "Deny"
-    actions = [
+  # statement {
+  #   principals {
+  #     type = "AWS"
+  #     identifiers = [
+  #       "*"
+  #     ]
+  #   }
+  #   effect = "Deny"
+  #   actions = [
 
-      "s3:*",
-    ]
-    resources = [
-      "*",
-    ]
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values = [
-        "true"
-      ]
-    }
-  }
+  #     "s3:*",
+  #   ]
+  #   resources = [
+  #     "*",
+  #   ]
+  #   condition {
+  #     test     = "Null"
+  #     variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+  #     values = [
+  #       "true"
+  #     ]
+  #   }
+  # }
 
   statement {
     principals {
