@@ -67,6 +67,13 @@ data "aws_iam_policy_document" "keypolicy" {
         "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.organization.master_account_id}:trail/goldrock"
       ]
     }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceOrgID"
+      values = [
+        "${data.aws_organizations_organization.organization.id}"
+      ]
+    }
   }
 
   statement {
