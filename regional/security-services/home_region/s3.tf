@@ -53,6 +53,13 @@ data "aws_iam_policy_document" "cloudtrail" {
         "arn:${data.aws_partition.current.partition}:cloudtrail:${data.aws_region.current.id}:${data.aws_organizations_organization.organization.master_account_id}:trail/goldrock"
       ]
     }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceOrgID"
+      values = [
+        "${data.aws_organizations_organization.organization.id}"
+      ]
+    }
   }
 
   statement {
@@ -162,31 +169,6 @@ data "aws_iam_policy_document" "cloudtrail" {
       ]
     }
   }
-
-  # statement {
-  #   effect = "Deny"
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = ["*"]
-  #   }
-  #   not_actions = [
-  #     "s3:GetObject",
-  #     "s3:ListBucket"
-  #   ]
-
-  #   resources = [
-  #     "${aws_s3_bucket.cloudtrail.arn}/*",
-  #     "${aws_s3_bucket.cloudtrail.arn}",
-  #   ]
-
-  #   condition {
-  #     test     = "StringNotEquals"
-  #     variable = "aws:PrincipalAccount"
-  #     values = [
-  #       data.aws_caller_identity.current.account_id
-  #     ]
-  #   }
-  # }
 
   statement {
     effect = "Deny"
@@ -301,7 +283,6 @@ resource "aws_s3_bucket_policy" "config" {
 }
 
 data "aws_iam_policy_document" "config" {
-
 
   statement {
     sid    = "getbucketacl-config"
