@@ -34,3 +34,7 @@ CloudTrail has to be deployed from management account because TF halts on creati
     }
     ]
 }
+
+
+
+putbucketacl condition key? x-amz-acl?

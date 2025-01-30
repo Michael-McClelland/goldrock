@@ -156,7 +156,7 @@ data "aws_iam_policy_document" "keypolicy" {
   }
 
   statement {
-    sid = "config-bucket-decrypt-self-account"
+    sid = "config-bucket-decrypt"
     principals {
       type = "AWS"
       identifiers = [
@@ -176,11 +176,6 @@ data "aws_iam_policy_document" "keypolicy" {
       values = [
         "s3.${data.aws_region.current.id}.amazonaws.com"
       ]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "kms:CallerAccount"
-      values   = ["${data.aws_caller_identity.current.id}"]
     }
     condition {
       test     = "StringEquals"

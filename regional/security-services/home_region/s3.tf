@@ -335,6 +335,30 @@ data "aws_iam_policy_document" "config" {
   }
 
   statement {
+    sid    = "athena-access"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket"
+    ]
+    resources = [
+      "${aws_s3_bucket.cloudtrail.arn}/${data.aws_organizations_organization.organization.id}/AWSLogs/$${aws:PrincipalAccount}/*",
+      "${aws_s3_bucket.cloudtrail.arn}"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        "${data.aws_organizations_organization.organization.id}"
+      ]
+    }
+  }
+
+  statement {
     effect = "Deny"
     principals {
       type        = "AWS"
