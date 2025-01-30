@@ -346,8 +346,8 @@ data "aws_iam_policy_document" "config" {
       "s3:ListBucket"
     ]
     resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/${data.aws_organizations_organization.organization.id}/AWSLogs/$${aws:PrincipalAccount}/*",
-      "${aws_s3_bucket.cloudtrail.arn}"
+      "${aws_s3_bucket.config.arn}/${data.aws_organizations_organization.organization.id}/AWSLogs/$${aws:PrincipalAccount}/*",
+      "${aws_s3_bucket.config.arn}"
     ]
     condition {
       test     = "StringEquals"
