@@ -358,50 +358,50 @@ data "aws_iam_policy_document" "config" {
     }
   }
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:PutObject",
-    ]
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:PutObject",
+  #   ]
 
-    resources = [
-      "${aws_s3_bucket.config.arn}/*"
-    ]
-    condition {
-      test     = "StringNotEqualsIfExists"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["aws:kms"]
-    }
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["false"]
-    }
-  }
+  #   resources = [
+  #     "${aws_s3_bucket.config.arn}/*"
+  #   ]
+  #   condition {
+  #     test     = "StringNotEqualsIfExists"
+  #     variable = "s3:x-amz-server-side-encryption"
+  #     values   = ["aws:kms"]
+  #   }
+  #   condition {
+  #     test     = "Null"
+  #     variable = "s3:x-amz-server-side-encryption"
+  #     values   = ["false"]
+  #   }
+  # }
+#TODO uncomment the following block above and below blocks and determine which breaks config
+  # statement {
+  #   effect = "Deny"
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = ["*"]
+  #   }
+  #   actions = [
+  #     "s3:PutObject",
+  #   ]
 
-  statement {
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "s3:PutObject",
-    ]
-
-    resources = [
-      "${aws_s3_bucket.config.arn}/*"
-    ]
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.key.arn]
-    }
-  }
+  #   resources = [
+  #     "${aws_s3_bucket.config.arn}/*"
+  #   ]
+  #   condition {
+  #     test     = "StringNotEquals"
+  #     variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+  #     values   = [aws_kms_key.key.arn]
+  #   }
+  # }
 
   # statement {
   #   effect = "Deny"
