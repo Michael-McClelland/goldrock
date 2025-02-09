@@ -43,8 +43,8 @@ data "aws_iam_policy_document" "cloudtrail" {
       "s3:PutObject"
     ]
     resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.id}/*",
-      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.master_account_id}/*"
+      "${aws_s3_bucket.cloudtrail.arn}/${var.name}/AWSLogs/${data.aws_organizations_organization.organization.id}/*",
+      "${aws_s3_bucket.cloudtrail.arn}/${var.name}/AWSLogs/${data.aws_organizations_organization.organization.master_account_id}/*"
     ]
     condition {
       test     = "StringEquals"
@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "cloudtrail" {
       "s3:ListBucket"
     ]
     resources = [
-      "${aws_s3_bucket.cloudtrail.arn}/goldrock/AWSLogs/${data.aws_organizations_organization.organization.id}/$${aws:PrincipalAccount}/*",
+      "${aws_s3_bucket.cloudtrail.arn}/${var.name}/AWSLogs/${data.aws_organizations_organization.organization.id}/$${aws:PrincipalAccount}/*",
       "${aws_s3_bucket.cloudtrail.arn}"
     ]
     condition {

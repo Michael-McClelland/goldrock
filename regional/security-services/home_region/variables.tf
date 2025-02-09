@@ -3,3 +3,7 @@ variable "securityhub_full_deploy" {
   type   = bool
   default = false
 }
+
+variable "name" {
+  default = "goldrock"
+}

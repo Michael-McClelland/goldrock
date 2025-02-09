@@ -256,7 +256,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:PARAMETER_ARN"
       values = [
-        "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/goldrock/security_account_id",
+        "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/${var.name}/security_account_id",
       ]
     }
   }
