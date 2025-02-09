@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "bucket" {
-  bucket = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+  bucket = "${var.name}-tfstate-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
   lifecycle {
     prevent_destroy = true
   }
@@ -256,7 +256,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringEquals"
       variable = "kms:EncryptionContext:PARAMETER_ARN"
       values = [
-        "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/${var.product_name}/security_account_id",
+        "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/${var.name}/security_account_id",
       ]
     }
   }
@@ -360,7 +360,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:dynamodb:tableName"
       values = [
-        "${var.name}*"
+        "${var.name}-tfstate*"
       ]
     }
     condition {
@@ -417,7 +417,7 @@ data "aws_iam_policy_document" "keypolicy" {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:dynamodb:tableName"
       values = [
-        "${var.name}*"
+        "${var.name}-tfstate*"
       ]
     }
     condition {
@@ -687,13 +687,13 @@ resource "aws_kms_key" "key" {
 }
 
 resource "aws_kms_alias" "alias" {
-  name          = "alias/${var.name}"
+  name          = "alias/${var.name}-tfstate"
   target_key_id = aws_kms_key.key.key_id
 }
 
 
 resource "aws_dynamodb_table" "tf_lock_table" {
-  name                        = "${var.name}-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
+  name                        = "${var.name}-tfstate-${data.aws_caller_identity.current.id}-${data.aws_region.current.id}"
   hash_key                    = "LockID"
   read_capacity               = 5
   write_capacity              = 5

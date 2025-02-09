@@ -1,5 +1,5 @@
 variable "name" {
-  default = "goldrock-tfstate"
+  default = "goldrock"
   type = string
 }
 
