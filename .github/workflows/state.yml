@@ -165,7 +165,7 @@ jobs:
           TF_VAR_region: ${{env.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}
 
       - name: Terraform apply
         if: github.ref == 'refs/heads/main'
@@ -251,7 +251,7 @@ jobs:
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         env:
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}
           TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
         run: |
           terraform init \
@@ -266,7 +266,7 @@ jobs:
       - name: Terraform Import
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}
         env:
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}
           TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
         run: |
           if [[ $(terraform state list | grep 'aws_s3_bucket.bucket' 2>/dev/null) ]]; then
@@ -299,7 +299,7 @@ jobs:
           TF_VAR_region: ${{matrix.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}
           TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
 
       - name: Terraform apply
@@ -312,5 +312,5 @@ jobs:
           TF_VAR_region: ${{matrix.region}}
           TF_VAR_ref: ${{github.ref_name}}
           TF_VAR_ORGANIZATION_IDENTIFIER: ${{env.ORGANIZATION_IDENTIFIER}}
-          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}-tfstate
+          TF_VAR_name: ${{env.ORGANIZATION_IDENTIFIER}}
           TF_VAR_HOME_REGION: ${{ vars.HOME_REGION }}
