@@ -68,30 +68,30 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
   #   }
   # }
 
-  # statement {
-  #   principals {
-  #     type = "AWS"
-  #     identifiers = [
-  #       "*"
-  #     ]
-  #   }
-  #   effect = "Deny"
-  #   actions = [
-  #     "kms:*",
-  #     "s3:*",
-  #     "secretsmanager:*",
-  #     "sqs:*",
-  #     "sts:*",
-  #   ]
-  #   resources = ["*"]
-  #   condition {
-  #     test     = "BoolIfExists"
-  #     variable = "aws:SecureTransport"
-  #     values = [
-  #       "false"
-  #     ]
-  #   }
-  # }
+  statement {
+    principals {
+      type = "AWS"
+      identifiers = [
+        "*"
+      ]
+    }
+    effect = "Deny"
+    actions = [
+      "kms:*",
+      "s3:*",
+      "secretsmanager:*",
+      "sqs:*",
+      "sts:*",
+    ]
+    resources = ["*"]
+    condition {
+      test     = "BoolIfExists"
+      variable = "aws:SecureTransport"
+      values = [
+        "false"
+      ]
+    }
+  }
 
   # statement {
   #   principals {
