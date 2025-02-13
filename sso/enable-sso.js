@@ -43,6 +43,8 @@ exports.handler = async function() {
   await page.$('xpath///*[@data-analytics="enable-idc-actions__enable"]')
   await page.click('xpath///*[@data-analytics="enable-idc-actions__enable"]')
   await new Promise(r => setTimeout(r, 60000));
+  browser.close
+  process.exit(0)
 }
 
 exports.handler()
