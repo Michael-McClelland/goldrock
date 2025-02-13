@@ -30,7 +30,7 @@ exports.handler = async function() {
     const destination = 'https://console.aws.amazon.com/';
     url = `${baseUrl}?Action=login&Destination=${encodeURIComponent(destination)}&SigninToken=${encodeURIComponent(signinToken)}`;
   });
-  const browser = await puppeteer.launch({ headless: false, 
+  const browser = await puppeteer.launch({ headless: true, 
     args: [
     `--no-sandbox`,
     `--disable-setuid-sandbox`
