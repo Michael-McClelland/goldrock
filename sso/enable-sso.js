@@ -38,8 +38,8 @@ exports.handler = async function() {
     slowMo: 500 });
   const page = await browser.newPage();
   await page.goto(url);
-  await page.goto('https://'+'us-east-2'+'.console.aws.amazon.com/singlesignon/home?region='+'us-east-2'+'#!/');
-  await page.goto('https://'+'us-east-2'+'.console.aws.amazon.com/singlesignon/home?region='+'us-east-2'+'#!/enable-iam-identity-center');
+  await page.goto('https://'+process.env.region+'.console.aws.amazon.com/singlesignon/home?region='+process.env.region+'#!/');
+  await page.goto('https://'+process.env.region+'.console.aws.amazon.com/singlesignon/home?region='+process.env.region+'#!/enable-iam-identity-center');
   await page.$('xpath///*[@data-analytics="enable-idc-actions__enable"]')
   await page.click('xpath///*[@data-analytics="enable-idc-actions__enable"]')
   await new Promise(r => setTimeout(r, 60000));
