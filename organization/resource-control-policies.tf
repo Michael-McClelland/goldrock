@@ -134,6 +134,8 @@ data "aws_iam_policy_document" "resource_control_standard_policy" {
 }
 
 resource "aws_organizations_policy" "resource_control_standard_policy" {
+
+  depends_on = [ aws_organizations_organization.organization ]
   name    = "resource-control-standard-policy"
   type = "RESOURCE_CONTROL_POLICY"
   content = data.aws_iam_policy_document.resource_control_standard_policy.json

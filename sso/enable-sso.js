@@ -9,6 +9,8 @@ exports.handler = async function() {
     sessionToken: process.env.AWS_SESSION_TOKEN
   });
 
+  
+
   const baseUrl = 'https://signin.aws.amazon.com/federation'
 
   const getSigninToken = (cb) => {
@@ -28,21 +30,19 @@ exports.handler = async function() {
     const destination = 'https://console.aws.amazon.com/';
     url = `${baseUrl}?Action=login&Destination=${encodeURIComponent(destination)}&SigninToken=${encodeURIComponent(signinToken)}`;
   });
-  const browser = await puppeteer.launch({ headless: true, 
-  //   args: [
-  //   `--no-sandbox`,
-  //   `--disable-setuid-sandbox`
-  // ], 
-    slowMo: 200 });
+  const browser = await puppeteer.launch({ headless: false, 
+    args: [
+    `--no-sandbox`,
+    `--disable-setuid-sandbox`
+  ], 
+    slowMo: 500 });
   const page = await browser.newPage();
   await page.goto(url);
-  await page.goto('https://'+process.env.region+'.console.aws.amazon.com/singlesignon/home?region='+process.env.region+'#!/');
-  await page.waitForSelector("::-p-xpath(//button[@data-testid='enable-sso-btn'])");
-  const button = await page.waitForSelector("::-p-xpath(//button[@data-testid='enable-sso-btn'])");
-  await button.click();
+  await page.goto('https://'+'us-east-2'+'.console.aws.amazon.com/singlesignon/home?region='+'us-east-2'+'#!/');
+  await page.goto('https://'+'us-east-2'+'.console.aws.amazon.com/singlesignon/home?region='+'us-east-2'+'#!/enable-iam-identity-center');
+  await page.$('xpath///*[@data-analytics="enable-idc-actions__enable"]')
+  await page.click('xpath///*[@data-analytics="enable-idc-actions__enable"]')
   await new Promise(r => setTimeout(r, 60000));
-  browser.close
-  process.exit(0)
 }
 
 exports.handler()

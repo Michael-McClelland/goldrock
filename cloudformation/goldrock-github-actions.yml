@@ -1,0 +1,217 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  GitHubOrg:
+    Description: Name of GitHub organization/user (case sensitive)
+    Default: "Michael-McClelland"
+    Type: String
+  RepositoryName:
+    Description: Name of GitHub repository (case sensitive)
+    Default: "goldrock"
+    Type: String
+  OIDCProviderArn:
+    Description: Arn for the GitHub OIDC Provider.  If a Github OIDC has not yet been deployed leave this as blank.
+    Default: ""
+    Type: String
+  OIDCAudience:
+    Description: Audience supplied to configure-aws-credentials.
+    Default: "sts.amazonaws.com"
+    Type: String
+
+Conditions:
+  CreateOIDCProvider: !Equals [!Ref OIDCProviderArn, ""]
+Resources:
+
+  CustomOrganizationsInformation:
+    Type: "Custom::Organizations-Attributes"
+    DependsOn:
+      - CROrgFunction
+      - CROrgFunctionRole
+      - CROrgFunctionPolicy
+    Properties:
+      ServiceTimeout: 60
+      ServiceToken: !GetAtt "CROrgFunction.Arn"
+
+  CROrgFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      ReservedConcurrentExecutions: 1
+      Timeout: 900
+      Role: !GetAtt "CROrgFunctionRole.Arn"
+      Runtime: python3.13
+      Architectures:
+        - arm64
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+
+          def lambda_handler(event, context):
+            responseData = {}
+            if event['RequestType'] == 'Delete':
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+              return
+            organizations_client = boto3.client('organizations')
+            list_root_response = organizations_client.list_roots()
+            responseData['OrganizationRootId'] = list_root_response['Roots'][0]['Id']
+            describe_organization_id =  organizations_client.describe_organization()
+            responseData['OrganizationId'] = describe_organization_id['Organization']['Id']
+            cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData, "OrganizationsInformation")
+
+  CROrgFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+            Condition: {}
+      Path: /
+
+  CROrgFunctionPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Description: Policy organization information custom resource
+      Roles:
+        - !Ref CROrgFunctionRole
+      Path: /
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - organizations:ListRoots
+              - organizations:DescribeOrganization
+              - organizations:DescribeOrganizationalUnit
+            Resource: "*"
+          - Effect: Allow
+            Action: logs:CreateLogGroup
+            Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*" #TODO MAKE LOGGROUP FOR FUNCTION?!?!?
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/OrganizationsInformation:*" #TODO
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "goldrock-github-actions"
+      MaxSessionDuration: 43200
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !If
+                - CreateOIDCProvider
+                - !Ref GithubOidc
+                - !Ref OIDCProviderArn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:ref:refs/heads/main
+                
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+  GithubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+
+  OIDCSTACKSET:
+    Type: "AWS::CloudFormation::StackSet"
+    Properties:
+      StackSetName: goldrock-github-actions
+      Description: OIDC provider for infrastructure management
+      PermissionModel: SERVICE_MANAGED
+      Capabilities: 
+        - CAPABILITY_NAMED_IAM
+      AutoDeployment:
+        Enabled: true
+        RetainStacksOnAccountRemoval: false
+      ManagedExecution:
+        Active: true
+      OperationPreferences:
+        MaxConcurrentPercentage: 100
+        FailureTolerancePercentage: 10
+      StackInstancesGroup:
+        - DeploymentTargets:
+            OrganizationalUnitIds:
+              - !GetAtt CustomOrganizationsInformation.OrganizationRootId
+          Regions:
+            - !Sub ${AWS::Region}
+      Parameters:
+        - ParameterKey: GitHubOrg
+          ParameterValue: !Ref GitHubOrg
+        - ParameterKey: RepositoryName
+          ParameterValue: !Ref RepositoryName
+        - ParameterKey: OIDCProviderArn
+          ParameterValue: !Ref OIDCProviderArn
+        - ParameterKey: OIDCAudience
+          ParameterValue: !Ref OIDCAudience
+        
+      Tags:
+        - Key: tag1
+          Value: value1
+      TemplateBody: |
+        ---
+        AWSTemplateFormatVersion: '2010-09-09'
+        Parameters:
+          GitHubOrg:
+            Description: Name of GitHub organization/user (case sensitive)
+            Type: String
+          RepositoryName:
+            Description: Name of GitHub repository (case sensitive)
+            Type: String
+          OIDCProviderArn:
+            Description: Arn for the GitHub OIDC Provider.  If a Github OIDC has not yet been deployed leave this as blank.
+            Default: ""
+            Type: String
+          OIDCAudience:
+            Description: Audience supplied to configure-aws-credentials.
+            Type: String
+
+        Conditions:
+          CreateOIDCProvider: !Equals [!Ref OIDCProviderArn, ""]
+
+        Resources:
+          Role:
+            Type: AWS::IAM::Role
+            Properties:
+              RoleName: !Sub "goldrock-github-actions"
+              MaxSessionDuration: 14400
+              AssumeRolePolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action: sts:AssumeRoleWithWebIdentity
+                    Principal:
+                      Federated: !If
+                        - CreateOIDCProvider
+                        - !Ref GithubOidc
+                        - !Ref OIDCProviderArn
+                    Condition:
+                      StringEquals:
+                        token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+                        token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:ref:refs/heads/main
+                        
+              ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/AdministratorAccess
+
+          GithubOidc:
+            Type: AWS::IAM::OIDCProvider
+            Condition: CreateOIDCProvider
+            Properties:
+              Url: https://token.actions.githubusercontent.com
+              ClientIdList:
+                - sts.amazonaws.com
+              ThumbprintList:
+                - 6938fd4d98bab03faadb97b34396831e3780aea1
