@@ -151,11 +151,6 @@ data "aws_iam_policy_document" "keypolicy" {
     ]
     condition {
       test     = "StringEquals"
-      variable = "kms:CallerAccount"
-      values   = ["${data.aws_caller_identity.current.id}"]
-    }
-    condition {
-      test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
       values   = ["${data.aws_organizations_organization.organization.id}"]
     }
