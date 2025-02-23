@@ -233,8 +233,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
 data "aws_iam_policy_document" "keypolicy" {
 
-
-
   statement {
     sid = "SSMPermissions"
     principals {
