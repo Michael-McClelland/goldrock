@@ -213,9 +213,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
 
   rule {
     id = "standard"
-
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
     noncurrent_version_expiration {
       noncurrent_days = 180
     }
@@ -401,9 +403,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "config" {
 
   rule {
     id = "standard"
-
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
     noncurrent_version_expiration {
       noncurrent_days = 180
     }

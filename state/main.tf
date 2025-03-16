@@ -216,9 +216,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
   rule {
     id = "standard"
-
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
     noncurrent_version_expiration {
       noncurrent_days = 180
     }
@@ -713,6 +715,9 @@ resource "aws_dynamodb_table" "tf_lock_table" {
   server_side_encryption {
     enabled     = true
     kms_key_arn = aws_kms_key.key.arn
+  }
+  point_in_time_recovery {
+    enabled = true
   }
 }
 

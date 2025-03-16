@@ -216,9 +216,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
   rule {
     id = "standard"
-
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
     noncurrent_version_expiration {
       noncurrent_days = 180
     }
