@@ -1,6 +1,6 @@
           terraform init \
             -backend-config="bucket=goldrock-tfstate-529162655134-us-east-2" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:us-east-2:529162655134:table/goldrock-tfstate-529162655134-us-east-2" \
+            -backend-config="use_lockfile=true" \
             -backend-config="kms_key_id=arn:aws:kms:us-east-2:529162655134:alias/goldrock-tfstate" \
             -backend-config="key=529162655134/us-east-2/organization" \
             -backend-config="region=us-east-2" \

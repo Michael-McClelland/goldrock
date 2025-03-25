@@ -57,7 +57,7 @@ jobs:
         run: |
           terraform init \
             -backend-config="bucket=${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{inputs.region}}" \
-            -backend-config="dynamodb_table=arn:aws:dynamodb:${{inputs.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:table/${{env.ORGANIZATION_IDENTIFIER}}-tfstate-${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}-${{inputs.region}}" \
+            -backend-config="use_lockfile=true" \
             -backend-config="kms_key_id=arn:aws:kms:${{inputs.region}}:${{env.ORGANIZATION_MANAGEMENT_ACCOUNT_ID}}:alias/${{env.ORGANIZATION_IDENTIFIER}}-tfstate" \
             -backend-config="key=${{inputs.account_id}}/${{inputs.region}}/${{inputs.workflow}}" \
             -backend-config="region=${{inputs.region}}" \
