@@ -19,7 +19,7 @@ concurrency:
 jobs:
   setup:
     name: 'setup'
-    runs-on: ubuntu-latest
+    runs-on: codebuild-goldrock-${{ github.run_id }}-${{ github.run_attempt }}
 
     defaults:
       run:
@@ -60,7 +60,7 @@ jobs:
 
   deploy_home_region:
     name: 'deploy_home_region'
-    runs-on: ubuntu-latest
+    runs-on: codebuild-goldrock-${{ github.run_id }}-${{ github.run_attempt }}
 
     needs: setup
 
@@ -121,7 +121,7 @@ jobs:
   parse_additional_regions:
     if: ${{  vars.ADDITIONAL_REGIONS != '' }}
     name: 'parse_additional_regions'
-    runs-on: ubuntu-latest
+    runs-on: codebuild-goldrock-${{ github.run_id }}-${{ github.run_attempt }}
     needs: deploy_home_region
     defaults:
       run:
@@ -143,7 +143,7 @@ jobs:
   additional_regions:
     if: ${{  vars.ADDITIONAL_REGIONS != '' }}
     name: 'additional_regions'
-    runs-on: ubuntu-latest
+    runs-on: codebuild-goldrock-${{ github.run_id }}-${{ github.run_attempt }}
     needs: [ setup, deploy_home_region, parse_additional_regions ]
     defaults:
       run:

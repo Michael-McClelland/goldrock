@@ -68,39 +68,3 @@ if not alias_exists:
     TargetKeyId=kms_home_region_response['KeyMetadata']['KeyId']
   )
 ######
-dynamodb_client = boto3.client('dynamodb',region_name=os.environ['PY_REGION'])
-try:
-  dynamodb_describe_response = dynamodb_client.describe_table(
-    TableName='goldrock-tfstate-' + account_id +'-' + os.environ['PY_REGION']
-  )
-  dynamodb_table_exists = True
-except dynamodb_client.exceptions.ResourceNotFoundException:
-  dynamodb_table_exists = False
-if not dynamodb_table_exists:
-  dynamodb_response = dynamodb_client.create_table(
-    AttributeDefinitions=[
-      {
-        'AttributeName': 'LockID',
-        'AttributeType': 'S'
-      },
-    ],
-    TableName='goldrock-tfstate-' + account_id +'-' + os.environ['PY_REGION'],
-    KeySchema=[
-      {
-        'AttributeName': 'LockID',
-        'KeyType': 'HASH'
-      },
-    ],
-    BillingMode='PROVISIONED',
-    ProvisionedThroughput={
-      'ReadCapacityUnits': 5,
-      'WriteCapacityUnits': 5
-    },
-    SSESpecification={
-      'Enabled': True,
-      'SSEType': 'KMS',
-      'KMSMasterKeyId': 'arn:' +  partition + ':kms:' + os.environ['PY_REGION'] + ':' + account_id + ':alias/goldrock-tfstate'
-    },
-    TableClass='STANDARD',
-    DeletionProtectionEnabled=True
-)

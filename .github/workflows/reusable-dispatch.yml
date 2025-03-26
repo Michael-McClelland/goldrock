@@ -15,7 +15,7 @@ concurrency:
 jobs:
   setup:
     name: 'setup'
-    runs-on: ubuntu-latest
+    runs-on: codebuild-goldrock-${{ github.run_id }}-${{ github.run_attempt }}
 
     defaults:
       run:
