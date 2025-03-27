@@ -1,5 +1,5 @@
-# goldrock
-GoldRock
+[# goldrock
+GoldRock](https://codebuild.us-east-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiM2t4dC9rUGhFM0k0U3JndVFla0M1TkxSOUxxSjByREY3UjAvN2dXQ2lOWmNjdHA0eTEzL0JrWmVzaG9ZYzlCMTNFbFN0UW1hMHZhKyt3OEIxQlFDZzBFPSIsIml2UGFyYW1ldGVyU3BlYyI6IjhmZ2wraHZnb0dTQTgvRS8iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
 ## bugs 
 CloudTrail has to be deployed from management account because TF halts on creating trail from delgate due to a race condition on describing a delegated trail
