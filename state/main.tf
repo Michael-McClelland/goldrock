@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "bucket" {
   }
 
   statement {
-    sid    = "puts"
+    sid    = "deletelocks"
     effect = "Allow"
     principals {
       type        = "AWS"
