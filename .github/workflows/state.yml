@@ -207,6 +207,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          whoami
           python -m pip install --upgrade boto3
 
       - name: Setup State
