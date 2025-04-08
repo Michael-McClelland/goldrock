@@ -143,7 +143,9 @@ Resources:
       OperationPreferences:
         MaxConcurrentPercentage: 100
         FailureTolerancePercentage: 10
-        ConcurrencyMode: PARALLEL
+        ConcurrencyMode: SOFT_FAILURE_TOLERANCE
+        RegionConcurrencyType: PARALLEL
+
       StackInstancesGroup:
         - DeploymentTargets:
             OrganizationalUnitIds:
