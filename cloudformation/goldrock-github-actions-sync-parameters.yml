@@ -1,5 +1,5 @@
-parameters: 
-    GitHubOrg: Michael-McClelland
-    RepositoryName: goldrock
-    OIDCProviderArn: ""
-    OIDCAudience: sts.amazonaws.com
+template-file-path: cloudformation/goldrock-github-actions.yml
+parameters: {}
+tags: {}
+
+
