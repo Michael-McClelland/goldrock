@@ -1,0 +1,5 @@
+parameters: 
+    GitHubOrg: Michael-McClelland
+    RepositoryName: goldrock
+    OIDCProviderArn: ""
+    OIDCAudience: sts.amazonaws.com

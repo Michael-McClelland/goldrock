@@ -98,7 +98,7 @@ Resources:
   Role:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "goldrock-github-actions"
+      RoleName: "goldrock-github-actions"
       MaxSessionDuration: 43200
       AssumeRolePolicyDocument:
         Statement:
