@@ -127,6 +127,29 @@ Resources:
       ThumbprintList:
         - 6938fd4d98bab03faadb97b34396831e3780aea1
 
+  ReadOnlyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "goldrock-github-actions-read-only"
+      MaxSessionDuration: 43200
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !If
+                - CreateOIDCProvider
+                - !Ref GithubOidc
+                - !Ref OIDCProviderArn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:ref:refs/heads/*
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+        - arn:aws:iam::aws:policy/IAMReadOnlyAccess
+
   OIDCSTACKSET:
     Type: "AWS::CloudFormation::StackSet"
     Properties:
@@ -218,3 +241,26 @@ Resources:
                 - sts.amazonaws.com
               ThumbprintList:
                 - 6938fd4d98bab03faadb97b34396831e3780aea1
+
+          ReadOnlyRole:
+            Type: AWS::IAM::Role
+            Properties:
+              RoleName: "goldrock-github-actions-read-only"
+              MaxSessionDuration: 43200
+              AssumeRolePolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action: sts:AssumeRoleWithWebIdentity
+                    Principal:
+                      Federated: !If
+                        - CreateOIDCProvider
+                        - !Ref GithubOidc
+                        - !Ref OIDCProviderArn
+                    Condition:
+                      StringEquals:
+                        token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+                      StringLike:
+                        token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:ref:refs/heads/*
+              ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+                - arn:aws:iam::aws:policy/IAMReadOnlyAccess
