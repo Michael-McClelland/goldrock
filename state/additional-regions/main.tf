@@ -39,6 +39,47 @@ data "aws_iam_policy_document" "bucket" {
     }
   }
 
+
+  statement {
+    sid    = "deletelocks"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      "${aws_s3_bucket.bucket.arn}/$${aws:PrincipalAccount}/*.tflock",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values = [
+        data.aws_organizations_organization.organization.id
+      ]
+    }
+  }
+
+  statement {
+    sid    = "prevent_delete_not_locks"
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "s3:DeleteObject"
+    ]
+
+    not_resources = [
+      "${aws_s3_bucket.bucket.arn}/*.tflock",
+    ]
+  }
+
+
   statement {
     effect = "Deny"
     principals {
