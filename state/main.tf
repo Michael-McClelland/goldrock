@@ -128,28 +128,11 @@ data "aws_iam_policy_document" "bucket" {
       type        = "AWS"
       identifiers = ["*"]
     }
-    actions = [
-      "s3:BypassGovernanceRetention",
-      "s3:DeleteBucket",
-      "s3:DeleteBucketPolicy",
-      "s3:DeleteBucketWebsite",
-      "s3:PutAccelerateConfiguration",
-      "s3:PutAnalyticsConfiguration",
-      "s3:PutBucketAcl",
-      "s3:PutBucketCORS",
-      "s3:PutBucketLogging",
-      "s3:PutBucketNotification",
-      "s3:PutBucketOwnershipControls",
-      "s3:PutBucketPolicy",
-      "s3:PutBucketPublicAccessBlock",
-      "s3:PutBucketRequestPayment",
-      "s3:PutBucketVersioning",
-      "s3:PutBucketWebsite",
-      "s3:PutEncryptionConfiguration",
-      "s3:PutInventoryConfiguration",
-      "s3:PutLifecycleConfiguration",
-      "s3:PutMetricsConfiguration",
-      "s3:PutReplicationConfiguration",
+    not_actions = [
+      "s3:DeleteObject"
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:PutObject"
 
     ]
 
