@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "bucket" {
       values   = [aws_kms_replica_key.replica.arn]
     }
   }
-  
+
   statement {
     effect = "Deny"
     principals {
@@ -132,7 +132,7 @@ data "aws_iam_policy_document" "bucket" {
       identifiers = ["*"]
     }
     not_actions = [
-      "s3:DeleteObject"
+      "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListBucket",
       "s3:PutObject"
