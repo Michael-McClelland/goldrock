@@ -40,10 +40,49 @@ exports.handler = async function() {
   await page.goto(url);
   await page.goto('https://'+process.env.region+'.console.aws.amazon.com/singlesignon/home?region='+process.env.region+'#!/');
   await page.goto('https://'+process.env.region+'.console.aws.amazon.com/singlesignon/home?region='+process.env.region+'#!/enable-iam-identity-center');
-  await page.$('xpath///*[@data-analytics="enable-idc-actions__enable"]')
-  await page.click('xpath///*[@data-analytics="enable-idc-actions__enable"]')
+  
+  try {
+    // Wait for the page to load completely
+    await page.waitForTimeout(2000);
+    
+    // Try to find the button by data-analytics attribute
+    const button = await page.$('[data-analytics="enable-idc-actions__enable"]');
+    if (button) {
+      await button.click();
+    } else {
+      // If not found, try to find by XPath
+      const xpathButton = await page.$x('//*[@data-analytics="enable-idc-actions__enable"]');
+      if (xpathButton.length > 0) {
+        await xpathButton[0].click();
+      } else {
+        console.log('Button not found by attribute or XPath, searching by text content...');
+        // Search for button by text content
+        const enableButtons = await page.$eval('button', buttons => 
+          buttons.filter(button => 
+            button.textContent.toLowerCase().includes('enable')
+          ).map(button => button.outerHTML)
+        );
+        
+        if (enableButtons.length > 0) {
+          console.log('Found button with "enable" text:', enableButtons[0]);
+          await page.evaluate(() => {
+            const buttons = Array.from(document.querySelectorAll('button'));
+            const enableButton = buttons.find(button => 
+              button.textContent.toLowerCase().includes('enable')
+            );
+            if (enableButton) enableButton.click();
+          });
+        } else {
+          console.log('No button with "enable" text found');
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error finding or clicking button:', error);
+  }
+  
   await new Promise(r => setTimeout(r, 60000));
-  browser.close
+  await browser.close();
   process.exit(0)
 }
 
