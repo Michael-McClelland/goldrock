@@ -7,6 +7,7 @@ locals {
       name : level_root_account.name,
       email : level_root_account.email
       allow_iam_users_access_to_billing : level_root_account.allow_iam_users_access_to_billing
+      policies : level_root_account.policies
     }
   ]
   level_1_account_arguments = flatten([
@@ -19,6 +20,7 @@ locals {
         name : level_1_account.name,
         email : level_1_account.email
         allow_iam_users_access_to_billing : level_1_account.allow_iam_users_access_to_billing
+        policies : level_1_account.policies
       }
     ]
   ])
@@ -34,6 +36,7 @@ locals {
           name : level_2_account.name,
           email : level_2_account.email
           allow_iam_users_access_to_billing : level_2_account.allow_iam_users_access_to_billing
+          policies : level_2_account.policies
         }
       ]
     ]
@@ -52,6 +55,7 @@ locals {
             name : level_3_account.name,
             email : level_3_account.email
             allow_iam_users_access_to_billing : level_3_account.allow_iam_users_access_to_billing
+            policies : level_3_account.policies
           }
         ]
       ]
@@ -73,6 +77,7 @@ locals {
               name : level_4_account.name,
               email : level_4_account.email
               allow_iam_users_access_to_billing : level_4_account.allow_iam_users_access_to_billing
+              policies : level_4_account.policies
             }
           ]
         ]
@@ -97,6 +102,7 @@ locals {
                 name : level_5_account.name,
                 email : level_5_account.email
                 allow_iam_users_access_to_billing : level_5_account.allow_iam_users_access_to_billing
+                policies : level_5_account.policies
               }
             ]
           ]
@@ -124,13 +130,13 @@ resource "aws_organizations_account" "account" {
 
 locals {
   all_account_attributes = {
-    for account in local.all_accounts :
-    account.key => {
+    for account in local.all_accounts : account.key => {
       id        = aws_organizations_account.account[account.key].id,
       arn       = aws_organizations_account.account[account.key].arn,
       name      = aws_organizations_account.account[account.key].name
       email     = aws_organizations_account.account[account.key].email
       parent_id = aws_organizations_account.account[account.key].parent_id,
+      policies  = account.policies
     }
   }
 }

@@ -84,6 +84,6 @@ exports.handler = async function() {
   await new Promise(r => setTimeout(r, 60000));
   await browser.close();
   process.exit(0)
-}
+}   
 
 exports.handler()

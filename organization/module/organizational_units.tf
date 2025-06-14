@@ -4,6 +4,7 @@ locals {
     {
       name : ou.name,
       key : ou.key,
+      policies : ou.policies
     }
   ]
   level_2_ou_arguments = flatten([
@@ -13,7 +14,8 @@ locals {
       {
         name : level_2_ou.name,
         key : level_2_ou.key,
-        parent : level_1_ou.key
+        parent : level_1_ou.key,
+        policies : level_2_ou.policies
       }
     ]
   ])
@@ -26,7 +28,8 @@ locals {
         {
           name : level_3_ou.name,
           key : level_3_ou.key,
-          parent : level_2_ou.key
+          parent : level_2_ou.key,
+          policies : level_3_ou.policies
         }
       ]
     ]
@@ -42,7 +45,8 @@ locals {
           {
             name : level_4_ou.name,
             key : level_4_ou.key,
-            parent : level_3_ou.key
+            parent : level_3_ou.key,
+            policies : level_4_ou.policies
           }
         ]
       ]
@@ -61,13 +65,82 @@ locals {
             {
               name : level_5_ou.name,
               key : level_5_ou.key,
-              parent : level_4_ou.key
+              parent : level_4_ou.key,
+              policies : level_5_ou.policies
             }
           ]
         ]
       ]
     ]
   ])
+}
+
+locals {
+  level_1_ou_attributes = [
+    for ou in local.level_1_ou_arguments :
+    {
+      key       = ou.key
+      id        = aws_organizations_organizational_unit.level_1_ous[ou.key].id,
+      arn       = aws_organizations_organizational_unit.level_1_ous[ou.key].arn,
+      parent_id = aws_organizations_organizational_unit.level_1_ous[ou.key].parent_id,
+      name      = aws_organizations_organizational_unit.level_1_ous[ou.key].name,
+      policies  = ou.policies
+    }
+  ]
+  level_2_ou_attributes = [
+    for ou in local.level_2_ou_arguments :
+    {
+      key       = ou.key
+      id        = aws_organizations_organizational_unit.level_2_ous[ou.key].id,
+      arn       = aws_organizations_organizational_unit.level_2_ous[ou.key].arn,
+      parent_id = aws_organizations_organizational_unit.level_2_ous[ou.key].parent_id,
+      name      = aws_organizations_organizational_unit.level_2_ous[ou.key].name,
+      policies  = ou.policies
+    }
+  ]
+  level_3_ou_attributes = [
+    for ou in local.level_3_ou_arguments :
+    {
+      key       = ou.key
+      id        = aws_organizations_organizational_unit.level_3_ous[ou.key].id,
+      arn       = aws_organizations_organizational_unit.level_3_ous[ou.key].arn,
+      parent_id = aws_organizations_organizational_unit.level_3_ous[ou.key].parent_id,
+      name      = aws_organizations_organizational_unit.level_3_ous[ou.key].name,
+      policies  = ou.policies
+    }
+  ]
+  level_4_ou_attributes = [
+    for ou in local.level_4_ou_arguments :
+    {
+      key       = ou.key
+      id        = aws_organizations_organizational_unit.level_4_ous[ou.key].id,
+      arn       = aws_organizations_organizational_unit.level_4_ous[ou.key].arn,
+      parent_id = aws_organizations_organizational_unit.level_4_ous[ou.key].parent_id,
+      name      = aws_organizations_organizational_unit.level_4_ous[ou.key].name,
+      policies  = ou.policies
+    }
+  ]
+  level_5_ou_attributes = [
+    for ou in local.level_5_ou_arguments :
+    {
+      key       = ou.key
+      id        = aws_organizations_organizational_unit.level_5_ous[ou.key].id,
+      arn       = aws_organizations_organizational_unit.level_5_ous[ou.key].arn,
+      parent_id = aws_organizations_organizational_unit.level_5_ous[ou.key].parent_id,
+      name      = aws_organizations_organizational_unit.level_5_ous[ou.key].name,
+      policies  = ou.policies
+    }
+  ]
+  all_ou_attributes = {
+    for ou in concat(
+      local.level_1_ou_attributes,
+      local.level_2_ou_attributes,
+      local.level_3_ou_attributes,
+      local.level_4_ou_attributes,
+      local.level_5_ou_attributes
+    ) :
+    ou.key => ou
+  }
 }
 
 resource "aws_organizations_organizational_unit" "level_1_ous" {
@@ -98,67 +171,4 @@ resource "aws_organizations_organizational_unit" "level_5_ous" {
   for_each  = { for record in local.level_5_ou_arguments : record.key => record }
   name      = each.value.name
   parent_id = aws_organizations_organizational_unit.level_4_ous[each.value.parent].id
-}
-
-locals {
-  level_1_ou_attributes = [
-    for ou in local.level_1_ou_arguments :
-    {
-      key       = ou.key
-      id        = aws_organizations_organizational_unit.level_1_ous[ou.key].id,
-      arn       = aws_organizations_organizational_unit.level_1_ous[ou.key].arn,
-      parent_id = aws_organizations_organizational_unit.level_1_ous[ou.key].parent_id,
-      name      = aws_organizations_organizational_unit.level_1_ous[ou.key].name,
-    }
-  ]
-  level_2_ou_attributes = [
-    for ou in local.level_2_ou_arguments :
-    {
-      key       = ou.key
-      id        = aws_organizations_organizational_unit.level_2_ous[ou.key].id,
-      arn       = aws_organizations_organizational_unit.level_2_ous[ou.key].arn,
-      parent_id = aws_organizations_organizational_unit.level_2_ous[ou.key].parent_id,
-      name      = aws_organizations_organizational_unit.level_2_ous[ou.key].name,
-    }
-  ]
-  level_3_ou_attributes = [
-    for ou in local.level_3_ou_arguments :
-    {
-      key       = ou.key
-      id        = aws_organizations_organizational_unit.level_3_ous[ou.key].id,
-      arn       = aws_organizations_organizational_unit.level_3_ous[ou.key].arn,
-      parent_id = aws_organizations_organizational_unit.level_3_ous[ou.key].parent_id,
-      name      = aws_organizations_organizational_unit.level_3_ous[ou.key].name,
-    }
-  ]
-  level_4_ou_attributes = [
-    for ou in local.level_4_ou_arguments :
-    {
-      key       = ou.key
-      id        = aws_organizations_organizational_unit.level_4_ous[ou.key].id,
-      arn       = aws_organizations_organizational_unit.level_4_ous[ou.key].arn,
-      parent_id = aws_organizations_organizational_unit.level_4_ous[ou.key].parent_id,
-      name      = aws_organizations_organizational_unit.level_4_ous[ou.key].name,
-    }
-  ]
-  level_5_ou_attributes = [
-    for ou in local.level_5_ou_arguments :
-    {
-      key       = ou.key
-      id        = aws_organizations_organizational_unit.level_5_ous[ou.key].id,
-      arn       = aws_organizations_organizational_unit.level_5_ous[ou.key].arn,
-      parent_id = aws_organizations_organizational_unit.level_5_ous[ou.key].parent_id,
-      name      = aws_organizations_organizational_unit.level_5_ous[ou.key].name,
-    }
-  ]
-  all_ou_attributes = {
-    for ou in concat(
-      local.level_1_ou_attributes,
-      local.level_2_ou_attributes,
-      local.level_3_ou_attributes,
-      local.level_4_ou_attributes,
-      local.level_5_ou_attributes
-    ) :
-    ou.key => ou
-  }
 }
