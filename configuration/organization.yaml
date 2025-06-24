@@ -11,6 +11,8 @@ accounts:
   - name: corp01
     key: goldrock-corp1
     email: mccmcc+corp01@amazon.com
+    service_control_policies:
+      - goldrock-full-access
   - name: corp02
     key: goldrock-corp2
     email: mccmcc+corp02@amazon.com
