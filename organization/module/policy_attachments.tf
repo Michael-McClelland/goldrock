@@ -1,32 +1,32 @@
 # Data source to get all AWS Organizations service_control_policies
-data "aws_organizations_service_control_policies" "service_control_service_control_policies" {
+data "aws_organizations_policies" "service_control_service_control_policies" {
   filter = "SERVICE_CONTROL_POLICY"
 }
 
-data "aws_organizations_service_control_policies" "tag_service_control_policies" {
+data "aws_organizations_policies" "tag_service_control_policies" {
   filter = "TAG_POLICY"
 }
 
-data "aws_organizations_service_control_policies" "backup_service_control_policies" {
+data "aws_organizations_policies" "backup_service_control_policies" {
   filter = "BACKUP_POLICY"
 }
 
-data "aws_organizations_service_control_policies" "aiservices_opt_out_service_control_policies" {
+data "aws_organizations_policies" "aiservices_opt_out_service_control_policies" {
   filter = "AISERVICES_OPT_OUT_POLICY"
 }
 
-data "aws_organizations_service_control_policies" "resource_control_service_control_policies" {
+data "aws_organizations_policies" "resource_control_service_control_policies" {
   filter = "RESOURCE_CONTROL_POLICY"
 }
 
 # Data source to get individual policy details
 data "aws_organizations_policy" "service_control_policies" {
   for_each = toset(concat(
-    data.aws_organizations_service_control_policies.service_control_service_control_policies.ids,
-    data.aws_organizations_service_control_policies.tag_service_control_policies.ids,
-    data.aws_organizations_service_control_policies.backup_service_control_policies.ids,
-    data.aws_organizations_service_control_policies.aiservices_opt_out_service_control_policies.ids,
-    data.aws_organizations_service_control_policies.resource_control_service_control_policies.ids
+    data.aws_organizations_policies.service_control_service_control_policies.ids,
+    data.aws_organizations_policies.tag_service_control_policies.ids,
+    data.aws_organizations_policies.backup_service_control_policies.ids,
+    data.aws_organizations_policies.aiservices_opt_out_service_control_policies.ids,
+    data.aws_organizations_policies.resource_control_service_control_policies.ids
   ))
   
   policy_id = each.value
