@@ -39,12 +39,12 @@ module "aws-iam-identity-center" {
     }
   }
 
-  // Create permissions sets backed by AWS managed policies
+  // Create permissions sets backed by AWS managed service_control_policies
   permission_sets = {
     AdministratorAccess = {
       description          = "Provides AWS full access permissions.",
       session_duration     = "PT12H", // how long until session expires - this means 4 hours. max is 12 hours
-      aws_managed_policies = [
+      aws_managed_service_control_policies = [
         "arn:aws:iam::aws:policy/AdministratorAccess"
         ]
       tags                 = { ManagedBy = "Terraform" }
@@ -52,7 +52,7 @@ module "aws-iam-identity-center" {
     ViewOnlyAccess = {
       description          = "Provides AWS view only permissions.",
       session_duration     = "PT3H", // how long until session expires - this means 3 hours. max is 12 hours
-      aws_managed_policies = [
+      aws_managed_service_control_policies = [
         "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
         ]
       tags                 = { ManagedBy = "Terraform" }
@@ -60,7 +60,7 @@ module "aws-iam-identity-center" {
     CustomPermissionAccess = {
       description          = "Provides Basic Readonly",
       session_duration     = "PT3H", // how long until session expires - this means 3 hours. max is 12 hours
-      aws_managed_policies = [
+      aws_managed_service_control_policies = [
         "arn:aws:iam::aws:policy/ReadOnlyAccess"
       ]
       inline_policy        = data.aws_iam_policy_document.CustomPermissionInlinePolicy.json

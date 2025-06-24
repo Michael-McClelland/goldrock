@@ -4,7 +4,7 @@ locals {
     {
       name : ou.name,
       key : ou.key,
-      policies : ou.policies
+      service_control_policies : ou.service_control_policies
     }
   ]
   level_2_ou_arguments = flatten([
@@ -15,7 +15,7 @@ locals {
         name : level_2_ou.name,
         key : level_2_ou.key,
         parent : level_1_ou.key,
-        policies : level_2_ou.policies
+        service_control_policies : level_2_ou.service_control_policies
       }
     ]
   ])
@@ -29,7 +29,7 @@ locals {
           name : level_3_ou.name,
           key : level_3_ou.key,
           parent : level_2_ou.key,
-          policies : level_3_ou.policies
+          service_control_policies : level_3_ou.service_control_policies
         }
       ]
     ]
@@ -46,7 +46,7 @@ locals {
             name : level_4_ou.name,
             key : level_4_ou.key,
             parent : level_3_ou.key,
-            policies : level_4_ou.policies
+            service_control_policies : level_4_ou.service_control_policies
           }
         ]
       ]
@@ -66,7 +66,7 @@ locals {
               name : level_5_ou.name,
               key : level_5_ou.key,
               parent : level_4_ou.key,
-              policies : level_5_ou.policies
+              service_control_policies : level_5_ou.service_control_policies
             }
           ]
         ]
@@ -84,7 +84,7 @@ locals {
       arn       = aws_organizations_organizational_unit.level_1_ous[ou.key].arn,
       parent_id = aws_organizations_organizational_unit.level_1_ous[ou.key].parent_id,
       name      = aws_organizations_organizational_unit.level_1_ous[ou.key].name,
-      policies  = ou.policies
+      service_control_policies  = ou.service_control_policies
     }
   ]
   level_2_ou_attributes = [
@@ -95,7 +95,7 @@ locals {
       arn       = aws_organizations_organizational_unit.level_2_ous[ou.key].arn,
       parent_id = aws_organizations_organizational_unit.level_2_ous[ou.key].parent_id,
       name      = aws_organizations_organizational_unit.level_2_ous[ou.key].name,
-      policies  = ou.policies
+      service_control_policies  = ou.service_control_policies
     }
   ]
   level_3_ou_attributes = [
@@ -106,7 +106,7 @@ locals {
       arn       = aws_organizations_organizational_unit.level_3_ous[ou.key].arn,
       parent_id = aws_organizations_organizational_unit.level_3_ous[ou.key].parent_id,
       name      = aws_organizations_organizational_unit.level_3_ous[ou.key].name,
-      policies  = ou.policies
+      service_control_policies  = ou.service_control_policies
     }
   ]
   level_4_ou_attributes = [
@@ -117,7 +117,7 @@ locals {
       arn       = aws_organizations_organizational_unit.level_4_ous[ou.key].arn,
       parent_id = aws_organizations_organizational_unit.level_4_ous[ou.key].parent_id,
       name      = aws_organizations_organizational_unit.level_4_ous[ou.key].name,
-      policies  = ou.policies
+      service_control_policies  = ou.service_control_policies
     }
   ]
   level_5_ou_attributes = [
@@ -128,7 +128,7 @@ locals {
       arn       = aws_organizations_organizational_unit.level_5_ous[ou.key].arn,
       parent_id = aws_organizations_organizational_unit.level_5_ous[ou.key].parent_id,
       name      = aws_organizations_organizational_unit.level_5_ous[ou.key].name,
-      policies  = ou.policies
+      service_control_policies  = ou.service_control_policies
     }
   ]
   all_ou_attributes = {

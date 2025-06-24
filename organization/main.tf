@@ -24,7 +24,7 @@ resource "aws_organizations_organization" "organization" {
     "ssm.amazonaws.com",
     "sso.amazonaws.com",
     "storage-lens.s3.amazonaws.com",
-    "tagpolicies.tag.amazonaws.com"
+    "tagservice_control_policies.tag.amazonaws.com"
   ]
   enabled_policy_types = [
     "AISERVICES_OPT_OUT_POLICY",

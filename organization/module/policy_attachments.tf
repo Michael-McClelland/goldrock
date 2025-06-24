@@ -1,32 +1,32 @@
-# Data source to get all AWS Organizations policies
-data "aws_organizations_policies" "service_control_policies" {
+# Data source to get all AWS Organizations service_control_policies
+data "aws_organizations_service_control_policies" "service_control_service_control_policies" {
   filter = "SERVICE_CONTROL_POLICY"
 }
 
-data "aws_organizations_policies" "tag_policies" {
+data "aws_organizations_service_control_policies" "tag_service_control_policies" {
   filter = "TAG_POLICY"
 }
 
-data "aws_organizations_policies" "backup_policies" {
+data "aws_organizations_service_control_policies" "backup_service_control_policies" {
   filter = "BACKUP_POLICY"
 }
 
-data "aws_organizations_policies" "aiservices_opt_out_policies" {
+data "aws_organizations_service_control_policies" "aiservices_opt_out_service_control_policies" {
   filter = "AISERVICES_OPT_OUT_POLICY"
 }
 
-data "aws_organizations_policies" "resource_control_policies" {
+data "aws_organizations_service_control_policies" "resource_control_service_control_policies" {
   filter = "RESOURCE_CONTROL_POLICY"
 }
 
 # Data source to get individual policy details
-data "aws_organizations_policy" "policies" {
+data "aws_organizations_policy" "service_control_policies" {
   for_each = toset(concat(
-    data.aws_organizations_policies.service_control_policies.ids,
-    data.aws_organizations_policies.tag_policies.ids,
-    data.aws_organizations_policies.backup_policies.ids,
-    data.aws_organizations_policies.aiservices_opt_out_policies.ids,
-    data.aws_organizations_policies.resource_control_policies.ids
+    data.aws_organizations_service_control_policies.service_control_service_control_policies.ids,
+    data.aws_organizations_service_control_policies.tag_service_control_policies.ids,
+    data.aws_organizations_service_control_policies.backup_service_control_policies.ids,
+    data.aws_organizations_service_control_policies.aiservices_opt_out_service_control_policies.ids,
+    data.aws_organizations_service_control_policies.resource_control_service_control_policies.ids
   ))
   
   policy_id = each.value
@@ -35,13 +35,13 @@ data "aws_organizations_policy" "policies" {
 locals {
   # Create a map of policy names to policy IDs
   policy_name_to_id_map = {
-    for id, policy in data.aws_organizations_policy.policies : policy.name => policy.id
+    for id, policy in data.aws_organizations_policy.service_control_policies : policy.name => policy.id
   }
 
   # Create a flattened list of all policy attachments for OUs
   ou_policy_attachments = flatten([
     for ou_key, ou in local.all_ou_attributes : [
-      for policy_name in ou.policies : {
+      for policy_name in ou.service_control_policies : {
         target_id   = ou.id
         policy_name = policy_name
         key         = "${ou_key}-${policy_name}"
@@ -52,7 +52,7 @@ locals {
   # Create a flattened list of all policy attachments for accounts
   account_policy_attachments = flatten([
     for account_key, account in local.all_account_attributes : [
-      for policy_name in account.policies : {
+      for policy_name in account.service_control_policies : {
         target_id   = account.id
         policy_name = policy_name
         key         = "${account_key}-${policy_name}"
@@ -71,7 +71,7 @@ resource "aws_organizations_policy_attachment" "policy_attachments" {
   policy_id = local.policy_name_to_id_map[each.value.policy_name]
   target_id = each.value.target_id
 
-  # Add a dependency on the organization to ensure it exists before attaching policies
+  # Add a dependency on the organization to ensure it exists before attaching service_control_policies
   depends_on = [
     aws_organizations_organizational_unit.level_1_ous,
     aws_organizations_organizational_unit.level_2_ous,
