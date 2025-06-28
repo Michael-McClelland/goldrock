@@ -8,6 +8,7 @@ locals {
       email : level_root_account.email
       allow_iam_users_access_to_billing : level_root_account.allow_iam_users_access_to_billing
       service_control_policies : level_root_account.service_control_policies
+      resource_control_policies : level_root_account.resource_control_policies
     }
   ]
   level_1_account_arguments = flatten([
@@ -21,6 +22,7 @@ locals {
         email : level_1_account.email
         allow_iam_users_access_to_billing : level_1_account.allow_iam_users_access_to_billing
         service_control_policies : level_1_account.service_control_policies
+        resource_control_policies : level_1_account.resource_control_policies
       }
     ]
   ])
@@ -37,6 +39,7 @@ locals {
           email : level_2_account.email
           allow_iam_users_access_to_billing : level_2_account.allow_iam_users_access_to_billing
           service_control_policies : level_2_account.service_control_policies
+          resource_control_policies : level_2_account.resource_control_policies
         }
       ]
     ]
@@ -56,6 +59,7 @@ locals {
             email : level_3_account.email
             allow_iam_users_access_to_billing : level_3_account.allow_iam_users_access_to_billing
             service_control_policies : level_3_account.service_control_policies
+            resource_control_policies : level_3_account.resource_control_policies
           }
         ]
       ]
@@ -78,6 +82,7 @@ locals {
               email : level_4_account.email
               allow_iam_users_access_to_billing : level_4_account.allow_iam_users_access_to_billing
               service_control_policies : level_4_account.service_control_policies
+              resource_control_policies : level_4_account.resource_control_policies
             }
           ]
         ]
@@ -103,6 +108,7 @@ locals {
                 email : level_5_account.email
                 allow_iam_users_access_to_billing : level_5_account.allow_iam_users_access_to_billing
                 service_control_policies : level_5_account.service_control_policies
+                resource_control_policies : level_5_account.resource_control_policies
               }
             ]
           ]
@@ -137,6 +143,7 @@ locals {
       email     = aws_organizations_account.account[account.key].email
       parent_id = aws_organizations_account.account[account.key].parent_id,
       service_control_policies  = account.service_control_policies
+      resource_control_policies = account.resource_control_policies
     }
   }
 }
