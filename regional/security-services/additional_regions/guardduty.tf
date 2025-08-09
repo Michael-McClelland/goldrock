@@ -8,7 +8,6 @@ resource "aws_guardduty_organization_configuration" "aws_guardduty_organization_
 
 resource "aws_guardduty_organization_configuration_feature" "aws_guardduty_organization_configuration_feature" {
   for_each = toset([
-    "EBS_MALWARE_PROTECTION",
     "EKS_AUDIT_LOGS",
     "LAMBDA_NETWORK_LOGS",
     "RDS_LOGIN_EVENTS",
@@ -19,6 +18,8 @@ resource "aws_guardduty_organization_configuration_feature" "aws_guardduty_organ
   name        = each.value
   auto_enable = "ALL"
 }
+
+
 
 resource "aws_guardduty_organization_configuration_feature" "aws_guardduty_organization_configuration_feature_runtime_monitoring" {
   detector_id = data.aws_guardduty_detector.aws_guardduty_detector.id
