@@ -39,6 +39,14 @@ resource "aws_organizations_organization" "organization" {
   }
 }
 
+resource "aws_iam_organizations_features" "aws_iam_organizations_features" {
+depends_on      = [aws_organizations_organization.organization]  
+enabled_features = [
+    "RootCredentialsManagement",
+    "RootSessions"
+    ]
+}
+
 resource "time_sleep" "organization_service_principal_activation" {
   depends_on      = [aws_organizations_organization.organization]
   create_duration = "5m"
