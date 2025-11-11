@@ -37,7 +37,7 @@ Resources:
     Properties:
       Handler: index.lambda_handler
       ReservedConcurrentExecutions: 1
-      Timeout: 900
+      Timeout: 90
       Role: !GetAtt "CROrgFunctionRole.Arn"
       Runtime: python3.13
       Architectures:
@@ -264,3 +264,226 @@ Resources:
               ManagedPolicyArns:
                 - arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
                 - arn:aws:iam::aws:policy/IAMReadOnlyAccess
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: goldrock-codebuild-ubuntu-runner-image
+      ImageTagMutability: MUTABLE
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep last 3 images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 3
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+      Tags:
+        - Key: placeholder
+          Value: 'placeholder'
+
+
+  ImageBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: goldrock-codebuild-ubuntu-image-builder
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Source:
+        Type: NO_SOURCE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            build:
+              commands:
+                - |
+                  cat > Dockerfile << 'EOF'
+                  FROM public.ecr.aws/ubuntu/ubuntu:latest
+                  
+                  ENV DEBIAN_FRONTEND=noninteractive
+                  
+                  # Install dependencies
+                  RUN apt-get update && apt-get install -y \
+                      curl \
+                      wget \
+                      unzip \
+                      git \
+                      jq \
+                      sudo \
+                      && rm -rf /var/lib/apt/lists/*
+                  
+                  # Install GitHub Actions runner
+                  RUN useradd -m -s /bin/bash runner && \
+                      echo "runner ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+                  
+                  USER runner
+                  WORKDIR /home/runner
+                  
+                  # Download and install GitHub Actions runner
+                  RUN RUNNER_VERSION=$(curl --silent "https://api.github.com/repos/actions/runner/releases/latest" | jq -r '.tag_name') && \
+                      curl -o actions-runner-linux-x64.tar.gz -L "https://github.com/actions/runner/releases/download/${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION#v}.tar.gz" && \
+                      tar xzf actions-runner-linux-x64.tar.gz && \
+                      rm actions-runner-linux-x64.tar.gz
+                  
+                  # Install Terraform
+                  RUN wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+                      echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list && \
+                      sudo apt-get update && \
+                      sudo apt-get install -y terraform
+                  
+                  ENTRYPOINT ["./run.sh"]
+                  EOF
+                - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO
+                - docker build -t $ECR_REPO:latest .
+                - docker push $ECR_REPO:latest
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: ECR_REPO
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepository}
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Tags:
+        - Key: placeholder
+          Value: 'placeholder'
+
+
+  BuildSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: rate(7 days)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt ImageBuildProject.Arn
+          RoleArn: !GetAtt EventBridgeRole.Arn
+          Id: ImageBuildTarget
+      Tags:
+        - Key: placeholder
+          Value: 'placeholder'
+
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: goldrock-codebuild-ubuntu-runner-image
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECRAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:PutImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+      Tags:
+        - Key: placeholder
+          Value: 'placeholder'
+
+
+  EventBridgeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: goldrock-codebuild-runner-images-eventbridge
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StartBuild
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: codebuild:StartBuild
+                Resource: !GetAtt ImageBuildProject.Arn
+      Tags:
+        - Key: placeholder
+          Value: 'placeholder'
+
+  TriggerBuild:
+    Type: Custom::TriggerBuild
+    DependsOn:
+      - ImageBuildProject
+      - ECRRepository
+    Properties:
+      ServiceToken: !GetAtt TriggerBuildFunction.Arn
+      ProjectName: !Ref ImageBuildProject
+
+  TriggerBuildFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      Runtime: python3.13
+      Timeout: 60
+      Role: !GetAtt TriggerBuildRole.Arn
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          
+          def lambda_handler(event, context):
+            try:
+              if event['RequestType'] == 'Create':
+                codebuild = boto3.client('codebuild')
+                project_name = event['ResourceProperties']['ProjectName']
+                response = codebuild.start_build(projectName=project_name)
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {'BuildId': response['build']['id']})
+              else:
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+            except Exception as e:
+              cfnresponse.send(event, context, cfnresponse.FAILED, {'Error': str(e)})
+
+  TriggerBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: StartBuild
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: codebuild:StartBuild
+                Resource: !GetAtt ImageBuildProject.Arn
