@@ -221,6 +221,74 @@ Resources:
         - Key: Organization
           Value: !Ref GitHubOrg
 
+  CodeBuildSourceCredential:
+    Type: Custom::CodeBuildSourceCredential
+    Properties:
+      ServiceToken: !GetAtt SourceCredentialFunction.Arn
+      ServerType: GITHUB
+      AuthType: CODECONNECTIONS
+      Resource: !Ref GitHubCodeConnection
+
+  SourceCredentialFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      Runtime: python3.13
+      Timeout: 60
+      Role: !GetAtt SourceCredentialRole.Arn
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          
+          def lambda_handler(event, context):
+            try:
+              codebuild = boto3.client('codebuild')
+              
+              if event['RequestType'] == 'Create':
+                response = codebuild.import_source_credentials(
+                  serverType=event['ResourceProperties']['ServerType'],
+                  authType=event['ResourceProperties']['AuthType'],
+                  token=event['ResourceProperties']['Resource']
+                )
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {'Arn': response['arn']})
+              elif event['RequestType'] == 'Delete':
+                try:
+                  codebuild.delete_source_credentials(
+                    arn=event['PhysicalResourceId']
+                  )
+                except:
+                  pass
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+              else:
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+            except Exception as e:
+              cfnresponse.send(event, context, cfnresponse.FAILED, {'Error': str(e)})
+
+  SourceCredentialRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CodeBuildCredentials
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:ImportSourceCredentials
+                  - codebuild:DeleteSourceCredentials
+                  - codebuild:ListSourceCredentials
+                Resource: '*'
+
   ConnectionShare:
     Type: AWS::RAM::ResourceShare
     Properties:
@@ -463,21 +531,38 @@ Resources:
 
   GoldrockProject:
     Type: AWS::CodeBuild::Project
+    DependsOn: TriggerBuild
     Properties:
       Name: goldrock
       ServiceRole: !GetAtt GoldrockCodeBuildRole.Arn
       Source:
         Type: GITHUB
         Location: !Sub "https://github.com/${GitHubOrg}/${RepositoryName}"
+        GitCloneDepth: 0
+        GitSubmodulesConfig:
+          FetchSubmodules: true
+        ReportBuildStatus: false
         Auth:
           Type: CODECONNECTIONS
           Resource: !Ref GitHubCodeConnection
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:7.0
+        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepository}:latest"
+        ImagePullCredentialsType: SERVICE_ROLE
+        PrivilegedMode: true
+      BadgeEnabled: false
+      Cache:
+        Type: NO_CACHE
       Artifacts:
         Type: NO_ARTIFACTS
+      TimeoutInMinutes: 30
+      QueuedTimeoutInMinutes: 30
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: WORKFLOW_JOB_QUEUED
       Tags:
         - Key: Organization
           Value: !Ref GitHubOrg
@@ -500,9 +585,21 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - codeconnections:UseConnection
+                  - codeconnections:CreateWebhook
+                  - codeconnections:DeleteWebhook
                   - codeconnections:GetConnection
-                Resource: !Ref GitHubCodeConnection
+                  - codeconnections:GetConnectionToken
+                  - codeconnections:ListWebhooks
+                  - codeconnections:UseConnection
+                  - codeconnections:UseConnection
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: '*'
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -627,3 +724,58 @@ Resources:
               ManagedPolicyArns:
                 - arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
                 - arn:aws:iam::aws:policy/IAMReadOnlyAccess
+
+          CodeBuildSourceCredential:
+            Type: Custom::CodeBuildSourceCredential
+            Properties:
+              ServiceToken: !GetAtt SourceCredentialFunction.Arn
+              ServerType: GITHUB
+              AuthType: OAUTH
+
+          SourceCredentialFunction:
+            Type: AWS::Lambda::Function
+            Properties:
+              Handler: index.lambda_handler
+              Runtime: python3.13
+              Timeout: 60
+              Role: !GetAtt SourceCredentialRole.Arn
+              Code:
+                ZipFile: |
+                  import boto3
+                  import cfnresponse
+                  
+                  def lambda_handler(event, context):
+                    try:
+                      codebuild = boto3.client('codebuild')
+                      
+                      if event['RequestType'] == 'Create':
+                        # For child accounts, use shared connection via RAM
+                        cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                      else:
+                        cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                    except Exception as e:
+                      cfnresponse.send(event, context, cfnresponse.FAILED, {'Error': str(e)})
+
+          SourceCredentialRole:
+            Type: AWS::IAM::Role
+            Properties:
+              AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                  - Effect: Allow
+                    Principal:
+                      Service: lambda.amazonaws.com
+                    Action: sts:AssumeRole
+              ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+              Policies:
+                - PolicyName: CodeBuildCredentials
+                  PolicyDocument:
+                    Version: '2012-10-17'
+                    Statement:
+                      - Effect: Allow
+                        Action:
+                          - codebuild:ImportSourceCredentials
+                          - codebuild:DeleteSourceCredentials
+                          - codebuild:ListSourceCredentials
+                        Resource: '*'
