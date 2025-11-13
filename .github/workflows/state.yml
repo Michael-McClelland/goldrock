@@ -211,7 +211,7 @@ jobs:
       - name: Install dependencies
         if: ${{ vars.install_python == 'true' }}
         run: |
-          python -m pip install --upgrade boto3
+          python3 -m pip install --upgrade boto3
 
       - name: Setup State
         working-directory: "./python/"
@@ -219,7 +219,7 @@ jobs:
           PY_HOME_REGION: ${{ vars.HOME_REGION }}
           PY_REGION: ${{matrix.region}}
         run: |
-          python additional_regions_state.py
+          python3 additional_regions_state.py
 
       - name: Terraform init
         working-directory: ${{env.WORKING_DIRECTORY_ADDITIONAL_REGIONS}}

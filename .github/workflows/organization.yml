@@ -98,12 +98,12 @@ jobs:
       - name: Install dependencies
         if: ${{ vars.install_python == 'true' }}
         run: |
-          python -m pip install --upgrade boto3
+          python3 -m pip install --upgrade boto3
           
       - name: StackSet Waiter
         working-directory: "./python/"
         run: |
-          python cloudformationstacksetwaiter.py
+          python3 cloudformationstacksetwaiter.py
 
       - name: Identify Security Account
         id: get_security_account
