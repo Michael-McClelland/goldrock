@@ -203,13 +203,14 @@ jobs:
           mask-aws-account-id: false
 
       - name: Setup Python
+        if: ${{ vars.install_python == 'true' }}
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install dependencies
+        if: ${{ vars.install_python == 'true' }}
         run: |
-          whoami
           python -m pip install --upgrade boto3
 
       - name: Setup State
