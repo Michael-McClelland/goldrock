@@ -7,11 +7,6 @@ resource "aws_organizations_policy" "goldrock_full_access" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = "*"
-        Resource = "*"
-      },
-      {
         Effect   = "Deny"
         Action   = [
           "groundstation:*",
