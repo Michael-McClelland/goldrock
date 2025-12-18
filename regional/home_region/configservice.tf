@@ -1,3 +1,7 @@
+locals {
+  config_settings = yamldecode(file("${path.module}/config-settings.yaml"))
+}
+
 resource "aws_iam_service_linked_role" "config" {
   aws_service_name = "config.amazonaws.com"
 }
@@ -19,15 +23,15 @@ resource "aws_config_configuration_recorder" "config" {
   role_arn = aws_iam_service_linked_role.config.arn
 
   recording_group {
-    all_supported                 = true
-    include_global_resource_types = true
+    all_supported                 = local.config_settings.all_supported
+    include_global_resource_types = local.config_settings.include_global_resources
   }
 
   recording_mode {
-    recording_frequency = "CONTINUOUS"
+    recording_frequency = local.config_settings.recording_frequency
   }
 }
 
-resource "aws_config_retention_configuration" "example" {
-  retention_period_in_days = 365
+resource "aws_config_retention_configuration" "config" {
+  retention_period_in_days = local.config_settings.retention_period_days
 }

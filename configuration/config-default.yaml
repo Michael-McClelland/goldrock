@@ -1,0 +1,4 @@
+recording_frequency: DAILY
+retention_period_days: 365
+all_supported: true
+include_global_resources: true

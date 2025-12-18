@@ -1,0 +1,6 @@
+# Example override for specific account and region
+# Filename format: config-{account_id}-{region}.yaml
+recording_frequency: DAILY
+retention_period_days: 180
+all_supported: false
+include_global_resources: false

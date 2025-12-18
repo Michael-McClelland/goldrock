@@ -53,6 +53,15 @@ jobs:
           aws-region: ${{inputs.region}}
           mask-aws-account-id: false
 
+      - name: Copy Config Settings
+        working-directory: ${{inputs.workingdirectory}}
+        run: |
+          if [ -f "../../../configuration/config-${{inputs.account_id}}-${{inputs.region}}.yaml" ]; then
+            cp ../../../configuration/config-${{inputs.account_id}}-${{inputs.region}}.yaml config-settings.yaml
+          else
+            cp ../../../configuration/config-default.yaml config-settings.yaml
+          fi
+
       - name: Terraform init
         working-directory: ${{inputs.workingdirectory}}
         run: |
